@@ -5,7 +5,7 @@
         #region Constructors
 
         internal SIdentType(string name)
-            : base(StreamType.IdentString)
+            : base(StreamType.StringIdent)
         {
             Value = name;
         }

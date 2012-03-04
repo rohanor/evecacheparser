@@ -74,8 +74,8 @@ namespace EveCacheParser
                         s_methodFilter.Any()
                             ? s_methodFilter.Where(
                                 method => Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method)).Select(
-                                    x => new FileInfo(cachedFile.Filename))
-                            : new[] { new FileInfo(cachedFile.Filename) });
+                                    x => new FileInfo(cachedFile.Fullname))
+                            : new[] { new FileInfo(cachedFile.Fullname) });
         }
     }
 }

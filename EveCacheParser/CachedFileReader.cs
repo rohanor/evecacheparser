@@ -15,7 +15,8 @@ namespace EveCacheParser
 
         internal CachedFileReader(FileInfo filename, bool deploy = true)
         {
-            Filename = filename.FullName;
+            Filename = filename.Name;
+            Fullname = filename.FullName;
             using (FileStream stream = filename.OpenRead())
             {
                 BinaryReader binaryReader = new BinaryReader(stream);
@@ -36,14 +37,19 @@ namespace EveCacheParser
         {
             Buffer = source.Buffer;
             Filename = source.Filename;
+            Fullname = source.Fullname;
             Position = source.Position;
-            EndOfObjectsData = length + Position;
+
+            SecurityCheck();
+            EndOfObjectsData = length + source.Position;
         }
 
 
         #region Properties
 
-        internal string Filename { get; private set; }
+        private string Filename { get; set; }
+
+        internal string Fullname { get; private set; }
 
         internal byte[] Buffer { get; private set; }
 
@@ -160,14 +166,14 @@ namespace EveCacheParser
                 throw new Exception("Uninitialized shared obj");
 
             if (m_sharePosition >= m_sharedMap.Length)
-                throw new Exception("cursor out of range");
+                throw new Exception("position out of range");
 
             int shareid = m_sharedMap[m_sharePosition];
 
             if (shareid > m_sharedMap.Length)
                 throw new Exception("shareid out of range");
 
-            m_sharedObj[shareid] = obj.Clone();
+            m_sharedObj[m_sharePosition] = obj.Clone();
 
             m_sharePosition++;
         }
@@ -180,17 +186,15 @@ namespace EveCacheParser
             return m_sharedObj[id].Clone();
         }
 
-        internal SType GetDBRow(SType nhead)
+        internal SType GetDBRow(SObjectType header)
         {
-            SObjectType head = nhead as SObjectType;
-
-            if (head == null)
+            if (header == null)
                 throw new Exception("The DBRow header isn't present...");
 
-            if (head.Name != "blue.DBRowDescriptor")
+            if (header.Name != "blue.DBRowDescriptor")
                 throw new Exception("Bad descriptor name");
 
-            STupleType fields = head.Members[0].Members[1].Members[0] as STupleType;
+            STupleType fields = header.Members[0].Members[1].Members[0] as STupleType;
             if (fields == null)
                 return new SNoneType();
 
@@ -201,7 +205,7 @@ namespace EveCacheParser
 
             CachedFileReader blob = new CachedFileReader(newdata);
 
-            SDictType dict = new SDictType(999999); // TODO: need dynamic sized dict
+            SDictType dict = new SDictType((uint)fields.Members.Count * 2); // size of dict is the ammount of entries
             int step = 1;
             while (step < 6)
             {
@@ -279,7 +283,7 @@ namespace EveCacheParser
             }
 
             SType fakerow = new STupleType(3);
-            fakerow.AddMember(head);
+            fakerow.AddMember(header);
             fakerow.AddMember(body);
             fakerow.AddMember(dict);
             return fakerow;

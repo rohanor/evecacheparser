@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
     public class CachedFileParser
     {
-        private readonly StreamType[] m_lenghtTypes = {
-                                                          StreamType.StringLong, StreamType.StringRef, StreamType.SubStream, StreamType.Utf8,
-                                                          StreamType.BigInt, StreamType.SharedObj, StreamType.Blue,
-                                                          StreamType.IdentString
-                                                      };
-
-
         private readonly CachedFileReader m_reader;
         private static KeyValuePair<Key, CachedObjects> s_result;
 
@@ -24,7 +16,7 @@ namespace EveCacheParser
             Parse();
         }
 
-        private List<SType> Streams{get; set; }
+        private List<SType> Streams { get; set; }
 
 
         #region Static Methods
@@ -32,7 +24,6 @@ namespace EveCacheParser
         public static KeyValuePair<Key, CachedObjects> Parse(CachedFileReader cachedFile)
         {
             new CachedFileParser(cachedFile);
-
             return s_result;
         }
 
@@ -41,19 +32,13 @@ namespace EveCacheParser
 
         private void Parse()
         {
-            var i = m_reader.ReadByte() + (m_reader.ReadByte() << 16);
-            
-            //var o = (m_reader.ReadByte() << 16) + m_reader.ReadByte();
-            //var p = m_reader.ReadByte() + m_reader.ReadLong();
-
-
             while (!m_reader.AtEnd)
             {
-                StreamType check = (StreamType)m_reader.ReadByte();
+                //StreamType check = (StreamType)m_reader.ReadByte();
                 SType stream = new SType(StreamType.StreamStart);
 
-                if (check != StreamType.StreamStart)
-                    continue;
+                //if (check != StreamType.StreamStart)
+                //    continue;
 
                 Streams.Add(stream);
                 Parse(stream, 1);
@@ -75,9 +60,10 @@ namespace EveCacheParser
         private SType GetObject()
         {
             SType sObject = null;
+            SDBRowType lastDbRow = null;
 
             byte type = m_reader.ReadByte();
-            StreamType checkType = (StreamType)type;
+            StreamType checkType = (StreamType)(type & ~(byte)StreamType.SharedFlag);
             bool shared = Convert.ToBoolean(type & (byte)StreamType.SharedFlag);
 
             switch (checkType)
@@ -90,8 +76,9 @@ namespace EveCacheParser
                     break;
                 case StreamType.Utf8:
                 case StreamType.String:
-                case StreamType.StringUnicode:
+                case StreamType.StringLong:
                 case StreamType.StringGlobal:
+                case StreamType.StringUnicode:
                     sObject = new SStringType(m_reader.ReadString(m_reader.ReadByte()));
                     break;
                 case StreamType.Long:
@@ -130,7 +117,7 @@ namespace EveCacheParser
                 case StreamType.StringRef:
                     sObject = new SReferenceType((byte)m_reader.ReadLength());
                     break;
-                case StreamType.IdentString:
+                case StreamType.StringIdent:
                     sObject = new SIdentType(m_reader.ReadString(m_reader.ReadLength()));
                     break;
                 case StreamType.Tuple:
@@ -173,8 +160,8 @@ namespace EveCacheParser
                     break;
                 case StreamType.NewObj:
                 case StreamType.Object:
-                        sObject = ParseObject();
-                        break;
+                    sObject = ParseObject();
+                    break;
                 case StreamType.TupleEmpty:
                     sObject = new STupleType(0);
                     break;
@@ -196,11 +183,12 @@ namespace EveCacheParser
                     sObject = new SStringType(m_reader.ReadString(2));
                     break;
                 case StreamType.CompressedDBRow:
-                    sObject = m_reader.GetDBRow(GetObject());
+                    sObject = m_reader.GetDBRow(GetObject() as SObjectType);
+                    lastDbRow = sObject as SDBRowType;
                     break;
                 case StreamType.SubStream:
-                        sObject = ParseSubStream();
-                        break;
+                    sObject = ParseSubStream();
+                    break;
                 case StreamType.TupleTwo:
                     sObject = new STupleType(2);
                     Parse(sObject, 2);
@@ -208,23 +196,20 @@ namespace EveCacheParser
                 case StreamType.BigInt:
                     sObject = m_reader.ReadBigInt();
                     break;
-                ////case StreamType.Marker:
-                ////    if (m_reader.ReadByte() != 0x2d)
-                ////        throw new Exception("Didn't encounter a double 0x2d where one was expected at " +
-                ////                                 (m_reader.Position - 2));
-                ////    else if (lastDbRow != null)
-                ////        lastDbRow.IsLast = true;
-                ////    return null;
-
+                case StreamType.Marker:
+                    if (m_reader.ReadByte() != (byte)StreamType.Marker)
+                        throw new Exception("Didn't encounter a double marker (0x2d) where it was expected at " +
+                                            (m_reader.Position - 2));
+                    else if (lastDbRow != null)
+                        lastDbRow.IsLast = true;
+                    return null;
                 default:
-                    break;
-                    //throw new Exception("Can't identify type " + String.Format("{0:x2}", (int)type) +
-                    //                    " at position " + String.Format("{0:x2}", m_reader.Position) + " and lenght " +
-                    //                    m_reader.Length);
+                    throw new Exception(string.Format("Can't identify type {0:x2} at position {1:x2} [{1}] and lenght {2}",
+                                                          type, m_reader.Position, m_reader.Length));
             }
 
-            //if (sObject == null)
-            //    throw new Exception("sObject can't be null");
+            if (sObject == null)
+                throw new Exception("sObject shouldn't be null");
 
             if (shared)
                 m_reader.AddSharedObj(sObject);

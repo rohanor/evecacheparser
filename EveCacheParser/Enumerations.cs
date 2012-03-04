@@ -21,7 +21,7 @@ namespace EveCacheParser
         String = 0x10, // String, next byte is 0x00 - 0xff being the count
         StringRef = 0x11, // String, reference to line in StringsTable
         StringUnicode = 0x12, // String unicode, next byte is count
-        IdentString = 0x13, // Buffer object, identifier string
+        StringIdent = 0x13, // Buffer object, identifier string
         Tuple = 0x014, // Tuple, next byte is count
         List = 0x15, // List, next byte is count
         Dict = 0x16, // Dictionary, next byte is count
@@ -48,6 +48,6 @@ namespace EveCacheParser
         Utf8 = 0x2e, // UTF8 string unicode, next byte is buffer size count
         BigInt = 0x2f, // Big int, next byte is count
 
-        SharedFlag = 0x40
+        SharedFlag = 0x40 // Flag for a shared object
     }
 }
