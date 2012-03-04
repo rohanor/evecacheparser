@@ -29,7 +29,7 @@
 
         public override string ToString()
         {
-            return string.Format("<SString '{0}'>", Value);
+            return string.Format("<SStringType '{0}'>", Value);
         }
 
         #endregion

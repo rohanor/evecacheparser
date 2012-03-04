@@ -12,12 +12,6 @@ namespace EveCacheParser.STypes
             GivenLength = length;
         }
 
-        internal SDictType(SDictType source)
-            : base(source)
-        {
-            GivenLength = source.GivenLength;
-        }
-
         #endregion
 
 
@@ -59,7 +53,7 @@ namespace EveCacheParser.STypes
 
         public override string ToString()
         {
-            return "<SDict>";
+            return "<SDictType>";
         }
 
         #endregion Methods

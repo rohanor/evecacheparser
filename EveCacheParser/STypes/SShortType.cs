@@ -1,11 +1,11 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SFloatType : SType
+    internal sealed class SShortType : SType
     {
         #region Constructors
 
-        internal SFloatType(float value)
-            : base(StreamType.Float)
+        internal SShortType(short value)
+            : base(StreamType.Short)
         {
             Value = value;
         }
@@ -15,7 +15,7 @@
 
         #region Properties
 
-        public float Value { get; private set; }
+        public short Value { get; private set; }
 
         #endregion
 
@@ -24,12 +24,12 @@
 
         public override SType Clone()
         {
-            return (SFloatType)MemberwiseClone();
+            return (SShortType)MemberwiseClone();
         }
 
         public override string ToString()
         {
-            return string.Format("<SFloatType '{0}'>", Value);
+            return string.Format("<SShortType '{0}'>", Value);
         }
 
         #endregion

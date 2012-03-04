@@ -29,7 +29,7 @@
 
         public override string ToString()
         {
-            return "<SSubStream>";
+            return "<SSubStreamType>";
         }
 
         #endregion

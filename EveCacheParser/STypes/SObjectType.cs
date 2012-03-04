@@ -50,7 +50,7 @@
 
         public override string ToString()
         {
-            return string.Format("<SObject '{0}' [{1:X4}]>", Name, DebugID);
+            return string.Format("<SObjectType '{0}' [{1:X4}]>", Name, DebugID);
         }
 
         #endregion

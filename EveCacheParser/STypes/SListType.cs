@@ -2,17 +2,17 @@
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class STupleType : SType
+    internal sealed class SListType : SType
     {
         #region Constructors
 
-        internal STupleType(uint len)
-            : base(StreamType.Tuple)
+        internal SListType(uint len)
+            : base(StreamType.List)
         {
             GivenLength = len;
         }
 
-        internal STupleType(STupleType source)
+        internal SListType(SListType source)
             : base(source)
         {
             GivenLength = source.GivenLength;
@@ -40,12 +40,12 @@ namespace EveCacheParser.STypes
 
         public override SType Clone()
         {
-            return (STupleType)MemberwiseClone();
+            return (SListType)MemberwiseClone();
         }
 
         public override string ToString()
         {
-            return "<STupleType>";
+            return "<SListType>";
         }
 
         #endregion

@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
     public class CachedFileReader
     {
+        private SType[] m_sharedObj;
+        private int[] m_sharedMap;
+        private int m_sharePosition;
         private int m_shareSkip;
-        private int[] m_sharedObj;
 
         internal CachedFileReader(FileInfo filename, bool deploy = true)
         {
@@ -19,6 +24,12 @@ namespace EveCacheParser
 
             if (deploy)
                 SecurityCheck();
+        }
+        
+        internal CachedFileReader(byte[] buffer)
+        {
+            Buffer = new byte[buffer.Length];
+            Array.Copy(buffer, Buffer, buffer.Length);
         }
 
 
@@ -37,7 +48,7 @@ namespace EveCacheParser
 
         internal bool AtEnd
         {
-            get { return Position < EndOfObjectsData; }
+            get { return Position >= EndOfObjectsData; }
         }
 
         internal int EndOfObjectsData
@@ -60,10 +71,34 @@ namespace EveCacheParser
 
         #region Internal Methods
 
+        public double ReadDouble()
+        {
+            return BitConverter.ToDouble(ReadBytes(8), 0);
+        }
+
+        public float ReadFloat()
+        {
+            return BitConverter.ToSingle(ReadBytes(8), 0);
+        }
+
+        public short ReadShort()
+        {
+            return BitConverter.ToInt16(ReadBytes(2), 0);
+        }
+
+        internal long ReadLong()
+        {
+            return BitConverter.ToInt64(ReadBytes(8), 0);
+        }
+
+        internal string ReadString(int length)
+        {
+            return Encoding.ASCII.GetString(ReadBytes(length));
+        }
+
         internal int ReadInt()
         {
-            byte[] temp = ReadBytes(4);
-            return BitConverter.ToInt32(temp, 0);
+            return BitConverter.ToInt32(ReadBytes(4), 0);
         }
 
         internal byte ReadByte()
@@ -73,8 +108,44 @@ namespace EveCacheParser
             return temp;
         }
 
+        internal byte[] ReadBytes(int length)
+        {
+            byte[] temp = GetBytes(new byte[length], length);
+            Seek(length);
+            return temp;
+        }
+
         #endregion
 
+        internal void AddSharedObj(SType obj)
+        {
+            if (m_sharedMap == null)
+                throw new Exception("Uninitialized shared map");
+
+            if (m_sharedObj == null)
+                throw new Exception("Uninitialized shared obj");
+
+            if (m_sharePosition >= m_sharedMap.Length)
+                throw new Exception("cursor out of range");
+
+            int shareid = m_sharedMap[m_sharePosition];
+
+            if (shareid > m_sharedMap.Length)
+                throw new Exception("shareid out of range");
+
+            m_sharedObj[shareid] = obj.Clone();
+
+            m_sharePosition++;
+        }
+
+
+        internal SType GetSharedObj(int id)
+        {
+            if (m_sharedObj[id] == null)
+                throw new Exception("ShareTab: No entry at position " + id);
+
+            return m_sharedObj[id].Clone();
+        }
 
         #region Private Methods
 
@@ -100,30 +171,23 @@ namespace EveCacheParser
             Seek(m_shareSkip, SeekOrigin.End);
 
             // Store the shared mapped data  
-            int[] sharedMap = new int[sharedMapsize];
+            m_sharedMap = new int[sharedMapsize];
             for (int i = 0; i < sharedMapsize; i++)
             {
-                sharedMap[i] = ReadInt();
+                m_sharedMap[i] = ReadInt();
             }
 
             // Security Check #2
             for (int i = 0; i < sharedMapsize; i++)
             {
-                if ((sharedMap[i] > sharedMapsize) || (sharedMap[i] < 1))
+                if ((m_sharedMap[i] > sharedMapsize) || (m_sharedMap[i] < 1))
                     throw new IndexOutOfRangeException();
             }
 
-            m_sharedObj = new int[sharedMapsize];
+            m_sharedObj = new SType[sharedMapsize];
 
             // Return to the stored position
             Seek(positionTemp, SeekOrigin.Begin);
-        }
-
-        private byte[] ReadBytes(int length)
-        {
-            byte[] temp = GetBytes(new byte[length], length);
-            Seek(length);
-            return temp;
         }
 
         private byte GetByte()

@@ -22,25 +22,25 @@ namespace EveCacheParser
                 for (int j = 0; j < cnt; ++j)
                 {
                     if (line[j] < 0x20 || line[j] > 0x7f)
-                        //line[j] = (byte)'.';
-                        if (j < cnt - 1)
-                            Console.Write(line[j]);
-                        else
-                            Console.WriteLine(line[j]);
-                    else if (j < cnt - 1)
-                        Console.Write(Encoding.ASCII.GetString(new[] { line[j] }));
-                    else
-                        Console.WriteLine(Encoding.ASCII.GetString(new[] { line[j] }));
+                        line[j] = (byte)'.';
+                    //    if (j < cnt - 1)
+                    //        Console.Write(line[j]);
+                    //    else
+                    //        Console.WriteLine(line[j]);
+                    //else if (j < cnt - 1)
+                    //    Console.Write(Encoding.ASCII.GetString(new[] { line[j] }));
+                    //else
+                    //    Console.WriteLine(Encoding.ASCII.GetString(new[] { line[j] }));
 
-                    if (line[j] == 0x40)
-                    {
-                        byte left;
-                        byte right;
-                        if (j > 0)
-                            left = line[j - 1];
-                        if (j < cnt - 1)
-                            right = line[j + 1];
-                    }
+                    //if (line[j] == 0x40)
+                    //{
+                    //    byte left;
+                    //    byte right;
+                    //    if (j > 0)
+                    //        left = line[j - 1];
+                    //    if (j < cnt - 1)
+                    //        right = line[j + 1];
+                    //}
                 }
                 Console.WriteLine(Encoding.ASCII.GetString(line));
             }

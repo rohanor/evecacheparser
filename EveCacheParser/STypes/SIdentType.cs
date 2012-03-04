@@ -5,7 +5,7 @@
         #region Constructors
 
         internal SIdentType(string name)
-            : base(StreamType.Buffer)
+            : base(StreamType.IdentString)
         {
             Value = name;
         }
@@ -29,7 +29,7 @@
 
         public override string ToString()
         {
-            return string.Format("<SIdent '{0}'>", Value);
+            return string.Format("<SIdentType '{0}'>", Value);
         }
 
         #endregion

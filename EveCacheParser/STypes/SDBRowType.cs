@@ -6,12 +6,12 @@ namespace EveCacheParser.STypes
 {
     internal sealed class SDBRowType : SType
     {
-        private List<byte> m_data;
+        private readonly IEnumerable<byte> m_data;
 
 
         #region Constructors
 
-        internal SDBRowType(List<byte> data)
+        internal SDBRowType(IEnumerable<byte> data)
             : base(StreamType.CompressedDBRow)
         {
             m_data = data;
@@ -38,7 +38,7 @@ namespace EveCacheParser.STypes
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("<DBRow ");
+            sb.Append("<SDBRowType ");
 
             foreach (byte type in m_data)
             {

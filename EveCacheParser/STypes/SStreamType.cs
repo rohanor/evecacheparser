@@ -26,7 +26,7 @@
 
         public override string ToString()
         {
-            return "<SStream>";
+            return "<SStreamType>";
         }
 
         #endregion Methods

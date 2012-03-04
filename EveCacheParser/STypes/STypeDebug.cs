@@ -38,12 +38,9 @@ namespace EveCacheParser.STypes
 
         #region Static Methods
 
-        internal static void DumpNodes(string fileName)
+        public static void DumpTypes(string fileName)
         {
-            foreach (SType node in s_nodes)
-            {
-                s_nodeConsumed[node.DebugID] = false;
-            }
+            s_nodes.ForEach(node => s_nodeConsumed[node.DebugID] = false);
 
             StringBuilder fileContents = new StringBuilder();
             foreach (SType n in s_nodes.Where(n => !s_nodeConsumed[n.DebugID]))
@@ -55,30 +52,28 @@ namespace EveCacheParser.STypes
                 }
 
                 fileContents.Append(n.ToString());
-                fileContents.Append(String.Format("[{0:00}]\n", n.DebugID));
-                fileContents.Append(DumpNode(n, 1));
+                fileContents.AppendFormat("[{0:00}]\n", n.DebugID);
+                fileContents.Append(DumpType(n, 1));
 
                 s_nodeConsumed[n.DebugID] = true;
             }
             File.WriteAllText(Path.ChangeExtension(fileName, ".structure"), fileContents.ToString());
         }
 
-        private static string DumpNode(SType node, int offset)
+        private static string DumpType(SType node, int offset)
         {
             if (node.Members.Length == 0)
-                return "";
+                return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            sb.Append("(\n".PadLeft(2 * offset));
             foreach (SType n in node.Members)
             {
                 sb.Append(n.ToString().PadLeft((2 * offset) + n.ToString().Length));
-                sb.Append(String.Format("[{0:00}]\n", n.DebugID));
+                sb.AppendFormat("[{0:00}]\n", n.DebugID);
                 if (n.Members.Length > 0)
-                    sb.Append(DumpNode(n, offset + 1));
+                    sb.Append(DumpType(n, offset + 1));
                 s_nodeConsumed[n.DebugID] = true;
             }
-            sb.Append(")\n".PadLeft(2 * offset));
 
             return sb.ToString();
         }

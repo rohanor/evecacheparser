@@ -29,7 +29,7 @@
 
         public override string ToString()
         {
-            return string.Format("<SInt '{0}'>", Value);
+            return string.Format("<SIntType '{0}'>", Value);
         }
 
         #endregion

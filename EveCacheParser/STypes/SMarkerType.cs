@@ -8,6 +8,10 @@
             : base(StreamType.Marker)
         {
             ID = id;
+            Name = StringsTable.GetStringByID(id);
+
+            if (string.IsNullOrWhiteSpace(Name))
+                Name = "Unknown";
         }
 
         #endregion
@@ -16,6 +20,8 @@
         #region Properties
 
         public byte ID { get; set; }
+
+        public string Name { get; set; }
 
         #endregion Properties
 
@@ -29,11 +35,7 @@
 
         public override string ToString()
         {
-            string name = StringsTable.GetStringByID(ID);
-            if (name == string.Empty)
-                name = string.Format("UNKNOWN: {0}", ID);
-
-            return string.Format("<SMarker ID: {0} '{1}'>", ID, name);
+            return string.Format("<SMarkerType ID: {0} '{1}'>", ID, Name);
         }
 
         #endregion

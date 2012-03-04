@@ -21,7 +21,7 @@
 
         public override string ToString()
         {
-            return "<SDBHeader>";
+            return "<SDBHeaderType>";
         }
 
         #endregion

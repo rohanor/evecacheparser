@@ -10,18 +10,18 @@ namespace EveCacheParser
         Int = 0x04, // 32 bit signed value
         Short = 0x05, // 16 bit signed value
         Byte = 0x6, // 8 bit signed value
-        NegOneInt = 0x07, // The value of -1
-        ZeroInt = 0x08, // The value of 0
-        OneInt = 0x09, // The value of 1
+        IntNegOne = 0x07, // The value of -1
+        IntZero = 0x08, // The value of 0
+        IntOne = 0x09, // The value of 1
         Float = 0x0a, // 64 bit signed float
-        Float0 = 0x0b, // 64 bit signed double
+        Double = 0x0b, // 64 bit signed double
         StringLong = 0x0d, // String, longer than 255 characters using normal count
         StringEmpty = 0xe, // String, empty
         StringOne = 0xf, // String, 1 character
         String = 0x10, // String, next byte is 0x00 - 0xff being the count
         StringRef = 0x11, // String, reference to line in columnlookup
         StringUnicode = 0x12, // String unicode, next byte is count
-        Buffer = 0x13, // Buffer object, identifier
+        IdentString = 0x13, // Buffer object, identifier string
         Tuple = 0x014, // Tuple, next byte is count
         List = 0x15, // List, next byte is count
         Dict = 0x16, // Dictionary, next byte is count
@@ -33,7 +33,7 @@ namespace EveCacheParser
         BoolTrue = 0x1f, // Boolean True
         BoolFalse = 0x20, // Boolean False
         Pickler = 0x21, // Standard pickle of undetermined size
-        Reduce = 0x22, // Reduce protocol
+        Object = 0x22, // Object
         NewObj = 0x23, // New object
         TupleEmpty = 0x24, // Tuple, empty
         TupleOne = 0x25, // Tuple, single element
@@ -44,7 +44,7 @@ namespace EveCacheParser
         CompressedDBRow = 0x2a, // Database row, a RLEish compressed row
         SubStream = 0x2b, // Embedded stream, substream - length bytes followed by 0x7e
         TupleTwo = 0x2c, // Tuple, two elements
-        Marker = 0x02d, // Marker (for the NEWOBJ/REDUCE iterators that follow them)
+        Marker = 0x02d, // Marker (for the NewObj/Object iterators that follow them)
         Utf8 = 0x2e, // UTF8 string unicode, next byte is buffer size count
         BigInt = 0x2f, // Big int, next byte is count
 
