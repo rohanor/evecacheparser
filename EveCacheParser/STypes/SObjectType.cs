@@ -38,7 +38,7 @@
             return (SObjectType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SObjectType '{0}' [{1:X4}]>", Name, DebugID);
         }

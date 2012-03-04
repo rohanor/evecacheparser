@@ -35,7 +35,7 @@ namespace EveCacheParser.STypes
             return (SDBRowType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<SDBRowType ");

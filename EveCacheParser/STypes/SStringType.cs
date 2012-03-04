@@ -27,7 +27,7 @@
             return (SStringType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SStringType '{0}'>", Value);
         }

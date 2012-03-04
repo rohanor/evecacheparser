@@ -27,7 +27,7 @@
             return (SShortType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SShortType '{0}'>", Value);
         }

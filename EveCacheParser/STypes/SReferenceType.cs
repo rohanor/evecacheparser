@@ -33,7 +33,7 @@
             return (SReferenceType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SReferenceType ID: {0} '{1}'>", ID, Name);
         }

@@ -19,7 +19,7 @@
             return (SDBHeader)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return "<SDBHeaderType>";
         }

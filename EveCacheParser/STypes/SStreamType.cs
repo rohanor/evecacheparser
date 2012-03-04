@@ -24,7 +24,7 @@
             return (SStreamType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return "<SStreamType>";
         }

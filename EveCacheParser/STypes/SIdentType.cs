@@ -27,7 +27,7 @@
             return (SIdentType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SIdentType '{0}'>", Value);
         }

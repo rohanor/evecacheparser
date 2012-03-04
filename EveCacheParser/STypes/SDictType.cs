@@ -51,7 +51,7 @@ namespace EveCacheParser.STypes
             return null;
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return "<SDictType>";
         }

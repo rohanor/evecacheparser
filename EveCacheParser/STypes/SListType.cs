@@ -37,7 +37,7 @@ namespace EveCacheParser.STypes
             return (SListType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return "<SListType>";
         }

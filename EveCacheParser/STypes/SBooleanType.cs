@@ -29,7 +29,7 @@ namespace EveCacheParser.STypes
             return (SBooleanType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SBooleanType '{0}'>", Value);
         }

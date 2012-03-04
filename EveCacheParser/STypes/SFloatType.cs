@@ -27,7 +27,7 @@
             return (SFloatType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SFloatType '{0}'>", Value);
         }

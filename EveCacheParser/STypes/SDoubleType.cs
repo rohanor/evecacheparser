@@ -27,7 +27,7 @@
             return (SDoubleType)MemberwiseClone();
         }
 
-        internal override string ToString()
+        public override string ToString()
         {
             return string.Format("<SDoubleType '{0}'>", Value);
         }
