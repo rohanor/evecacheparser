@@ -23,7 +23,7 @@ namespace EveCacheParser.STypes
 
         #region Properties
 
-        public int Length
+        internal int Length
         {
             get { return Items.Count(); }
         }

@@ -23,19 +23,19 @@ namespace EveCacheParser.STypes
 
         #region Properties
 
-        public bool IsLast { get; set; }
+        internal bool IsLast { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SDBRowType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<SDBRowType ");

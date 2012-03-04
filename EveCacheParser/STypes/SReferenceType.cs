@@ -1,11 +1,11 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SMarkerType : SType
+    internal sealed class SReferenceType : SType
     {
         #region Constructors
 
-        internal SMarkerType(byte id)
-            : base(StreamType.Marker)
+        internal SReferenceType(byte id)
+            : base(StreamType.StringRef)
         {
             ID = id;
             Name = StringsTable.GetStringByID(id);
@@ -19,23 +19,23 @@
 
         #region Properties
 
-        public byte ID { get; set; }
+        private byte ID { get; set; }
 
-        public string Name { get; set; }
+        private string Name { get; set; }
 
         #endregion Properties
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
-            return (SMarkerType)MemberwiseClone();
+            return (SReferenceType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
-            return string.Format("<SMarkerType ID: {0} '{1}'>", ID, Name);
+            return string.Format("<SReferenceType ID: {0} '{1}'>", ID, Name);
         }
 
         #endregion

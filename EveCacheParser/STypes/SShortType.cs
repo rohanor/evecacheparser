@@ -15,19 +15,19 @@
 
         #region Properties
 
-        public short Value { get; private set; }
+        private short Value { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SShortType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SShortType '{0}'>", Value);
         }

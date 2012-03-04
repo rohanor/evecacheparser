@@ -15,19 +15,19 @@
 
         #region Properties
 
-        public float Value { get; private set; }
+        private float Value { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SFloatType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SFloatType '{0}'>", Value);
         }

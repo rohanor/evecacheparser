@@ -2,17 +2,10 @@
 {
     internal sealed class SObjectType : SType
     {
-
-
         #region Constructors
 
         internal SObjectType()
             : base(StreamType.ClassObject)
-        {
-        }
-
-        internal SObjectType(SType source)
-            : base(source)
         {
         }
 
@@ -21,7 +14,7 @@
 
         #region Properties
 
-        public string Name
+        internal string Name
         {
             get
             {
@@ -31,10 +24,7 @@
 
                 SStringType str = current as SStringType;
 
-                if (str != null)
-                    return str.Value;
-
-                return string.Empty;
+                return str != null ? str.Value : string.Empty;
             }
         }
 
@@ -43,12 +33,12 @@
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SObjectType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SObjectType '{0}' [{1:X4}]>", Name, DebugID);
         }

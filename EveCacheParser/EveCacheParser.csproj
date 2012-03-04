@@ -58,7 +58,7 @@
     <Compile Include="STypes\SIdentType.cs" />
     <Compile Include="STypes\SIntType.cs" />
     <Compile Include="STypes\SLongType.cs" />
-    <Compile Include="STypes\SMarkerType.cs" />
+    <Compile Include="STypes\SReferenceType.cs" />
     <Compile Include="STypes\SType.cs" />
     <Compile Include="STypes\STypeCollection.cs" />
     <Compile Include="STypes\STypeDebug.cs" />

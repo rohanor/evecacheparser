@@ -15,19 +15,19 @@
 
         #region Properties
 
-        public byte Value { get; private set; }
+        private byte Value { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SByteType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SByteType '{0}'>", Value);
         }

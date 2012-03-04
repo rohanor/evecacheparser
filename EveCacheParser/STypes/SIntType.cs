@@ -15,19 +15,19 @@
 
         #region Properties
 
-        public int Value { get; private set; }
+        internal int Value { get; private set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SIntType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SIntType '{0}'>", Value);
         }

@@ -19,7 +19,7 @@ namespace EveCacheParser
         StringEmpty = 0xe, // String, empty
         StringOne = 0xf, // String, 1 character
         String = 0x10, // String, next byte is 0x00 - 0xff being the count
-        StringRef = 0x11, // String, reference to line in columnlookup
+        StringRef = 0x11, // String, reference to line in StringsTable
         StringUnicode = 0x12, // String unicode, next byte is count
         IdentString = 0x13, // Buffer object, identifier string
         Tuple = 0x014, // Tuple, next byte is count
@@ -44,7 +44,7 @@ namespace EveCacheParser
         CompressedDBRow = 0x2a, // Database row, a RLEish compressed row
         SubStream = 0x2b, // Embedded stream, substream - length bytes followed by 0x7e
         TupleTwo = 0x2c, // Tuple, two elements
-        Marker = 0x02d, // Marker (for the NewObj/Object iterators that follow them)
+        Marker = 0x2d, // Marker (for the NewObj/Object iterators that follow them)
         Utf8 = 0x2e, // UTF8 string unicode, next byte is buffer size count
         BigInt = 0x2f, // Big int, next byte is count
 

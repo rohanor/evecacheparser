@@ -15,19 +15,19 @@
 
         #region Properties
 
-        public long Value { get; private set; }
+        private long Value { get; set; }
 
         #endregion Properties
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SLongType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SLongType '{0}'>", Value);
         }

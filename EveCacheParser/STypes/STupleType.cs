@@ -12,38 +12,32 @@ namespace EveCacheParser.STypes
             GivenLength = len;
         }
 
-        internal STupleType(STupleType source)
-            : base(source)
-        {
-            GivenLength = source.GivenLength;
-        }
-
         #endregion
 
 
         #region Properties
 
-        public uint GivenLength { get; set; }
+        private uint GivenLength { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override void AddMember(SType node)
+        internal override void AddMember(SType node)
         {
             if (!(Members.Length < GivenLength))
-                throw new SystemException();
+                throw new ArgumentOutOfRangeException();
 
             Members.Add(node);
         }
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (STupleType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return "<STupleType>";
         }

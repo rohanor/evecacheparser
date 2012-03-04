@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,7 +18,7 @@ namespace EveCacheParser.STypes
 
         #region Fields
 
-        protected readonly int DebugID;
+        internal readonly int DebugID;
 
         #endregion Fields
 
@@ -60,7 +59,7 @@ namespace EveCacheParser.STypes
             File.WriteAllText(Path.ChangeExtension(fileName, ".structure"), fileContents.ToString());
         }
 
-        private static string DumpType(SType node, int offset)
+        private  string DumpType(SType node, int offset)
         {
             if (node.Members.Length == 0)
                 return string.Empty;

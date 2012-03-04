@@ -25,21 +25,31 @@ namespace EveCacheParser
             if (deploy)
                 SecurityCheck();
         }
-        
-        internal CachedFileReader(byte[] buffer)
+
+        private CachedFileReader(byte[] buffer)
         {
             Buffer = new byte[buffer.Length];
             Array.Copy(buffer, Buffer, buffer.Length);
         }
 
+        internal CachedFileReader(CachedFileReader source, int length)
+        {
+            Buffer = source.Buffer;
+            Filename = source.Filename;
+            Position = source.Position;
+            EndOfObjectsData = length + Position;
+        }
+
 
         #region Properties
 
-        internal string Filename { get; set; }
+        internal string Filename { get; private set; }
 
         internal byte[] Buffer { get; private set; }
 
         internal int Position { get; private set; }
+
+        private int EndOfObjectsData { get; set; }
 
         internal int Length
         {
@@ -49,11 +59,6 @@ namespace EveCacheParser
         internal bool AtEnd
         {
             get { return Position >= EndOfObjectsData; }
-        }
-
-        internal int EndOfObjectsData
-        {
-            get { return Length - m_shareSkip; }
         }
 
         #endregion
@@ -71,17 +76,43 @@ namespace EveCacheParser
 
         #region Internal Methods
 
-        public double ReadDouble()
+        internal SType ReadBigInt()
+        {
+            SType sObject;
+
+            switch (ReadByte())
+            {
+                case 8:
+                    sObject = new SLongType(ReadLong());
+                    break;
+                case 4:
+                    sObject = new SIntType(ReadInt());
+                    break;
+                case 3:
+                    sObject = new SIntType(ReadByte() + (ReadByte() << 16));
+                    break;
+                case 2:
+                    sObject = new SShortType(ReadShort());
+                    break;
+                default:
+                    sObject = new SByteType(ReadByte());
+                    break;
+            }
+
+            return sObject;
+        }
+
+        internal double ReadDouble()
         {
             return BitConverter.ToDouble(ReadBytes(8), 0);
         }
 
-        public float ReadFloat()
+        internal float ReadFloat()
         {
             return BitConverter.ToSingle(ReadBytes(8), 0);
         }
 
-        public short ReadShort()
+        internal short ReadShort()
         {
             return BitConverter.ToInt16(ReadBytes(2), 0);
         }
@@ -108,14 +139,17 @@ namespace EveCacheParser
             return temp;
         }
 
-        internal byte[] ReadBytes(int length)
+        internal int ReadLength()
         {
-            byte[] temp = GetBytes(new byte[length], length);
-            Seek(length);
-            return temp;
-        }
+            CheckSize(1);
+            int lenght = ReadByte();
 
-        #endregion
+            if (lenght != 255)
+                return lenght;
+
+            CheckSize(4);
+            return ReadInt();
+        }
 
         internal void AddSharedObj(SType obj)
         {
@@ -138,7 +172,6 @@ namespace EveCacheParser
             m_sharePosition++;
         }
 
-
         internal SType GetSharedObj(int id)
         {
             if (m_sharedObj[id] == null)
@@ -146,6 +179,132 @@ namespace EveCacheParser
 
             return m_sharedObj[id].Clone();
         }
+
+        internal SType GetDBRow(SType nhead)
+        {
+            SObjectType head = nhead as SObjectType;
+
+            if (head == null)
+                throw new Exception("The DBRow header isn't present...");
+
+            if (head.Name != "blue.DBRowDescriptor")
+                throw new Exception("Bad descriptor name");
+
+            STupleType fields = head.Members[0].Members[1].Members[0] as STupleType;
+            if (fields == null)
+                return new SNoneType();
+
+            int len = ReadLength();
+            byte[] olddata = ReadBytes(len);
+            byte[] newdata = Unpack(olddata);
+            SType body = new SDBRowType(newdata);
+
+            CachedFileReader blob = new CachedFileReader(newdata);
+
+            SDictType dict = new SDictType(999999); // TODO: need dynamic sized dict
+            int step = 1;
+            while (step < 6)
+            {
+                foreach (SType field in fields.Members)
+                {
+                    SType fieldName = field.Members[0];
+                    SIntType fieldType = (SIntType)field.Members[1];
+                    int fieldTypeInt = fieldType.Value;
+
+                    byte boolcount = 0;
+                    bool boolbuf = false;
+                    SType obj = null;
+
+                    switch (fieldTypeInt)
+                    {
+                        case 18:
+                        case 2: // 16bit int
+                            if (step == 3)
+                                obj = new SShortType(blob.ReadShort());
+                            break;
+                        case 3: // 32bit int
+                        case 19:
+                            if (step == 2)
+                                obj = new SIntType(blob.ReadInt());
+                            break;
+                        case 4:
+                            obj = new SFloatType(blob.ReadFloat());
+                            break;
+                        case 5: // double
+                            if (step == 1)
+                                obj = new SDoubleType(blob.ReadDouble());
+                            break;
+                        case 6: // currency
+                        case 20:// 64bit int
+                        case 21:
+                        case 64: // timestamp
+                            if (step == 1)
+                                obj = new SLongType(blob.ReadLong());
+                            break;
+                        case 11: // boolean
+                            if (step == 5)
+                            {
+                                if (boolcount == 0)
+                                {
+                                    boolbuf = Convert.ToBoolean(blob.ReadByte());
+                                    boolcount++;
+                                }
+                                if (boolbuf && boolcount != 0)
+                                    obj = new SBooleanType(1);
+                                else
+                                    obj = new SBooleanType(0);
+                            }
+                            break;
+                        case 16:
+                        case 17:
+                            obj = new SByteType(blob.ReadByte());
+                            break;
+                        case 128: // string types
+                        case 129:
+                        case 130:
+                            obj = new SStringType("I can't parse strings yet - be patient");
+                            break;
+                        default:
+                            throw new Exception("Unhandled ADO type " + fieldTypeInt);
+                    }
+
+                    if (obj == null)
+                        continue;
+
+                    dict.AddMember(obj);
+                    dict.AddMember(fieldName.Clone());
+                }
+
+                step++;
+            }
+
+            SType fakerow = new STupleType(3);
+            fakerow.AddMember(head);
+            fakerow.AddMember(body);
+            fakerow.AddMember(dict);
+            return fakerow;
+        }
+
+        internal void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
+        {
+            switch (origin)
+            {
+                case SeekOrigin.Begin:
+                    Position = offset;
+                    break;
+                case SeekOrigin.Current:
+                    Position += offset;
+                    break;
+                case SeekOrigin.End:
+                    Position = Length - offset;
+                    break;
+                default:
+                    throw new IOException("Invalid origin");
+            }
+        }
+
+        #endregion
+
 
         #region Private Methods
 
@@ -186,8 +345,18 @@ namespace EveCacheParser
 
             m_sharedObj = new SType[sharedMapsize];
 
+            // Mark the end of the data
+            EndOfObjectsData = Length - m_shareSkip;
+
             // Return to the stored position
             Seek(positionTemp, SeekOrigin.Begin);
+        }
+
+        private byte[] ReadBytes(int length)
+        {
+            byte[] temp = GetBytes(new byte[length], length);
+            Seek(length);
+            return temp;
         }
 
         private byte GetByte()
@@ -202,24 +371,67 @@ namespace EveCacheParser
             return destination;
         }
 
-        private void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
+        private void CheckSize(int length)
         {
-            switch (origin)
+            if (Position + length > Length)
+                throw new EndOfStreamException();
+        }
+
+        private static byte[] Unpack(IList<byte> inputBytes)
+        {
+            List<byte> buffer = new List<byte>();
+            if (inputBytes.Count == 0)
+                return new byte[] { };
+
+            int i = 0;
+            while (i < inputBytes.Count)
             {
-                case SeekOrigin.Begin:
-                    Position = offset;
-                    break;
-                case SeekOrigin.Current:
-                    Position += offset;
-                    break;
-                case SeekOrigin.End:
-                    Position = Length - offset;
-                    break;
-                default:
-                    throw new IOException("Invalid origin");
+                PackerOpcap opcap = new PackerOpcap(inputBytes[i++]);
+                if (opcap.Tzero)
+                {
+                    byte count = (byte)(opcap.Tlen + 1);
+                    for (; count > 0; count--)
+                        buffer.Add(0);
+                }
+                else
+                {
+                    byte count = (byte)(8 - opcap.Tlen);
+                    for (; count > 0; count--)
+                        buffer.Add(inputBytes[i++]);
+                }
+
+                if (opcap.Bzero)
+                {
+                    byte count = (byte)(opcap.Blen + 1);
+                    for (; count > 0; count--)
+                        buffer.Add(0);
+                }
+                else
+                {
+                    byte count = (byte)(8 - opcap.Blen);
+                    for (; count > 0; count--)
+                        buffer.Add(inputBytes[i++]);
+                }
             }
+            return buffer.ToArray();
         }
 
         #endregion
+    }
+
+    public struct PackerOpcap
+    {
+        public readonly byte Tlen;
+        public readonly bool Tzero;
+        public readonly byte Blen;
+        public readonly bool Bzero;
+
+        public PackerOpcap(byte b)
+        {
+            Tlen = (byte)((byte)(b << 5) >> 5);
+            Tzero = (byte)((byte)(b << 4) >> 7) == 1;
+            Blen = (byte)((byte)(b << 1) >> 5);
+            Bzero = (byte)(b >> 7) == 1;
+        }
     }
 }

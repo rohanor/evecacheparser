@@ -15,19 +15,19 @@
 
         #region Properties
 
-        public double Value { get; private set; }
+        private double Value { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SDoubleType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SDoubleType '{0}'>", Value);
         }

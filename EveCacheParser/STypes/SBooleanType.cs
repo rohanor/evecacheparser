@@ -17,19 +17,19 @@ namespace EveCacheParser.STypes
 
         #region Properties
 
-        public bool Value { get; private set; }
+        private bool Value { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SBooleanType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SBooleanType '{0}'>", Value);
         }

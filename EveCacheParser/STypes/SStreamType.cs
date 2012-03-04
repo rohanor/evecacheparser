@@ -19,12 +19,12 @@
 
         #region Methods
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SStreamType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return "<SStreamType>";
         }

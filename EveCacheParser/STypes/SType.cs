@@ -24,26 +24,26 @@
 
         #region Properties
 
-        protected internal STypeCollection Members { get; private set; }
+        internal STypeCollection Members { get; private set; }
 
-        protected StreamType StreamType { get; set; }
+        internal StreamType StreamType { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public virtual void AddMember(SType type)
+        internal virtual void AddMember(SType type)
         {
             Members.Add(type);
         }
 
-        public virtual SType Clone()
+        internal virtual SType Clone()
         {
             return (SType)MemberwiseClone();
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return string.Format("<SType [{0}]>", StreamType);
         }

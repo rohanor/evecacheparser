@@ -20,8 +20,11 @@ namespace EveCacheParser
         private CachedFileParser(CachedFileReader reader)
         {
             m_reader = reader;
+            Streams = new List<SType>();
             Parse();
         }
+
+        private List<SType> Streams{get; set; }
 
 
         #region Static Methods
@@ -38,6 +41,12 @@ namespace EveCacheParser
 
         private void Parse()
         {
+            var i = m_reader.ReadByte() + (m_reader.ReadByte() << 16);
+            
+            //var o = (m_reader.ReadByte() << 16) + m_reader.ReadByte();
+            //var p = m_reader.ReadByte() + m_reader.ReadLong();
+
+
             while (!m_reader.AtEnd)
             {
                 StreamType check = (StreamType)m_reader.ReadByte();
@@ -46,6 +55,7 @@ namespace EveCacheParser
                 if (check != StreamType.StreamStart)
                     continue;
 
+                Streams.Add(stream);
                 Parse(stream, 1);
             }
         }
@@ -78,6 +88,7 @@ namespace EveCacheParser
                 case StreamType.None:
                     sObject = new SNoneType();
                     break;
+                case StreamType.Utf8:
                 case StreamType.String:
                 case StreamType.StringUnicode:
                 case StreamType.StringGlobal:
@@ -116,29 +127,29 @@ namespace EveCacheParser
                 case StreamType.StringOne:
                     sObject = new SStringType(m_reader.ReadString(1));
                     break;
-                case StreamType.Marker:
-                    sObject = new SMarkerType((byte)ReadLength());
+                case StreamType.StringRef:
+                    sObject = new SReferenceType((byte)m_reader.ReadLength());
                     break;
                 case StreamType.IdentString:
-                    sObject = new SIdentType(m_reader.ReadString(ReadLength()));
+                    sObject = new SIdentType(m_reader.ReadString(m_reader.ReadLength()));
                     break;
                 case StreamType.Tuple:
                     {
-                        int length = ReadLength();
+                        int length = m_reader.ReadLength();
                         sObject = new STupleType((uint)length);
                         Parse(sObject, length);
                         break;
                     }
                 case StreamType.List:
                     {
-                        int length = ReadLength();
+                        int length = m_reader.ReadLength();
                         sObject = new SListType((uint)length);
                         Parse(sObject, length);
                         break;
                     }
                 case StreamType.Dict:
                     {
-                        int length = (ReadLength() * 2);
+                        int length = (m_reader.ReadLength() * 2);
                         sObject = new SDictType((uint)length);
                         Parse(sObject, length);
                         break;
@@ -148,7 +159,7 @@ namespace EveCacheParser
                     Parse(sObject, 2);
                     break;
                 case StreamType.SharedObj:
-                    sObject = m_reader.GetSharedObj(ReadLength());
+                    sObject = m_reader.GetSharedObj(m_reader.ReadLength());
                     break;
                 case StreamType.Checksum:
                     sObject = new SStringType("checksum");
@@ -162,24 +173,8 @@ namespace EveCacheParser
                     break;
                 case StreamType.NewObj:
                 case StreamType.Object:
-                    {
-                        SObjectType obj = new SObjectType();
-                        sObject = obj;
-                        Parse(sObject, 1);
-
-                        if (obj.Name == "dbutil.RowList")
-                        {
-                            SType row;
-                            do
-                            {
-                                row = GetObject();
-                                if (row != null)
-                                    obj.AddMember(row);
-
-                            } while (row != null);
-                        }
+                        sObject = ParseObject();
                         break;
-                    }
                 case StreamType.TupleEmpty:
                     sObject = new STupleType(0);
                     break;
@@ -201,8 +196,25 @@ namespace EveCacheParser
                     sObject = new SStringType(m_reader.ReadString(2));
                     break;
                 case StreamType.CompressedDBRow:
-                    sObject = GetDBRow();
+                    sObject = m_reader.GetDBRow(GetObject());
                     break;
+                case StreamType.SubStream:
+                        sObject = ParseSubStream();
+                        break;
+                case StreamType.TupleTwo:
+                    sObject = new STupleType(2);
+                    Parse(sObject, 2);
+                    break;
+                case StreamType.BigInt:
+                    sObject = m_reader.ReadBigInt();
+                    break;
+                ////case StreamType.Marker:
+                ////    if (m_reader.ReadByte() != 0x2d)
+                ////        throw new Exception("Didn't encounter a double 0x2d where one was expected at " +
+                ////                                 (m_reader.Position - 2));
+                ////    else if (lastDbRow != null)
+                ////        lastDbRow.IsLast = true;
+                ////    return null;
 
                 default:
                     break;
@@ -221,190 +233,39 @@ namespace EveCacheParser
             return sObject;
         }
 
-
-        private int ReadLength()
+        private SType ParseObject()
         {
-            CheckSize(1);
-            int lenght = m_reader.ReadByte();
+            SObjectType obj = new SObjectType();
+            SType sObject = obj;
+            Parse(sObject, 1);
 
-            if (lenght != 255)
-                return lenght;
-
-            CheckSize(4);
-            return m_reader.ReadInt();
-        }
-
-        private void CheckSize(int i)
-        {
-            if (m_reader.Position + i > m_reader.Length)
-                throw new EndOfStreamException();
-        }
-
-        private SType GetDBRow()
-        {
-            SType nhead = GetObject();
-
-            SObjectType head = nhead as SObjectType;
-            if (head == null)
-                throw new Exception("The DBRow header isn't present...");
-
-            if (head.Name != "blue.DBRowDescriptor")
-                throw new Exception("Bad descriptor name");
-
-            STupleType fields = head.Members[0].Members[1].Members[0] as STupleType;
-            if (fields == null)
-                return new SNoneType();
-
-            int len = ReadLength();
-            byte[] olddata = m_reader.ReadBytes(len);
-            byte[] newdata = Unpack(olddata);
-            SType body = new SDBRowType(newdata);
-
-            CachedFileReader blob = new CachedFileReader(newdata);
-
-            SDictType dict = new SDictType(999999); // TODO: need dynamic sized dict
-            int step = 1;
-            while (step < 6)
+            if (obj.Name == "dbutil.RowList")
             {
-                foreach (SType field in fields.Members)
+                SType row;
+                do
                 {
-                    SType fieldName = field.Members[0];
-                    SIntType fieldType = (SIntType)field.Members[1];
-                    int fieldTypeInt = fieldType.Value;
+                    row = GetObject();
+                    if (row != null)
+                        obj.AddMember(row);
+                } while (row != null);
+            }
+            return sObject;
+        }
 
-                    byte boolcount = 0;
-                    bool boolbuf = false;
-                    SType obj = null;
-
-                    switch (fieldTypeInt)
-                    {
-                        case 2: // 16bit int
-                            if (step == 3)
-                                obj = new SShortType(blob.ReadShort());
-                            break;
-                        case 3: // 32bit int
-                            if (step == 2)
-                                obj = new SIntType(blob.ReadInt());
-                            break;
-                        case 4:
-                            obj = new SFloatType(blob.ReadFloat());
-                            break;
-                        case 5: // double
-                            if (step == 1)
-                                obj = new SDoubleType(blob.ReadDouble());
-                            break;
-                        case 6: // currency
-                            if (step == 1)
-                                obj = new SLongType(blob.ReadLong());
-                            break;
-                        case 11: // boolean
-                            if (step == 5)
-                            {
-                                if (boolcount == 0)
-                                {
-                                    boolbuf = Convert.ToBoolean(blob.ReadByte());
-                                    boolcount++;
-                                }
-                                if (boolbuf && boolcount != 0)
-                                    obj = new SBooleanType(1);
-                                else
-                                    obj = new SBooleanType(0);
-                            }
-                            break;
-                        case 16:
-                            obj = new SIntType(blob.ReadByte());
-                            break;
-                        case 17:
-                            goto case 16;
-                        case 18: // 16bit int
-                            goto case 2;
-                        case 19: // 32bit int
-                            goto case 3;
-                        case 20: // 64bit int
-                            goto case 6;
-                        case 21: // 64bit int
-                            goto case 6;
-                        case 64: // timestamp
-                            goto case 6;
-                        case 128: // string types
-                        case 129:
-                        case 130:
-                            obj = new SStringType("I can't parse strings yet - be patient");
-                            break;
-                        default:
-                            throw new Exception("Unhandled ADO type " + fieldTypeInt);
-                    }
-
-                    if (obj == null)
-                        continue;
-
-                    dict.AddMember(obj);
-                    dict.AddMember(fieldName.Clone());
-                }
-
-                step++;
+        private SType ParseSubStream()
+        {
+            int len = m_reader.ReadLength();
+            CachedFileReader readerSub = new CachedFileReader(m_reader, len);
+            SSubStreamType subStream = new SSubStreamType(len);
+            CachedFileParser subParser = new CachedFileParser(readerSub);
+            subParser.Parse();
+            foreach (SType stype in subParser.Streams)
+            {
+                subStream.AddMember(stype.Clone());
             }
 
-            SType fakerow = new STupleType(3);
-            fakerow.AddMember(head);
-            fakerow.AddMember(body);
-            fakerow.AddMember(dict);
-            return fakerow;
-        }
-
-        private static byte[] Unpack(IList<byte> inputBytes)
-        {
-            List<byte> buffer = new List<byte>();
-            if (inputBytes.Count == 0)
-                return new byte[] { };
-
-            int i = 0;
-            while (i < inputBytes.Count)
-            {
-                PackerOpcap opcap = new PackerOpcap(inputBytes[i++]);
-                if (opcap.Tzero)
-                {
-                    byte count = (byte)(opcap.Tlen + 1);
-                    for (; count > 0; count--)
-                        buffer.Add(0);
-                }
-                else
-                {
-                    byte count = (byte)(8 - opcap.Tlen);
-                    for (; count > 0; count--)
-                        buffer.Add(inputBytes[i++]);
-                }
-
-                if (opcap.Bzero)
-                {
-                    byte count = (byte)(opcap.Blen + 1);
-                    for (; count > 0; count--)
-                        buffer.Add(0);
-                }
-                else
-                {
-                    byte count = (byte)(8 - opcap.Blen);
-                    for (; count > 0; count--)
-                        buffer.Add(inputBytes[i++]);
-                }
-            }
-            return buffer.ToArray();
+            //m_reader.Seek(readerSub.Position, SeekOrigin.Begin);
+            return subStream;
         }
     }
-    public struct PackerOpcap
-    {
-        public readonly byte Tlen;
-        public readonly bool Tzero;
-        public readonly byte Blen;
-        public readonly bool Bzero;
-
-        public PackerOpcap(byte b)
-        {
-            Tlen = (byte)((byte)(b << 5) >> 5);
-            Tzero = (byte)((byte)(b << 4) >> 7) == 1;
-            Blen = (byte)((byte)(b << 1) >> 5);
-            Bzero = (byte)(b >> 7) == 1;
-        }
-    }
-
 }

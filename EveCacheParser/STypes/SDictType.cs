@@ -17,14 +17,14 @@ namespace EveCacheParser.STypes
 
         #region Properties
 
-        public uint GivenLength { get; set; }
+        private uint GivenLength { get; set; }
 
         #endregion
 
 
         #region Methods
 
-        public override void AddMember(SType type)
+        internal override void AddMember(SType type)
         {
             if (!(Members.Length < GivenLength))
                 throw new SystemException();
@@ -32,12 +32,12 @@ namespace EveCacheParser.STypes
             Members.Add(type);
         }
 
-        public override SType Clone()
+        internal override SType Clone()
         {
             return (SDictType)MemberwiseClone();
         }
 
-        public SType GetByName(string target)
+        internal SType GetByName(string target)
         {
             if (Members.Length < 2 || (Members.Length & 1) > 0)
                 return null;
@@ -51,7 +51,7 @@ namespace EveCacheParser.STypes
             return null;
         }
 
-        public override string ToString()
+        internal override string ToString()
         {
             return "<SDictType>";
         }
