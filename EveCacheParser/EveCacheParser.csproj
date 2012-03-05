@@ -54,7 +54,6 @@
     <Compile Include="STypes\SByteType.cs" />
     <Compile Include="STypes\SShortType.cs" />
     <Compile Include="STypes\SDBHeaderType.cs" />
-    <Compile Include="STypes\SDBRowType.cs" />
     <Compile Include="STypes\SDictType.cs" />
     <Compile Include="STypes\SIdentType.cs" />
     <Compile Include="STypes\SIntType.cs" />

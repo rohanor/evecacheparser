@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using EveCacheParser.STypes;
@@ -41,6 +40,7 @@ namespace EveCacheParser
             Position = source.Position;
 
             SecurityCheck();
+
             EndOfObjectsData = length + source.Position - m_shareSkip;
         }
 
@@ -145,6 +145,13 @@ namespace EveCacheParser
             return temp;
         }
 
+        internal byte[] ReadBytes(int length)
+        {
+            byte[] temp = GetBytes(new byte[length], length);
+            Seek(length);
+            return temp;
+        }
+
         internal int ReadLength()
         {
             CheckSize(1);
@@ -160,18 +167,18 @@ namespace EveCacheParser
         internal void AddSharedObj(SType obj)
         {
             if (m_sharedMap == null)
-                throw new Exception("Uninitialized shared map");
+                throw new NullReferenceException("sharedMap not initialized");
 
             if (m_sharedObj == null)
-                throw new Exception("Uninitialized shared obj");
+                throw new NullReferenceException("sharedObj not initialized");
 
             if (m_sharePosition >= m_sharedMap.Length)
-                throw new Exception("position out of range");
+                throw new IndexOutOfRangeException("sharePosition out of range");
 
             int shareid = m_sharedMap[m_sharePosition] - 1;
 
             if (shareid >= m_sharedMap.Length)
-                throw new Exception("shareid out of range");
+                throw new IndexOutOfRangeException("shareid out of range");
 
             m_sharedObj[shareid] = obj.Clone();
 
@@ -182,28 +189,14 @@ namespace EveCacheParser
         {
             int position = id - 1;
             if (m_sharedObj[position] == null)
-                throw new Exception("ShareTab: No entry at position " + position);
+                throw new NullReferenceException("No shared object at position " + position);
 
             return m_sharedObj[position].Clone();
         }
 
-
-        internal void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
+        internal void AdvancePosition(CachedFileReader subReader)
         {
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    Position = offset;
-                    break;
-                case SeekOrigin.Current:
-                    Position += offset;
-                    break;
-                case SeekOrigin.End:
-                    Position = Length - offset;
-                    break;
-                default:
-                    throw new IOException("Invalid origin");
-            }
+            Seek(subReader.EndOfObjectsData + subReader.m_shareSkip, SeekOrigin.Begin);
         }
 
         #endregion
@@ -255,11 +248,22 @@ namespace EveCacheParser
             Seek(positionTemp, SeekOrigin.Begin);
         }
 
-        internal byte[] ReadBytes(int length)
+        private void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
         {
-            byte[] temp = GetBytes(new byte[length], length);
-            Seek(length);
-            return temp;
+            switch (origin)
+            {
+                case SeekOrigin.Begin:
+                    Position = offset;
+                    break;
+                case SeekOrigin.Current:
+                    Position += offset;
+                    break;
+                case SeekOrigin.End:
+                    Position = Length - offset;
+                    break;
+                default:
+                    throw new IOException("Invalid origin");
+            }
         }
 
         private byte GetByte()
@@ -282,6 +286,7 @@ namespace EveCacheParser
 
 
         #endregion
+
     }
 
     public struct PackerOpcap
