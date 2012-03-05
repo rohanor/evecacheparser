@@ -48,7 +48,7 @@ namespace EveCacheParser
 
             // Find all eve clients data folders
             DirectoryInfo directory = new DirectoryInfo(eveApplicationDataDir);
-            DirectoryInfo[] foldersIn = directory.GetDirectories("*_tranquility");
+            DirectoryInfo[] foldersIn = directory.GetDirectories("*_tranquility").OrderBy(dir => dir.CreationTimeUtc).ToArray();
 
             // Get the path to the cache folder of each eve client
             IEnumerable<string> cacheFoldersPath = foldersIn.Select(folder => folder.Name).Select(

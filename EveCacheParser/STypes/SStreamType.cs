@@ -2,11 +2,13 @@
 {
     internal class SStreamType : SType
     {
+        private readonly StreamType m_streamType;
         #region Constructors
 
         internal SStreamType(StreamType streamType)
             : base(streamType)
         {
+            m_streamType = streamType;
         }
 
         #endregion 
@@ -21,7 +23,7 @@
 
         public override string ToString()
         {
-            return "<SStreamType>";
+            return m_streamType == StreamType.StreamStart ? "<SStreamType>" : "<SSubStreamType>";
         }
 
         #endregion Methods

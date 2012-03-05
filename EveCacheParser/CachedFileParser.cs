@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using EveCacheParser.STypes;
 
@@ -15,7 +14,6 @@ namespace EveCacheParser
         {
             m_reader = reader;
             Streams = new List<SType>();
-            Parse();
         }
 
         private List<SType> Streams { get; set; }
@@ -25,7 +23,10 @@ namespace EveCacheParser
 
         public static KeyValuePair<Key, CachedObjects> Parse(CachedFileReader cachedFile)
         {
-            new CachedFileParser(cachedFile);
+            CachedFileParser parser = new CachedFileParser(cachedFile);
+            parser.Parse();
+            s_result = new KeyValuePair<Key, CachedObjects>();
+
             return s_result;
         }
 
@@ -36,12 +37,10 @@ namespace EveCacheParser
         {
             while (!m_reader.AtEnd)
             {
-                SType stream = new SStreamType(StreamType.StreamStart);
+                SStreamType stream = new SStreamType(StreamType.StreamStart);
                 Streams.Add(stream);
                 Parse(stream, 1);
             }
-
-            s_result = new KeyValuePair<Key, CachedObjects>();
         }
 
         private void Parse(SType stream, int limit)
@@ -233,17 +232,18 @@ namespace EveCacheParser
 
         private SType ParseSubStream()
         {
-            SSubStreamType subStream = new SSubStreamType();
             CachedFileReader subReader = new CachedFileReader(m_reader, m_reader.ReadLength());
             CachedFileParser subParser = new CachedFileParser(subReader);
-
+            SStreamType subStream = new SStreamType(StreamType.SubStream);
             subParser.Parse();
+
             foreach (SType type in subParser.Streams)
             {
                 subStream.AddMember(type.Clone());
             }
 
             m_reader.AdvancePosition(subReader);
+
             return subStream;
         }
 
