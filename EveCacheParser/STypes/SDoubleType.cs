@@ -5,7 +5,7 @@
         #region Constructors
 
         internal SDoubleType(double value)
-            : base(StreamType.Double)
+            : base(StreamType.DoubleZero)
         {
             Value = value;
         }
@@ -15,10 +15,9 @@
 
         #region Properties
 
-        private double Value { get; set; }
+        internal double Value { get; set; }
 
         #endregion
-
 
         #region Methods
 

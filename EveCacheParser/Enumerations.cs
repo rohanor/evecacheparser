@@ -13,8 +13,8 @@ namespace EveCacheParser
         IntNegOne = 0x07, // The value of -1
         IntZero = 0x08, // The value of 0
         IntOne = 0x09, // The value of 1
-        Float = 0x0a, // 64 bit signed float
-        Double = 0x0b, // 64 bit signed double
+        Double = 0x0a, // 64 bit signed double
+        DoubleZero = 0x0b, // The value of 0.0
         StringLong = 0x0d, // String, longer than 255 characters using normal count
         StringEmpty = 0xe, // String, empty
         StringOne = 0xf, // String, 1 character

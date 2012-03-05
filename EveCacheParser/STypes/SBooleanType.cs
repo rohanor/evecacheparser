@@ -2,22 +2,15 @@
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class SBooleanType : SType
+    internal sealed class SBooleanType : SLongType
     {
         #region Constructors
 
         internal SBooleanType(byte value)
             : base(StreamType.Byte)
         {
-            Value = Convert.ToBoolean(value);
+            Value = value;
         }
-
-        #endregion
-
-
-        #region Properties
-
-        private bool Value { get; set; }
 
         #endregion
 
@@ -31,7 +24,7 @@ namespace EveCacheParser.STypes
 
         public override string ToString()
         {
-            return string.Format("<SBooleanType '{0}'>", Value);
+            return string.Format("<SBooleanType '{0}'>", Convert.ToBoolean(Value));
         }
 
         #endregion

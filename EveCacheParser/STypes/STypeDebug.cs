@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EveCacheParser.STypes
 {
-    public partial class SType
+    public abstract partial  class SType
     {
         #region Static Fields
 

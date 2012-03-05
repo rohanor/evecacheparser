@@ -1,6 +1,6 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SShortType : SType
+    internal sealed class SShortType : SLongType
     {
         #region Constructors
 
@@ -9,13 +9,6 @@
         {
             Value = value;
         }
-
-        #endregion
-
-
-        #region Properties
-
-        private short Value { get; set; }
 
         #endregion
 

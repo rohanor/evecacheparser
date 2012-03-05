@@ -1,8 +1,13 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SLongType : SType
+    internal class SLongType : SType
     {
         #region Constructors
+
+        internal SLongType(StreamType type)
+            : base(type)
+        {
+        }
 
         internal SLongType(long value)
             : base(StreamType.Long)
@@ -15,9 +20,9 @@
 
         #region Properties
 
-        private long Value { get; set; }
+        protected internal long Value { get; protected set; }
 
-        #endregion Properties
+        #endregion 
 
 
         #region Methods

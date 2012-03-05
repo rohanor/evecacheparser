@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EveCacheParser
@@ -8,7 +9,7 @@ namespace EveCacheParser
         static readonly List<string> s_stringList;
         static StringsTable()
         {
-            s_stringList = Properties.Resources.StringsTable.Split(',').ToList();
+            s_stringList = Properties.Resources.StringsTable.Replace(Environment.NewLine, String.Empty).Split(',').ToList();
         }
 
         internal static string GetStringByID(byte id)

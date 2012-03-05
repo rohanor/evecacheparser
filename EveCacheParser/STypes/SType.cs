@@ -1,6 +1,6 @@
 ﻿namespace EveCacheParser.STypes
 {
-    public partial class SType
+    public abstract partial class SType
     {
         #region Constructors
 
@@ -11,12 +11,6 @@
 
             Members = new STypeCollection();
             StreamType = streamType;
-        }
-
-        internal SType(SType source)
-        {
-            Members = new STypeCollection(source.Members);
-            StreamType = source.StreamType;
         }
 
         #endregion

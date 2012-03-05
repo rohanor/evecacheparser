@@ -9,19 +9,21 @@ namespace Dumper
 {
     internal class Program
     {
-        private static void Main()
+        private static void Main(string[] args)
         {
             CachedFilesFinder.SetMethodFilter("GetOrders", "GetOldPriceHistory");
 
             FileInfo cachedFile = CachedFilesFinder.GetMachoCachedFiles().First();
             Console.WriteLine("Reading...");
             CachedFileReader file = CachedFileReader.Read(cachedFile);
-            //SType parser = CachedFileParser.Parse(file);
             Console.WriteLine("Parsing...");
-            KeyValuePair<Key, CachedObjects> parsedFile = CachedFileParser.Parse(file);
+            KeyValuePair<Key, CachedObjects> parsedObject = CachedFileParser.Parse(file);
             Console.WriteLine("Dumping...");
             SType.DumpTypes(Path.ChangeExtension(cachedFile.Name, ".structure"));
-            //DebugASCII.Read(file);
+
+            if (args.Any() && args.First() == "ascii")
+                DebugASCII.Read(file);
+
             Console.WriteLine("Done...");
             Console.ReadLine();
         }

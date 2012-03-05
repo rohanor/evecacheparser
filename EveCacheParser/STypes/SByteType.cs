@@ -1,6 +1,6 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SByteType : SType
+    internal sealed class SByteType : SLongType
     {
         #region Constructors
 
@@ -9,13 +9,6 @@
         {
             Value = value;
         }
-
-        #endregion
-
-
-        #region Properties
-
-        private byte Value { get; set; }
 
         #endregion
 
