@@ -61,7 +61,7 @@ namespace EveCacheParser.STypes
 
         private static string DumpType(SType node, int offset)
         {
-            if (node.Members.Length == 0)
+            if (node.Members.Count == 0)
                 return string.Empty;
 
             StringBuilder sb = new StringBuilder();
@@ -69,7 +69,7 @@ namespace EveCacheParser.STypes
             {
                 sb.Append(n.ToString().PadLeft((2 * offset) + n.ToString().Length));
                 sb.AppendFormat("[{0:00}]\n", n.DebugID);
-                if (n.Members.Length > 0)
+                if (n.Members.Count > 0)
                     sb.Append(DumpType(n, offset + 1));
                 s_nodeConsumed[n.DebugID] = true;
             }

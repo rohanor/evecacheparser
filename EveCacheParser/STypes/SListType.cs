@@ -4,20 +4,16 @@ namespace EveCacheParser.STypes
 {
     internal sealed class SListType : SType
     {
+        private readonly uint m_length;
+
+
         #region Constructors
 
         internal SListType(uint len)
             : base(StreamType.List)
         {
-            GivenLength = len;
+            m_length = len;
         }
-
-        #endregion
-
-
-        #region Properties
-
-        private uint GivenLength { get; set; }
 
         #endregion
 
@@ -26,8 +22,8 @@ namespace EveCacheParser.STypes
 
         internal override void AddMember(SType node)
         {
-            if (!(Members.Length < GivenLength))
-                throw new SystemException();
+            if (Members.Count >= m_length)
+                throw new IndexOutOfRangeException("Members exceed collection capacity");
 
             Members.Add(node);
         }

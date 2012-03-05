@@ -1,13 +1,8 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SStreamType : SType
+    internal class SStreamType : SType
     {
         #region Constructors
-
-        internal SStreamType()
-            : base(StreamType.StreamStart)
-        {
-        }
 
         internal SStreamType(StreamType streamType)
             : base(streamType)

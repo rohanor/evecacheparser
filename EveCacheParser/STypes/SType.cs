@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Collections.ObjectModel;
+
+namespace EveCacheParser.STypes
 {
     public abstract partial class SType
     {
@@ -9,7 +11,7 @@
             DebugID = s_count++;
             s_nodes.Add(this);
 
-            Members = new STypeCollection();
+            Members = new Collection<SType>();
             StreamType = streamType;
         }
 
@@ -18,7 +20,7 @@
 
         #region Properties
 
-        internal STypeCollection Members { get; private set; }
+        internal Collection<SType> Members { get; private set; }
 
         internal StreamType StreamType { get; set; }
 

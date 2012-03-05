@@ -3,7 +3,6 @@ namespace EveCacheParser
 {
     public enum StreamType
     {
-        StreamStart = 0x07e,
         None = 0x01, // Python None type
         StringGlobal = 0x02, // A string identifying usually a type, function or class object
         Long = 0x3, // 64 bit signed value
@@ -42,12 +41,13 @@ namespace EveCacheParser
         StringUnicodeEmpty = 0x28, // String unicode, empty
         StringUnicodeOne = 0x29, // String unicode, 1 character
         CompressedDBRow = 0x2a, // Database row, a RLEish compressed row
-        SubStream = 0x2b, // Embedded stream, substream - length bytes followed by 0x7e
+        SubStream = 0x2b, // Embedded stream (substream), next bytes after 'StreamStart' are length
         TupleTwo = 0x2c, // Tuple, two elements
         Marker = 0x2d, // Marker (for the NewObj/Object iterators that follow them)
         Utf8 = 0x2e, // UTF8 string unicode, next byte is buffer size count
         BigInt = 0x2f, // Big int, next byte is count
 
-        SharedFlag = 0x40 // Flag for a shared object
+        SharedFlag = 0x40, // Flag for a shared object
+        StreamStart = 0x7e // Start of each stream
     }
 }

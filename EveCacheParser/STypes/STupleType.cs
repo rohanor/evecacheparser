@@ -4,20 +4,16 @@ namespace EveCacheParser.STypes
 {
     internal sealed class STupleType : SType
     {
+        private readonly uint m_length;
+
+
         #region Constructors
 
-        internal STupleType(uint len)
+        internal STupleType(uint length)
             : base(StreamType.Tuple)
         {
-            GivenLength = len;
+            m_length = length;
         }
-
-        #endregion
-
-
-        #region Properties
-
-        private uint GivenLength { get; set; }
 
         #endregion
 
@@ -26,8 +22,8 @@ namespace EveCacheParser.STypes
 
         internal override void AddMember(SType node)
         {
-            if (!(Members.Length < GivenLength))
-                throw new ArgumentOutOfRangeException();
+            if (Members.Count >= m_length)
+                throw new IndexOutOfRangeException("Members exceed collection capacity");
 
             Members.Add(node);
         }

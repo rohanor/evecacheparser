@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,7 +61,6 @@
     <Compile Include="STypes\SLongType.cs" />
     <Compile Include="STypes\SReferenceType.cs" />
     <Compile Include="STypes\SType.cs" />
-    <Compile Include="STypes\STypeCollection.cs" />
     <Compile Include="STypes\STypeDebug.cs" />
     <Compile Include="STypes\SNoneType.cs" />
     <Compile Include="STypes\SObjectType.cs" />

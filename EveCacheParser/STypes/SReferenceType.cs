@@ -23,7 +23,7 @@
 
         private string Name { get; set; }
 
-        #endregion Properties
+        #endregion
 
 
         #region Methods

@@ -236,8 +236,8 @@ namespace EveCacheParser
         {
             int len = m_reader.ReadLength();
             CachedFileReader readerSub = new CachedFileReader(m_reader, len);
-            SSubStreamType subStream = new SSubStreamType(len);
             CachedFileParser subParser = new CachedFileParser(readerSub);
+            SSubStreamType subStream = new SSubStreamType();
             subParser.Parse();
             foreach (SType stype in subParser.Streams)
             {

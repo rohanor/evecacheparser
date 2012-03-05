@@ -41,7 +41,7 @@ namespace EveCacheParser
             Position = source.Position;
 
             SecurityCheck();
-            EndOfObjectsData = length + source.Position;
+            EndOfObjectsData = length + source.Position - m_shareSkip;
         }
 
 
@@ -168,22 +168,23 @@ namespace EveCacheParser
             if (m_sharePosition >= m_sharedMap.Length)
                 throw new Exception("position out of range");
 
-            int shareid = m_sharedMap[m_sharePosition];
+            int shareid = m_sharedMap[m_sharePosition] - 1;
 
-            if (shareid > m_sharedMap.Length)
+            if (shareid >= m_sharedMap.Length)
                 throw new Exception("shareid out of range");
 
-            m_sharedObj[m_sharePosition] = obj.Clone();
+            m_sharedObj[shareid] = obj.Clone();
 
             m_sharePosition++;
         }
 
         internal SType GetSharedObj(int id)
         {
-            if (m_sharedObj[id] == null)
-                throw new Exception("ShareTab: No entry at position " + id);
+            int position = id - 1;
+            if (m_sharedObj[position] == null)
+                throw new Exception("ShareTab: No entry at position " + position);
 
-            return m_sharedObj[id].Clone();
+            return m_sharedObj[position].Clone();
         }
 
 

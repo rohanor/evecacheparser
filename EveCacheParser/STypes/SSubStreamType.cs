@@ -1,21 +1,13 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SSubStreamType : SType
+    internal sealed class SSubStreamType : SStreamType
     {
         #region Constructors
 
-        internal SSubStreamType(int length)
+        internal SSubStreamType()
             : base(StreamType.SubStream)
         {
-            Length = length;
         }
-
-        #endregion
-
-
-        #region Properties
-
-        private int Length { get; set; }
 
         #endregion
 

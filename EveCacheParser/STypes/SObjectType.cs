@@ -19,12 +19,14 @@
             get
             {
                 SType current = this;
-                while (current.Members.Length > 0)
+                while (current.Members.Count > 0)
+                {
                     current = current.Members[0];
+                }
 
-                SStringType str = current as SStringType;
+                SStringType stringType = current as SStringType;
 
-                return str != null ? str.Value : string.Empty;
+                return stringType != null ? stringType.Value : string.Empty;
             }
         }
 
