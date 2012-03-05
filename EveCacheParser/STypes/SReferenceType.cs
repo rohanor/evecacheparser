@@ -3,7 +3,6 @@
     internal sealed class SReferenceType : SType
     {
         private readonly byte m_id;
-        private readonly string m_name;
 
 
         #region Constructors
@@ -16,13 +15,24 @@
             : base(StreamType.StringRef)
         {
             m_id = id;
-            m_name = StringsTable.GetStringByID(id);
+            Text = StringsTable.GetStringByID(id);
 
-            if (string.IsNullOrWhiteSpace(m_name))
-                m_name = "Unknown";
+            if (string.IsNullOrWhiteSpace(Text))
+                Text = "Unknown";
         }
 
         #endregion
+        
+        
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the text.
+        /// </summary>
+        /// <value>The text.</value>
+        internal string Text { get; private set; }
+
+        #endregion Properties
 
 
         #region Methods
@@ -44,7 +54,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SReferenceType ID: {0} '{1}'>", m_id, m_name);
+            return string.Format("<SReferenceType ID: {0} '{1}'>", m_id, Text);
         }
 
         #endregion

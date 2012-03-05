@@ -7,11 +7,11 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="SIdentType"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        internal SIdentType(string name)
+        /// <param name="text">The text.</param>
+        internal SIdentType(string text)
             : base(StreamType.StringIdent)
         {
-            Value = name;
+            Text = text;
         }
 
         #endregion
@@ -19,7 +19,11 @@
 
         #region Properties
 
-        internal string Value { get; private set; }
+        /// <summary>
+        /// Gets or sets the text.
+        /// </summary>
+        /// <value>The text.</value>
+        internal string Text { get; private set; }
 
         #endregion Properties
 
@@ -43,7 +47,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SIdentType '{0}'>", Value);
+            return string.Format("<SIdentType '{0}'>", Text);
         }
 
         #endregion

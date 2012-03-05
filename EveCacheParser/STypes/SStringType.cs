@@ -7,11 +7,11 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="SStringType"/> class.
         /// </summary>
-        /// <param name="value">The value.</param>
-        internal SStringType(string value)
+        /// <param name="text">The text.</param>
+        internal SStringType(string text)
             : base(StreamType.StringGlobal)
         {
-            Value = value;
+            Text = text;
         }
 
         #endregion
@@ -20,10 +20,10 @@
         #region Properties
 
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets or sets the text.
         /// </summary>
-        /// <value>The value.</value>
-        internal string Value { get; private set; }
+        /// <value>The text.</value>
+        internal string Text { get; private set; }
 
         #endregion
 
@@ -47,7 +47,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SStringType '{0}'>", Value);
+            return string.Format("<SStringType '{0}'>", Text);
         }
 
         #endregion

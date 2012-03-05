@@ -29,7 +29,7 @@
 
                 SStringType stringType = current as SStringType;
 
-                return stringType != null ? stringType.Value : string.Empty;
+                return stringType != null ? stringType.Text : string.Empty;
             }
         }
 

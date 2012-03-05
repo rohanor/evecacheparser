@@ -9,6 +9,7 @@ namespace Dumper
 {
     internal class Program
     {
+
         private static void Main(string[] args)
         {
             CachedFilesFinder.SetMethodFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
@@ -22,7 +23,7 @@ namespace Dumper
             else
             {
                 Console.WriteLine("Parsing...");
-                Tuple<Collection<SType>, Collection<SType>> result = CachedFileParser.Parse(file);
+                CachedFileParser.Parse(file);
                 Console.WriteLine("Dumping...");
                 SType.DumpTypes(cachedFile.Name);
                 Console.WriteLine("Done...");
