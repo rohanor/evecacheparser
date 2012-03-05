@@ -43,6 +43,7 @@ namespace EveCacheParser
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
+
             s_result = new KeyValuePair<Key, CachedObjects>();
             return s_result;
         }
@@ -55,39 +56,49 @@ namespace EveCacheParser
         private static byte[] UncompressData(IList<byte> data)
         {
             List<byte> buffer = new List<byte>();
-            if (data.Count == 0)
-                return new byte[] { };
 
-            int i = 0;
-            while (i < data.Count)
+            if (data.Any())
             {
-                PackerOpcap opcap = new PackerOpcap(data[i++]);
-                if (opcap.Tzero)
+                int i = 0;
+                while (i < data.Count)
                 {
-                    byte count = (byte)(opcap.Tlen + 1);
-                    for (; count > 0; count--)
-                        buffer.Add(0);
-                }
-                else
-                {
-                    byte count = (byte)(8 - opcap.Tlen);
-                    for (; count > 0; count--)
-                        buffer.Add(data[i++]);
-                }
+                    PackerOpcap opcap = new PackerOpcap(data[i++]);
+                    if (opcap.Tzero)
+                    {
+                        byte count = (byte)(opcap.Tlen + 1);
+                        for (; count > 0; count--)
+                        {
+                            buffer.Add(0);
+                        }
+                    }
+                    else
+                    {
+                        byte count = (byte)(8 - opcap.Tlen);
+                        for (; count > 0; count--)
+                        {
+                            buffer.Add(data[i++]);
+                        }
+                    }
 
-                if (opcap.Bzero)
-                {
-                    byte count = (byte)(opcap.Blen + 1);
-                    for (; count > 0; count--)
-                        buffer.Add(0);
-                }
-                else
-                {
-                    byte count = (byte)(8 - opcap.Blen);
-                    for (; count > 0; count--)
-                        buffer.Add(data[i++]);
+                    if (opcap.Bzero)
+                    {
+                        byte count = (byte)(opcap.Blen + 1);
+                        for (; count > 0; count--)
+                        {
+                            buffer.Add(0);
+                        }
+                    }
+                    else
+                    {
+                        byte count = (byte)(8 - opcap.Blen);
+                        for (; count > 0; count--)
+                        {
+                            buffer.Add(data[i++]);
+                        }
+                    }
                 }
             }
+
             return buffer.ToArray();
         }
 
@@ -103,7 +114,7 @@ namespace EveCacheParser
         {
             while (!m_reader.AtEnd)
             {
-                Parse(m_stream, 1);
+                Parse(m_stream);
             }
         }
 
@@ -112,7 +123,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="limit">The limit.</param>
-        private void Parse(SType stream, int limit)
+        private void Parse(SType stream, int limit = 1)
         {
             while (!m_reader.AtEnd && limit > 0)
             {
@@ -236,14 +247,14 @@ namespace EveCacheParser
                     break;
                 case StreamType.TupleOne:
                     sObject = new STupleType(1);
-                    Parse(sObject, 1);
+                    Parse(sObject);
                     break;
                 case StreamType.ListEmpty:
                     sObject = new SListType(0);
                     break;
                 case StreamType.ListOne:
                     sObject = new SListType(1);
-                    Parse(sObject, 1);
+                    Parse(sObject);
                     break;
                 case StreamType.StringUnicodeEmpty:
                     sObject = new SStringType(String.Empty);
@@ -293,7 +304,7 @@ namespace EveCacheParser
         {
             SObjectType obj = new SObjectType();
             SType sObject = obj;
-            Parse(sObject, 1);
+            Parse(sObject);
 
             if (obj.IsValidRowListName)
             {
