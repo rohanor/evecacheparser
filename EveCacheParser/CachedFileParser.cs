@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using EveCacheParser.STypes;
 
 namespace EveCacheParser
@@ -32,6 +33,35 @@ namespace EveCacheParser
 
 
         #region Static Methods
+
+        /// <summary>
+        /// Reads the specified file and projects it with an ASCII format.
+        /// </summary>
+        /// <param name="cachedFile">The cachedFile.</param>
+        public static void ShowAsASCII(CachedFileReader cachedFile)
+        {
+            // Dump 16 bytes per line
+            int len = cachedFile.Length;
+            for (int i = 0; i < len; i += 16)
+            {
+                int cnt = Math.Min(16, len - i);
+                byte[] line = new byte[cnt];
+                Array.Copy(cachedFile.Buffer, i, line, 0, cnt);
+
+                // Write address + hex + ascii
+                Console.Write("{0:X6} ", i);
+                Console.Write(BitConverter.ToString(line));
+                Console.Write(" ");
+
+                // Convert non-ascii characters to "."
+                for (int j = 0; j < cnt; ++j)
+                {
+                    if (line[j] < 0x20 || line[j] > 0x7f)
+                        line[j] = (byte)'.';
+                }
+                Console.WriteLine(Encoding.ASCII.GetString(line));
+            }
+        }
 
         /// <summary>
         /// Parses the specified cached file.

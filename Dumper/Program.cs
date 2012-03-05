@@ -19,7 +19,7 @@ namespace Dumper
             CachedFileReader file = CachedFileReader.Read(cachedFile);
 
             if (args.Any() && args.First() == "ascii")
-                DebugASCII.Read(file);
+                CachedFileParser.ShowAsASCII(file);
             else
             {
                 Console.WriteLine("Parsing...");

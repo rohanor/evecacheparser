@@ -37,14 +37,14 @@ namespace EveCacheParser
         /// <summary>
         /// Gets the bulk data cached files.
         /// </summary>
-        /// <param name="folderLocation">The folder location.</param>
+        /// <param name="folderPath">The folder location.</param>
         /// <returns></returns>
-        public static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderLocation)
+        public static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderPath)
         {
-            if (String.IsNullOrWhiteSpace(folderLocation) || !Directory.Exists(folderLocation))
+            if (String.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
                 return null;
 
-            return new DirectoryInfo(folderLocation).GetFiles("*.cache2");
+            return new DirectoryInfo(folderPath).GetFiles("*.cache2");
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace EveCacheParser
                             ? s_methodFilter.Where(
                                 method => Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method)).Select(
                                     x => new FileInfo(cachedFile.Fullname))
-                            : new[] { new FileInfo(cachedFile.Fullname) });
+                            : new[] { new FileInfo(cachedFile.Fullname) }).ToArray();
         }
     }
 }
