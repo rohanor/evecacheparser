@@ -10,8 +10,8 @@ namespace EveCacheParser.STypes
         #region Static Fields
 
         private static int s_count;
-        private static readonly Dictionary<int, bool> s_nodeConsumed;
-        private static readonly List<SType> s_nodes;
+        private static readonly Dictionary<int, bool> s_typeConsumed;
+        private static readonly List<SType> s_type;
 
         #endregion
 
@@ -25,11 +25,14 @@ namespace EveCacheParser.STypes
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes the <see cref="SType"/> class.
+        /// </summary>
         static SType()
         {
             s_count = 0;
-            s_nodeConsumed = new Dictionary<int, bool>();
-            s_nodes = new List<SType>();
+            s_typeConsumed = new Dictionary<int, bool>();
+            s_type = new List<SType>();
         }
 
         #endregion
@@ -37,16 +40,20 @@ namespace EveCacheParser.STypes
 
         #region Static Methods
 
+        /// <summary>
+        /// Dumps the structure of the stream types.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
         public static void DumpTypes(string fileName)
         {
-            s_nodes.ForEach(node => s_nodeConsumed[node.DebugID] = false);
+            s_type.ForEach(node => s_typeConsumed[node.DebugID] = false);
 
             StringBuilder fileContents = new StringBuilder();
-            foreach (SType n in s_nodes.Where(n => !s_nodeConsumed[n.DebugID]))
+            foreach (SType n in s_type.Where(n => !s_typeConsumed[n.DebugID]))
             {
-                if (n.StreamType == StreamType.StreamStart)
+                if (n.m_streamType == StreamType.StreamStart)
                 {
-                    s_nodeConsumed[n.DebugID] = true;
+                    s_typeConsumed[n.DebugID] = true;
                     continue;
                 }
 
@@ -54,24 +61,30 @@ namespace EveCacheParser.STypes
                 fileContents.AppendFormat("[{0:00}]\n", n.DebugID);
                 fileContents.Append(DumpType(n, 1));
 
-                s_nodeConsumed[n.DebugID] = true;
+                s_typeConsumed[n.DebugID] = true;
             }
             File.WriteAllText(Path.ChangeExtension(fileName, ".structure"), fileContents.ToString());
         }
 
-        private static string DumpType(SType node, int offset)
+        /// <summary>
+        /// Dumps the structure of the stream types.
+        /// </summary>
+        /// <param name="type">The stream type.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns></returns>
+        private static string DumpType(SType type, int offset)
         {
-            if (node.Members.Count == 0)
+            if (type.Members.Count == 0)
                 return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            foreach (SType n in node.Members)
+            foreach (SType n in type.Members)
             {
                 sb.Append(n.ToString().PadLeft((2 * offset) + n.ToString().Length));
                 sb.AppendFormat("[{0:00}]\n", n.DebugID);
                 if (n.Members.Count > 0)
                     sb.Append(DumpType(n, offset + 1));
-                s_nodeConsumed[n.DebugID] = true;
+                s_typeConsumed[n.DebugID] = true;
             }
 
             return sb.ToString();

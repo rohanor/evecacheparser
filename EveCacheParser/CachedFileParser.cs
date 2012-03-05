@@ -297,7 +297,7 @@ namespace EveCacheParser
             SType sObject = obj;
             Parse(sObject, 1);
 
-            if (obj.Name == "dbutil.RowList")
+            if (obj.IsValidRowListName)
             {
                 SType row;
                 do
@@ -342,7 +342,7 @@ namespace EveCacheParser
             if (header == null)
                 throw new NullReferenceException("DBRow header not found");
 
-            if (header.Name != "blue.DBRowDescriptor")
+            if (!header.IsValidDBRowDescriptorName)
                 throw new FormatException("Bad DBRow descriptor name");
 
             STupleType fields = header.Members.First().Members.Last().Members.First() as STupleType;

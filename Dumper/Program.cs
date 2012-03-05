@@ -23,7 +23,7 @@ namespace Dumper
                 Console.WriteLine("Parsing...");
                 CachedFileParser.Parse(file);
                 Console.WriteLine("Dumping...");
-                SType.DumpTypes(Path.ChangeExtension(cachedFile.Name, ".structure"));
+                SType.DumpTypes(cachedFile.Name);
                 Console.WriteLine("Done...");
             }
 
