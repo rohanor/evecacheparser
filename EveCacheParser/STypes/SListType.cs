@@ -9,10 +9,10 @@ namespace EveCacheParser.STypes
 
         #region Constructors
 
-        internal SListType(uint len)
+        internal SListType(uint length)
             : base(StreamType.List)
         {
-            m_length = len;
+            m_length = length;
         }
 
         #endregion
@@ -20,12 +20,12 @@ namespace EveCacheParser.STypes
 
         #region Methods
 
-        internal override void AddMember(SType node)
+        internal override void AddMember(SType type)
         {
             if (Members.Count > m_length)
                 throw new IndexOutOfRangeException("Members exceed collection capacity");
 
-            Members.Add(node);
+            base.AddMember(type);
         }
 
         internal override SType Clone()

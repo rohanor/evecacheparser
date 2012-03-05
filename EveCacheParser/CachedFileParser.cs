@@ -40,6 +40,8 @@ namespace EveCacheParser
                 Streams.Add(stream);
                 Parse(stream, 1);
             }
+
+            s_result = new KeyValuePair<Key, CachedObjects>();
         }
 
         private void Parse(SType stream, int limit)
@@ -260,7 +262,7 @@ namespace EveCacheParser
             byte[] compressedData = m_reader.ReadBytes(m_reader.ReadLength());
             byte[] uncompressedData = UncompressData(compressedData);
 
-            CachedFileReader blob = new CachedFileReader(uncompressedData);
+            CachedFileReader reader = new CachedFileReader(uncompressedData);
 
             // Find the maximum number of elements for each field member
             int maxElements = fields.Members.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();
@@ -285,33 +287,33 @@ namespace EveCacheParser
                     {
                         case 2: // 8 bit int
                             if (step == 3)
-                                obj = new SByteType(blob.ReadByte());
+                                obj = new SByteType(reader.ReadByte());
                             break;
                         case 3: // 32 bit int
                         case 19:
                             if (step == 2)
-                                obj = new SIntType(blob.ReadInt());
+                                obj = new SIntType(reader.ReadInt());
                             break;
                         case 4: // float
-                            obj = new SDoubleType(blob.ReadFloat());
+                            obj = new SDoubleType(reader.ReadFloat());
                             break;
                         case 5: // double
                             if (step == 1)
-                                obj = new SDoubleType(blob.ReadDouble());
+                                obj = new SDoubleType(reader.ReadDouble());
                             break;
                         case 6: // currency
                         case 20: // 64 bit int
                         case 21:
                         case 64: // timestamp
                             if (step == 1)
-                                obj = new SLongType(blob.ReadLong());
+                                obj = new SLongType(reader.ReadLong());
                             break;
                         case 11: // boolean
                             if (step == 5)
                             {
                                 if (boolCount == 0)
                                 {
-                                    boolBuffer = Convert.ToBoolean(blob.ReadByte());
+                                    boolBuffer = Convert.ToBoolean(reader.ReadByte());
                                     boolCount++;
                                 }
                                 if (boolBuffer && boolCount != 0)
@@ -322,10 +324,10 @@ namespace EveCacheParser
                             break;
                         case 16:
                         case 17:
-                            obj = new SByteType(blob.ReadByte());
+                            obj = new SByteType(reader.ReadByte());
                             break;
                         case 18: // 16 bit int
-                            obj = new SShortType(blob.ReadShort());
+                            obj = new SShortType(reader.ReadShort());
                             break;
                         case 128: // String types
                         case 129:

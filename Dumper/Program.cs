@@ -11,20 +11,23 @@ namespace Dumper
     {
         private static void Main(string[] args)
         {
-            CachedFilesFinder.SetMethodFilter("GetOrders", "GetOldPriceHistory");
+            CachedFilesFinder.SetMethodFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
 
             FileInfo cachedFile = CachedFilesFinder.GetMachoCachedFiles().First();
             Console.WriteLine("Reading...");
             CachedFileReader file = CachedFileReader.Read(cachedFile);
-            Console.WriteLine("Parsing...");
-            KeyValuePair<Key, CachedObjects> parsedObject = CachedFileParser.Parse(file);
-            Console.WriteLine("Dumping...");
-            SType.DumpTypes(Path.ChangeExtension(cachedFile.Name, ".structure"));
 
             if (args.Any() && args.First() == "ascii")
                 DebugASCII.Read(file);
+            else
+            {
+                Console.WriteLine("Parsing...");
+                KeyValuePair<Key, CachedObjects> parsedObject = CachedFileParser.Parse(file);
+                Console.WriteLine("Dumping...");
+                SType.DumpTypes(Path.ChangeExtension(cachedFile.Name, ".structure"));
+                Console.WriteLine("Done...");
+            }
 
-            Console.WriteLine("Done...");
             Console.ReadLine();
         }
     }

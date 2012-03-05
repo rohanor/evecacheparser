@@ -25,26 +25,12 @@ namespace EveCacheParser.STypes
             if (Members.Count > m_length)
                 throw new IndexOutOfRangeException("Members exceed collection capacity");
 
-            Members.Add(type);
+            base.AddMember(type);
         }
 
         internal override SType Clone()
         {
             return (SDictType)MemberwiseClone();
-        }
-
-        internal SType GetByName(string target)
-        {
-            if (Members.Count < 2 || (Members.Count & 1) > 0)
-                return null;
-
-            for (int i = 1; i < Members.Count; i += 2)
-            {
-                if (Members[i] is SIdentType && ((SIdentType)Members[i]).Value == target)
-                    return Members[i - 1];
-            }
-
-            return null;
         }
 
         public override string ToString()

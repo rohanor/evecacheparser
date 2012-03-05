@@ -20,12 +20,12 @@ namespace EveCacheParser.STypes
 
         #region Methods
 
-        internal override void AddMember(SType node)
+        internal override void AddMember(SType type)
         {
             if (Members.Count > m_length)
                 throw new IndexOutOfRangeException("Members exceed collection capacity");
 
-            Members.Add(node);
+            base.AddMember(type);
         }
 
         internal override SType Clone()
