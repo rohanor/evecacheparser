@@ -7,6 +7,10 @@ namespace EveCacheParser
         public readonly byte Blen;
         public readonly bool Bzero;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackerOpcap"/> struct.
+        /// </summary>
+        /// <param name="b">The b.</param>
         internal PackerOpcap(byte b)
         {
             Tlen = (byte)((byte)(b << 5) >> 5);

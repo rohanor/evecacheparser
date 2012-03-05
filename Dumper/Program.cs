@@ -12,7 +12,7 @@ namespace Dumper
         {
             CachedFilesFinder.SetMethodFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
 
-            FileInfo cachedFile = CachedFilesFinder.GetMachoCachedFiles().First();
+            FileInfo cachedFile = CachedFilesFinder.GetMachoNetCachedFiles().First();
             Console.WriteLine("Reading...");
             CachedFileReader file = CachedFileReader.Read(cachedFile);
 

@@ -10,11 +10,19 @@ namespace EveCacheParser
     {
         private static List<string> s_methodFilter = new List<string>();
 
+        /// <summary>
+        /// Sets the methods filter.
+        /// </summary>
+        /// <param name="args">The args.</param>
         public static void SetMethodFilter(params string[] args)
         {
             SetMethodFilter(new List<string>(args));
         }
 
+        /// <summary>
+        /// Sets the methods filter.
+        /// </summary>
+        /// <param name="methods">The methods.</param>
         public static void SetMethodFilter(IEnumerable<string> methods)
         {
             if (methods == null)
@@ -26,6 +34,11 @@ namespace EveCacheParser
             s_methodFilter = methods.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
         }
 
+        /// <summary>
+        /// Gets the bulk data cached files.
+        /// </summary>
+        /// <param name="folderLocation">The folder location.</param>
+        /// <returns></returns>
         public static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderLocation)
         {
             if (String.IsNullOrWhiteSpace(folderLocation) || !Directory.Exists(folderLocation))
@@ -34,7 +47,11 @@ namespace EveCacheParser
             return new DirectoryInfo(folderLocation).GetFiles("*.cache2");
         }
 
-        public static IEnumerable<FileInfo> GetMachoCachedFiles()
+        /// <summary>
+        /// Gets the macho net cached files.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<FileInfo> GetMachoNetCachedFiles()
         {
             // Get the local appdata folder
             string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

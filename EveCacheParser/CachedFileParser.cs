@@ -7,20 +7,37 @@ namespace EveCacheParser
 {
     public class CachedFileParser
     {
-        private readonly CachedFileReader m_reader;
-        private static KeyValuePair<Key, CachedObjects> s_result;
+        #region Fields
 
+        private static KeyValuePair<Key, CachedObjects> s_result;
+        private readonly CachedFileReader m_reader;
+        private readonly List<SType> m_streams;
+
+        #endregion
+
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedFileParser"/> class.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
         private CachedFileParser(CachedFileReader reader)
         {
             m_reader = reader;
-            Streams = new List<SType>();
+            m_streams = new List<SType>();
         }
 
-        private List<SType> Streams { get; set; }
+        #endregion
 
 
         #region Static Methods
 
+        /// <summary>
+        /// Parses the specified cached file.
+        /// </summary>
+        /// <param name="cachedFile">The cached file.</param>
+        /// <returns></returns>
         public static KeyValuePair<Key, CachedObjects> Parse(CachedFileReader cachedFile)
         {
             CachedFileParser parser = new CachedFileParser(cachedFile);
@@ -30,19 +47,73 @@ namespace EveCacheParser
             return s_result;
         }
 
+        /// <summary>
+        /// Uncompresses the provided data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        private static byte[] UncompressData(IList<byte> data)
+        {
+            List<byte> buffer = new List<byte>();
+            if (data.Count == 0)
+                return new byte[] { };
+
+            int i = 0;
+            while (i < data.Count)
+            {
+                PackerOpcap opcap = new PackerOpcap(data[i++]);
+                if (opcap.Tzero)
+                {
+                    byte count = (byte)(opcap.Tlen + 1);
+                    for (; count > 0; count--)
+                        buffer.Add(0);
+                }
+                else
+                {
+                    byte count = (byte)(8 - opcap.Tlen);
+                    for (; count > 0; count--)
+                        buffer.Add(data[i++]);
+                }
+
+                if (opcap.Bzero)
+                {
+                    byte count = (byte)(opcap.Blen + 1);
+                    for (; count > 0; count--)
+                        buffer.Add(0);
+                }
+                else
+                {
+                    byte count = (byte)(8 - opcap.Blen);
+                    for (; count > 0; count--)
+                        buffer.Add(data[i++]);
+                }
+            }
+            return buffer.ToArray();
+        }
+
         #endregion
 
 
+        #region Private Methods
+
+        /// <summary>
+        /// Parses the data of a stream.
+        /// </summary>
         private void Parse()
         {
             while (!m_reader.AtEnd)
             {
                 SStreamType stream = new SStreamType(StreamType.StreamStart);
-                Streams.Add(stream);
+                m_streams.Add(stream);
                 Parse(stream, 1);
             }
         }
 
+        /// <summary>
+        /// Parses the specified stream for the specified limit.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="limit">The limit.</param>
         private void Parse(SType stream, int limit)
         {
             while (!m_reader.AtEnd && limit > 0)
@@ -55,6 +126,10 @@ namespace EveCacheParser
             }
         }
 
+        /// <summary>
+        /// Gets an object from the data.
+        /// </summary>
+        /// <returns></returns>
         private SType GetObject()
         {
             SType sObject = null;
@@ -179,7 +254,7 @@ namespace EveCacheParser
                     sObject = new SStringType(m_reader.ReadString(2));
                     break;
                 case StreamType.CompressedDBRow:
-                    sObject = ParseDBRow(GetObject() as SObjectType);
+                    sObject = ParseDBRow();
                     break;
                 case StreamType.SubStream:
                     sObject = ParseSubStream();
@@ -194,11 +269,12 @@ namespace EveCacheParser
                 case StreamType.Marker:
                     if (m_reader.ReadByte() != (byte)StreamType.Marker)
                         throw new FormatException("Didn't encounter a double marker (0x2d) where it was expected at " +
-                                            (m_reader.Position - 2));
+                                                  (m_reader.Position - 2));
                     return null;
                 default:
-                    throw new NotImplementedException(String.Format("Can't identify type {0:x2} at position {1:x2} [{1}] and lenght {2}",
-                                                          type, m_reader.Position, m_reader.Length));
+                    throw new NotImplementedException(
+                        String.Format("Can't identify type {0:x2} at position {1:x2} [{1}] and lenght {2}",
+                                      type, m_reader.Position, m_reader.Length));
             }
 
             if (sObject == null)
@@ -211,6 +287,10 @@ namespace EveCacheParser
             return sObject;
         }
 
+        /// <summary>
+        /// Parses an object.
+        /// </summary>
+        /// <returns></returns>
         private SType ParseObject()
         {
             SObjectType obj = new SObjectType();
@@ -230,6 +310,10 @@ namespace EveCacheParser
             return sObject;
         }
 
+        /// <summary>
+        /// Parses a sub stream.
+        /// </summary>
+        /// <returns></returns>
         private SType ParseSubStream()
         {
             CachedFileReader subReader = new CachedFileReader(m_reader, m_reader.ReadLength());
@@ -237,7 +321,7 @@ namespace EveCacheParser
             SStreamType subStream = new SStreamType(StreamType.SubStream);
             subParser.Parse();
 
-            foreach (SType type in subParser.Streams)
+            foreach (SType type in subParser.m_streams)
             {
                 subStream.AddMember(type.Clone());
             }
@@ -247,8 +331,14 @@ namespace EveCacheParser
             return subStream;
         }
 
-        private SType ParseDBRow(SObjectType header)
+        /// <summary>
+        /// Parses a database row.
+        /// </summary>
+        /// <returns></returns>
+        private SType ParseDBRow()
         {
+            SObjectType header = GetObject() as SObjectType;
+
             if (header == null)
                 throw new NullReferenceException("DBRow header not found");
 
@@ -348,49 +438,12 @@ namespace EveCacheParser
                 step++;
             }
 
-            SType parsedDBRow = new STupleType(2);
+            STupleType parsedDBRow = new STupleType(2);
             parsedDBRow.AddMember(header);
             parsedDBRow.AddMember(dict);
             return parsedDBRow;
         }
 
-        private static byte[] UncompressData(IList<byte> inputBytes)
-        {
-            List<byte> buffer = new List<byte>();
-            if (inputBytes.Count == 0)
-                return new byte[] { };
-
-            int i = 0;
-            while (i < inputBytes.Count)
-            {
-                PackerOpcap opcap = new PackerOpcap(inputBytes[i++]);
-                if (opcap.Tzero)
-                {
-                    byte count = (byte)(opcap.Tlen + 1);
-                    for (; count > 0; count--)
-                        buffer.Add(0);
-                }
-                else
-                {
-                    byte count = (byte)(8 - opcap.Tlen);
-                    for (; count > 0; count--)
-                        buffer.Add(inputBytes[i++]);
-                }
-
-                if (opcap.Bzero)
-                {
-                    byte count = (byte)(opcap.Blen + 1);
-                    for (; count > 0; count--)
-                        buffer.Add(0);
-                }
-                else
-                {
-                    byte count = (byte)(8 - opcap.Blen);
-                    for (; count > 0; count--)
-                        buffer.Add(inputBytes[i++]);
-                }
-            }
-            return buffer.ToArray();
-        }
+        #endregion
     }
 }

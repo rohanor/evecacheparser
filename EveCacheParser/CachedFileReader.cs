@@ -7,10 +7,17 @@ namespace EveCacheParser
 {
     public class CachedFileReader
     {
+        #region Fields
+
         private SType[] m_sharedObj;
         private int[] m_sharedMap;
         private int m_sharePosition;
         private int m_shareSkip;
+
+        #endregion
+
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
@@ -57,6 +64,8 @@ namespace EveCacheParser
 
             EndOfObjectsData = length + source.Position - m_shareSkip;
         }
+
+        #endregion
 
 
         #region Properties
