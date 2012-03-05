@@ -11,7 +11,7 @@ namespace EveCacheParser
 
         private static KeyValuePair<Key, CachedObjects> s_result;
         private readonly CachedFileReader m_reader;
-        private readonly List<SType> m_streams;
+        private readonly SStreamType m_stream;
 
         #endregion
 
@@ -25,7 +25,7 @@ namespace EveCacheParser
         private CachedFileParser(CachedFileReader reader)
         {
             m_reader = reader;
-            m_streams = new List<SType>();
+            m_stream = new SStreamType(StreamType.StreamStart);
         }
 
         #endregion
@@ -42,8 +42,8 @@ namespace EveCacheParser
         {
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
-            s_result = new KeyValuePair<Key, CachedObjects>();
 
+            s_result = new KeyValuePair<Key, CachedObjects>();
             return s_result;
         }
 
@@ -103,9 +103,7 @@ namespace EveCacheParser
         {
             while (!m_reader.AtEnd)
             {
-                SStreamType stream = new SStreamType(StreamType.StreamStart);
-                m_streams.Add(stream);
-                Parse(stream, 1);
+                Parse(m_stream, 1);
             }
         }
 
@@ -278,7 +276,7 @@ namespace EveCacheParser
             }
 
             if (sObject == null)
-                throw new NullReferenceException("sObject caould not be created");
+                throw new NullReferenceException("An object could not be created");
 
             if (shared)
                 m_reader.AddSharedObj(sObject);
@@ -314,17 +312,14 @@ namespace EveCacheParser
         /// Parses a sub stream.
         /// </summary>
         /// <returns></returns>
-        private SType ParseSubStream()
+        private SStreamType ParseSubStream()
         {
             CachedFileReader subReader = new CachedFileReader(m_reader, m_reader.ReadLength());
             CachedFileParser subParser = new CachedFileParser(subReader);
             SStreamType subStream = new SStreamType(StreamType.SubStream);
             subParser.Parse();
 
-            foreach (SType type in subParser.m_streams)
-            {
-                subStream.AddMember(type.Clone());
-            }
+            subStream.AddMember(subParser.m_stream.Clone());
 
             m_reader.AdvancePosition(subReader);
 
