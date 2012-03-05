@@ -55,7 +55,7 @@ namespace EveCacheParser
         /// <returns></returns>
         private static byte[] UncompressData(IList<byte> data)
         {
-            List<byte> buffer = new List<byte>();
+            List<byte> buffer = new List<byte>(66);
 
             if (data.Any())
             {
@@ -97,6 +97,12 @@ namespace EveCacheParser
                         }
                     }
                 }
+            }
+
+            // Ensure that the buffer has enough data
+            while (buffer.Count < buffer.Capacity)
+            {
+                buffer.Add(0);
             }
 
             return buffer.ToArray();
@@ -373,7 +379,7 @@ namespace EveCacheParser
                 {
                     SType fieldName = field.Members.First();
                     SLongType fieldType = (SLongType)field.Members.Last();
-                    long fieldTypeValue = fieldType.Value;
+                    long fieldTypeValue = fieldType.LongValue;
 
                     byte boolCount = 0;
                     bool boolBuffer = false;
@@ -381,9 +387,9 @@ namespace EveCacheParser
 
                     switch (fieldTypeValue)
                     {
-                        case 2: // 8 bit int
+                        case 2: // 16 bit int
                             if (step == 3)
-                                obj = new SByteType(reader.ReadByte());
+                                obj = new SShortType(reader.ReadShort());
                             break;
                         case 3: // 32 bit int
                         case 19:
@@ -412,10 +418,10 @@ namespace EveCacheParser
                                     boolBuffer = Convert.ToBoolean(reader.ReadByte());
                                     boolCount++;
                                 }
-                                if (boolBuffer && boolCount != 0)
-                                    obj = new SBooleanType(1);
-                                else
-                                    obj = new SBooleanType(0);
+
+                                obj = boolBuffer && boolCount != 0
+                                          ? new SBooleanType(1)
+                                          : new SBooleanType(0);
                             }
                             break;
                         case 16:

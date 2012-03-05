@@ -11,21 +11,11 @@
         internal SDoubleType(double value)
             : base(StreamType.DoubleZero)
         {
-            Value = value;
+            DoubleValue = value;
         }
 
         #endregion
 
-
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the value.
-        /// </summary>
-        /// <value>The value.</value>
-        internal double Value { get; set; }
-
-        #endregion
 
         #region Methods
 
@@ -46,7 +36,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SDoubleType '{0}'>", Value);
+            return string.Format("<SDoubleType '{0}'>", LongValue);
         }
 
         #endregion

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using EveCacheParser;
@@ -15,6 +14,7 @@ namespace Dumper
             CachedFilesFinder.SetMethodFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
 
             FileInfo cachedFile = CachedFilesFinder.GetMachoNetCachedFiles().First();
+            Console.WriteLine("Processing file: {0}", cachedFile.Name);
             Console.WriteLine("Reading...");
             CachedFileReader file = CachedFileReader.Read(cachedFile);
 

@@ -13,7 +13,7 @@ namespace EveCacheParser.STypes
         internal SBooleanType(byte value)
             : base(StreamType.Byte)
         {
-            Value = value;
+            Boolean = Convert.ToBoolean(value);
         }
 
         #endregion
@@ -38,7 +38,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SBooleanType '{0}'>", Convert.ToBoolean(Value));
+            return string.Format("<SBooleanType '{0}'>", Boolean);
         }
 
         #endregion

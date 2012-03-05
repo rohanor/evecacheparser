@@ -26,6 +26,34 @@ namespace EveCacheParser.STypes
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the text.
+        /// </summary>
+        /// <value>The text.</value>
+        public string Text { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the long value.
+        /// </summary>
+        /// <value>The long value.</value>
+        public long LongValue { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the double value.
+        /// </summary>
+        /// <value>The double value.</value>
+        public double DoubleValue { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets a boolean.
+        /// </summary>
+        /// <value>The boolean value.</value>
+        public bool Boolean { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the members.
+        /// </summary>
+        /// <value>The members.</value>
         internal Collection<SType> Members { get; private set; }
 
         #endregion

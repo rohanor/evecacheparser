@@ -23,17 +23,6 @@
 
         #endregion
         
-        
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the text.
-        /// </summary>
-        /// <value>The text.</value>
-        internal string Text { get; private set; }
-
-        #endregion Properties
-
 
         #region Methods
 

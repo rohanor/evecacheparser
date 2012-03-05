@@ -20,21 +20,10 @@
         internal SLongType(long value)
             : base(StreamType.Long)
         {
-            Value = value;
+            LongValue = value;
         }
 
         #endregion
-
-
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the value.
-        /// </summary>
-        /// <value>The value.</value>
-        protected internal long Value { get; protected set; }
-
-        #endregion 
 
 
         #region Methods
@@ -56,7 +45,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SLongType '{0}'>", Value);
+            return string.Format("<SLongType '{0}'>", LongValue);
         }
 
         #endregion
