@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EveCacheParser;
@@ -22,7 +21,7 @@ namespace Dumper
             else
             {
                 Console.WriteLine("Parsing...");
-                KeyValuePair<Key, CachedObjects> parsedObject = CachedFileParser.Parse(file);
+                CachedFileParser.Parse(file);
                 Console.WriteLine("Dumping...");
                 SType.DumpTypes(Path.ChangeExtension(cachedFile.Name, ".structure"));
                 Console.WriteLine("Done...");

@@ -12,7 +12,12 @@ namespace EveCacheParser
         private int m_sharePosition;
         private int m_shareSkip;
 
-        internal CachedFileReader(FileInfo filename, bool deploy = true)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="doSecurityCheck">if set to <c>true</c> does a security check.</param>
+        internal CachedFileReader(FileInfo filename, bool doSecurityCheck = true)
         {
             Filename = filename.Name;
             Fullname = filename.FullName;
@@ -22,16 +27,25 @@ namespace EveCacheParser
                 Buffer = binaryReader.ReadBytes((int)stream.Length);
             }
 
-            if (deploy)
+            if (doSecurityCheck)
                 SecurityCheck();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
         internal CachedFileReader(byte[] buffer)
         {
             Buffer = new byte[buffer.Length];
             Array.Copy(buffer, Buffer, buffer.Length);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="length">The length.</param>
         internal CachedFileReader(CachedFileReader source, int length)
         {
             Buffer = source.Buffer;
@@ -47,21 +61,49 @@ namespace EveCacheParser
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the filename.
+        /// </summary>
+        /// <value>The filename.</value>
         private string Filename { get; set; }
 
-        private int EndOfObjectsData { get; set; }
-
+        /// <summary>
+        /// Gets or sets the fullname.
+        /// </summary>
+        /// <value>The fullname.</value>
         internal string Fullname { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the buffer.
+        /// </summary>
+        /// <value>The buffer.</value>
         internal byte[] Buffer { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the position.
+        /// </summary>
+        /// <value>The position.</value>
         internal int Position { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the end of the objects data.
+        /// </summary>
+        /// <value>The end of objects data.</value>
+        private int EndOfObjectsData { get; set; }
+
+        /// <summary>
+        /// Gets the length.
+        /// </summary>
+        /// <value>The length.</value>
         internal int Length
         {
             get { return Buffer.Length; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether we have reach the end of the data.
+        /// </summary>
+        /// <value><c>true</c> if we have reach the end of the data; otherwise, <c>false</c>.</value>
         internal bool AtEnd
         {
             get { return Position >= EndOfObjectsData; }
@@ -72,6 +114,11 @@ namespace EveCacheParser
 
         #region Static Methods
 
+        /// <summary>
+        /// Reads the specified file.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <returns></returns>
         public static CachedFileReader Read(FileInfo file)
         {
             return new CachedFileReader(file);
@@ -82,6 +129,10 @@ namespace EveCacheParser
 
         #region Internal Methods
 
+        /// <summary>
+        /// Reads a big int.
+        /// </summary>
+        /// <returns></returns>
         internal SType ReadBigInt()
         {
             SType sObject;
@@ -108,36 +159,65 @@ namespace EveCacheParser
             return sObject;
         }
 
+        /// <summary>
+        /// Reads a double.
+        /// </summary>
+        /// <returns></returns>
         internal double ReadDouble()
         {
             return BitConverter.ToDouble(ReadBytes(8), 0);
         }
 
+        /// <summary>
+        /// Reads a float.
+        /// </summary>
+        /// <returns></returns>
         internal float ReadFloat()
         {
             return BitConverter.ToSingle(ReadBytes(4), 0);
         }
 
+        /// <summary>
+        /// Reads a short.
+        /// </summary>
+        /// <returns></returns>
         internal short ReadShort()
         {
             return BitConverter.ToInt16(ReadBytes(2), 0);
         }
 
+        /// <summary>
+        /// Reads a long.
+        /// </summary>
+        /// <returns></returns>
         internal long ReadLong()
         {
             return BitConverter.ToInt64(ReadBytes(8), 0);
         }
 
+        /// <summary>
+        /// Reads a string.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
         internal string ReadString(int length)
         {
             return Encoding.ASCII.GetString(ReadBytes(length));
         }
 
+        /// <summary>
+        /// Reads an int.
+        /// </summary>
+        /// <returns></returns>
         internal int ReadInt()
         {
             return BitConverter.ToInt32(ReadBytes(4), 0);
         }
 
+        /// <summary>
+        /// Reads a byte.
+        /// </summary>
+        /// <returns></returns>
         internal byte ReadByte()
         {
             byte temp = GetByte();
@@ -145,6 +225,11 @@ namespace EveCacheParser
             return temp;
         }
 
+        /// <summary>
+        /// Reads the bytes.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
         internal byte[] ReadBytes(int length)
         {
             byte[] temp = GetBytes(new byte[length], length);
@@ -152,6 +237,10 @@ namespace EveCacheParser
             return temp;
         }
 
+        /// <summary>
+        /// Reads the length.
+        /// </summary>
+        /// <returns></returns>
         internal int ReadLength()
         {
             CheckSize(1);
@@ -164,6 +253,10 @@ namespace EveCacheParser
             return ReadInt();
         }
 
+        /// <summary>
+        /// Adds a shared object.
+        /// </summary>
+        /// <param name="obj">The object.</param>
         internal void AddSharedObj(SType obj)
         {
             if (m_sharedMap == null)
@@ -185,6 +278,11 @@ namespace EveCacheParser
             m_sharePosition++;
         }
 
+        /// <summary>
+        /// Gets a shared object.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
         internal SType GetSharedObj(int id)
         {
             int position = id - 1;
@@ -194,6 +292,10 @@ namespace EveCacheParser
             return m_sharedObj[position].Clone();
         }
 
+        /// <summary>
+        /// Advances the readers position.
+        /// </summary>
+        /// <param name="subReader">The sub stream reader.</param>
         internal void AdvancePosition(CachedFileReader subReader)
         {
             Seek(subReader.EndOfObjectsData + subReader.m_shareSkip, SeekOrigin.Begin);
@@ -204,6 +306,9 @@ namespace EveCacheParser
 
         #region Private Methods
 
+        /// <summary>
+        /// Does a security check on the data.
+        /// </summary>
         private void SecurityCheck()
         {
             // Move one position
@@ -248,6 +353,11 @@ namespace EveCacheParser
             Seek(positionTemp, SeekOrigin.Begin);
         }
 
+        /// <summary>
+        /// Seeks the data to the specified offset.
+        /// </summary>
+        /// <param name="offset">The offset.</param>
+        /// <param name="origin">The origin.</param>
         private void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
         {
             switch (origin)
@@ -266,11 +376,21 @@ namespace EveCacheParser
             }
         }
 
+        /// <summary>
+        /// Gets a byte.
+        /// </summary>
+        /// <returns></returns>
         private byte GetByte()
         {
             return Buffer[Position];
         }
 
+        /// <summary>
+        /// Gets the bytes.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
         private byte[] GetBytes(byte[] destination, int count)
         {
             int copyLength = Position + count < Length ? count : Length - Position;
@@ -278,30 +398,18 @@ namespace EveCacheParser
             return destination;
         }
 
+        /// <summary>
+        /// Checks the size.
+        /// </summary>
+        /// <param name="length">The length.</param>
         private void CheckSize(int length)
         {
             if (Position + length > Length)
-                throw new EndOfStreamException();
+                throw new EndOfStreamException("Not enough data");
         }
 
 
         #endregion
 
-    }
-
-    public struct PackerOpcap
-    {
-        public readonly byte Tlen;
-        public readonly bool Tzero;
-        public readonly byte Blen;
-        public readonly bool Bzero;
-
-        public PackerOpcap(byte b)
-        {
-            Tlen = (byte)((byte)(b << 5) >> 5);
-            Tzero = (byte)((byte)(b << 4) >> 7) == 1;
-            Blen = (byte)((byte)(b << 1) >> 5);
-            Bzero = (byte)(b >> 7) == 1;
-        }
     }
 }
