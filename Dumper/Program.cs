@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using EveCacheParser;
@@ -21,7 +22,7 @@ namespace Dumper
             else
             {
                 Console.WriteLine("Parsing...");
-                CachedFileParser.Parse(file);
+                Tuple<Collection<SType>, Collection<SType>> result = CachedFileParser.Parse(file);
                 Console.WriteLine("Dumping...");
                 SType.DumpTypes(cachedFile.Name);
                 Console.WriteLine("Done...");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using EveCacheParser.STypes;
 
@@ -9,7 +10,6 @@ namespace EveCacheParser
     {
         #region Fields
 
-        private static KeyValuePair<Key, CachedObjects> s_result;
         private readonly CachedFileReader m_reader;
         private readonly SStreamType m_stream;
 
@@ -38,14 +38,14 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="cachedFile">The cached file.</param>
         /// <returns></returns>
-        public static KeyValuePair<Key, CachedObjects> Parse(CachedFileReader cachedFile)
+        public static Tuple<Collection<SType>, Collection<SType>> Parse(CachedFileReader cachedFile)
         {
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
-
-            s_result = new KeyValuePair<Key, CachedObjects>();
-            return s_result;
+            Collection<SType> key = parser.m_stream.Members[0].Members[0].Members;
+            Collection<SType> obj = parser.m_stream.Members[0].Members[1].Members;
+            return new Tuple<Collection<SType>, Collection<SType>>(key, obj);
         }
 
         /// <summary>
