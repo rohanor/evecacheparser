@@ -22,13 +22,13 @@ namespace EveCacheParser
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
         /// </summary>
-        /// <param name="filename">The filename.</param>
+        /// <param name="file">The file.</param>
         /// <param name="doSecurityCheck">if set to <c>true</c> does a security check.</param>
-        internal CachedFileReader(FileInfo filename, bool doSecurityCheck = true)
+        internal CachedFileReader(FileInfo file, bool doSecurityCheck = true)
         {
-            Filename = filename.Name;
-            Fullname = filename.FullName;
-            using (FileStream stream = filename.OpenRead())
+            Filename = file.Name;
+            Fullname = file.FullName;
+            using (FileStream stream = file.OpenRead())
             {
                 BinaryReader binaryReader = new BinaryReader(stream);
                 Buffer = binaryReader.ReadBytes((int)stream.Length);

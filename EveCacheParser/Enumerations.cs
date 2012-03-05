@@ -1,7 +1,7 @@
 
 namespace EveCacheParser
 {
-    public enum StreamType
+    internal enum StreamType
     {
         None = 0x01, // Python None type
         StringGlobal = 0x02, // A string identifying usually a type, function or class object
