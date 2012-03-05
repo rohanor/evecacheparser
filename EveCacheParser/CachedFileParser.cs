@@ -257,87 +257,91 @@ namespace EveCacheParser
             if (fields == null)
                 return new SNoneType();
 
-            int len = m_reader.ReadLength();
-            byte[] compressedData = m_reader.ReadBytes(len);
+            byte[] compressedData = m_reader.ReadBytes(m_reader.ReadLength());
             byte[] uncompressedData = UncompressData(compressedData);
 
             CachedFileReader blob = new CachedFileReader(uncompressedData);
 
-            SDictType dict = new SDictType((uint)fields.Members.Count * 2); // size of dict must be the ammount of entries stored
+            // Find the maximum number of elements for each field member
+            int maxElements = fields.Members.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();
+
+            // The size of SDict must be the ammount of entries stored,
+            // multiplied by the max elements of each field member
+            SDictType dict = new SDictType((uint)(fields.Members.Count * maxElements));
             int step = 1;
             while (step < 6)
             {
-            foreach (SType field in fields.Members)
-            {
-                SType fieldName = field.Members.First();
-                SLongType fieldType = (SLongType)field.Members.Last();
-                long fieldTypeValue = fieldType.Value;
-
-                byte boolCount = 0;
-                bool boolBuffer = false;
-                SType obj = null;
-
-                switch (fieldTypeValue)
+                foreach (SType field in fields.Members)
                 {
-                    case 2: // 8 bit int
-                        if (step == 3)
-                        obj = new SByteType(blob.ReadByte());
-                        break;
-                    case 3: // 32 bit int
-                    case 19:
-                        if (step == 2)
-                        obj = new SIntType(blob.ReadInt());
-                        break;
-                    case 4: // float
-                        obj = new SDoubleType(blob.ReadFloat());
-                        break;
-                    case 5: // double
-                        if (step == 1)
-                        obj = new SDoubleType(blob.ReadDouble());
-                        break;
-                    case 6: // currency
-                    case 20: // 64 bit int
-                    case 21:
-                    case 64: // timestamp
-                        if (step == 1)
-                        obj = new SLongType(blob.ReadLong());
-                        break;
-                    case 11: // boolean
-                        if (step == 5)
-                        {
-                            if (boolCount == 0)
+                    SType fieldName = field.Members.First();
+                    SLongType fieldType = (SLongType)field.Members.Last();
+                    long fieldTypeValue = fieldType.Value;
+
+                    byte boolCount = 0;
+                    bool boolBuffer = false;
+                    SType obj = null;
+
+                    switch (fieldTypeValue)
+                    {
+                        case 2: // 8 bit int
+                            if (step == 3)
+                                obj = new SByteType(blob.ReadByte());
+                            break;
+                        case 3: // 32 bit int
+                        case 19:
+                            if (step == 2)
+                                obj = new SIntType(blob.ReadInt());
+                            break;
+                        case 4: // float
+                            obj = new SDoubleType(blob.ReadFloat());
+                            break;
+                        case 5: // double
+                            if (step == 1)
+                                obj = new SDoubleType(blob.ReadDouble());
+                            break;
+                        case 6: // currency
+                        case 20: // 64 bit int
+                        case 21:
+                        case 64: // timestamp
+                            if (step == 1)
+                                obj = new SLongType(blob.ReadLong());
+                            break;
+                        case 11: // boolean
+                            if (step == 5)
                             {
-                                boolBuffer = Convert.ToBoolean(blob.ReadByte());
-                                boolCount++;
+                                if (boolCount == 0)
+                                {
+                                    boolBuffer = Convert.ToBoolean(blob.ReadByte());
+                                    boolCount++;
+                                }
+                                if (boolBuffer && boolCount != 0)
+                                    obj = new SBooleanType(1);
+                                else
+                                    obj = new SBooleanType(0);
                             }
-                            if (boolBuffer && boolCount != 0)
-                                obj = new SBooleanType(1);
-                            else
-                                obj = new SBooleanType(0);
-                        }
-                        break;
-                    case 16:
-                    case 17:
-                        obj = new SByteType(blob.ReadByte());
-                        break;
-                    case 18: // 16 bit int
-                        obj = new SShortType(blob.ReadShort());
-                        break;
-                    case 128: // String types
-                    case 129:
-                    case 130:
-                        obj = new SStringType("Can't parse strings yet");
-                        break;
-                    default:
-                        throw new NotImplementedException("Unhandled ADO type " + fieldTypeValue);
+                            break;
+                        case 16:
+                        case 17:
+                            obj = new SByteType(blob.ReadByte());
+                            break;
+                        case 18: // 16 bit int
+                            obj = new SShortType(blob.ReadShort());
+                            break;
+                        case 128: // String types
+                        case 129:
+                        case 130:
+                            obj = new SStringType("Can't parse strings yet");
+                            break;
+                        default:
+                            throw new NotImplementedException("Unhandled ADO type " + fieldTypeValue);
+                    }
+
+                    if (obj == null)
+                        continue;
+
+                    dict.AddMember(obj);
+                    dict.AddMember(fieldName.Clone());
                 }
-
-                if (obj == null)
-                    continue;
-
-                dict.AddMember(obj);
-                dict.AddMember(fieldName.Clone());
-            }
 
                 step++;
             }
