@@ -22,7 +22,7 @@ namespace EveCacheParser.STypes
 
         internal override void AddMember(SType node)
         {
-            if (Members.Count >= m_length)
+            if (Members.Count > m_length)
                 throw new IndexOutOfRangeException("Members exceed collection capacity");
 
             Members.Add(node);
