@@ -82,6 +82,7 @@ namespace EveCacheParser
         /// Uncompresses the provided data.
         /// </summary>
         /// <param name="data">The data.</param>
+        /// <remarks>See http://yannramin.com/2009/12/28/about-rle_unpack-in-libevecache/ </remarks>
         /// <returns></returns>
         private static byte[] UncompressData(IList<byte> data)
         {
@@ -408,8 +409,8 @@ namespace EveCacheParser
             {
                 // The pattern for what data to read on each pass is:
                 // 1: 64 bit (Int64, Double)
-                // 2: 32 bit (Int32, Float)
-                // 3: 16 bit (Single)
+                // 2: 32 bit (Int32, Single)
+                // 3: 16 bit (Int16)
                 // 4: 8 bit (Byte)
                 // 5: 1 bit (Boolean)
 
