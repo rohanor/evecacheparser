@@ -90,16 +90,21 @@ namespace EveCacheParser
             // Initialize the list with the calculated unpacked size
             // (usually the size must be at least 64 + 1 bytes)
             List<byte> buffer = new List<byte>(unpackedDataSize);
-
+            
             if (data.Any())
             {
                 int i = 0;
                 while (i < data.Count)
                 {
-                    PackerOpcap opcap = new PackerOpcap(data[i++]);
-                    if (opcap.Tzero)
+                    byte b = data[i++];
+                    byte tlen = (byte)((byte)(b << 5) >> 5);
+                    bool tzero = (byte)((byte)(b << 4) >> 7) == 1;
+                    byte blen = (byte)((byte)(b << 1) >> 5);
+                    bool bzero = (byte)(b >> 7) == 1;
+
+                    if (tzero)
                     {
-                        byte count = (byte)(opcap.Tlen + 1);
+                        byte count = (byte)(tlen + 1);
                         for (; count > 0; count--)
                         {
                             buffer.Add(0);
@@ -107,16 +112,16 @@ namespace EveCacheParser
                     }
                     else
                     {
-                        byte count = (byte)(8 - opcap.Tlen);
+                        byte count = (byte)(8 - tlen);
                         for (; count > 0; count--)
                         {
                             buffer.Add(data[i++]);
                         }
                     }
 
-                    if (opcap.Bzero)
+                    if (bzero)
                     {
-                        byte count = (byte)(opcap.Blen + 1);
+                        byte count = (byte)(blen + 1);
                         for (; count > 0; count--)
                         {
                             buffer.Add(0);
@@ -127,7 +132,7 @@ namespace EveCacheParser
                         if (i == data.Count)
                             break;
 
-                        byte count = (byte)(8 - opcap.Blen);
+                        byte count = (byte)(8 - blen);
                         for (; count > 0; count--)
                         {
                             buffer.Add(data[i++]);
@@ -394,7 +399,6 @@ namespace EveCacheParser
                 return new SNoneType();
 
             int unpackedDataSize = GetUnpackedDataSize(fields.Members);
-
             byte[] compressedData = m_reader.ReadBytes(m_reader.ReadLength());
             byte[] uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
 
