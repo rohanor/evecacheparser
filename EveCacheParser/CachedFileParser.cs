@@ -85,6 +85,7 @@ namespace EveCacheParser
         /// <returns></returns>
         private static byte[] UncompressData(IList<byte> data)
         {
+            // Initialize the list capacity to 64 + 2 bytes
             List<byte> buffer = new List<byte>(66);
 
             if (data.Any())
@@ -402,9 +403,16 @@ namespace EveCacheParser
             // The size of SDict must be the ammount of entries stored,
             // multiplied by the max elements of each field member
             SDictType dict = new SDictType((uint)(fields.Members.Count * maxElements));
-            int step = 1;
-            while (step < 6)
+            int pass = 1;
+            while (pass < 6)
             {
+                // The pattern for what data to read on each pass is:
+                // 1: 64 bit (Int64, Double)
+                // 2: 32 bit (Int32, Float)
+                // 3: 16 bit (Single)
+                // 4: 8 bit (Byte)
+                // 5: 1 bit (Boolean)
+
                 foreach (SType field in fields.Members)
                 {
                     SType fieldName = field.Members.First();
@@ -418,30 +426,31 @@ namespace EveCacheParser
                     switch (fieldTypeValue)
                     {
                         case 2: // 16 bit int
-                            if (step == 3)
+                            if (pass == 3)
                                 obj = new SShortType(reader.ReadShort());
                             break;
                         case 3: // 32 bit int
                         case 19:
-                            if (step == 2)
+                            if (pass == 2)
                                 obj = new SIntType(reader.ReadInt());
                             break;
                         case 4: // float
-                            obj = new SDoubleType(reader.ReadFloat());
+                            if (pass == 2)
+                                obj = new SDoubleType(reader.ReadFloat());
                             break;
                         case 5: // double
-                            if (step == 1)
+                            if (pass == 1)
                                 obj = new SDoubleType(reader.ReadDouble());
                             break;
                         case 6: // currency
                         case 20: // 64 bit int
                         case 21:
                         case 64: // timestamp
-                            if (step == 1)
+                            if (pass == 1)
                                 obj = new SLongType(reader.ReadLong());
                             break;
                         case 11: // boolean
-                            if (step == 5)
+                            if (pass == 5)
                             {
                                 if (boolCount == 0)
                                 {
@@ -456,10 +465,12 @@ namespace EveCacheParser
                             break;
                         case 16:
                         case 17:
-                            obj = new SByteType(reader.ReadByte());
+                            if (pass == 4)
+                                obj = new SByteType(reader.ReadByte());
                             break;
                         case 18: // 16 bit int
-                            obj = new SShortType(reader.ReadShort());
+                            if (pass == 3)
+                                obj = new SShortType(reader.ReadShort());
                             break;
                         case 128: // String types
                         case 129:
@@ -477,7 +488,7 @@ namespace EveCacheParser
                     dict.AddMember(fieldName.Clone());
                 }
 
-                step++;
+                pass++;
             }
 
             STupleType parsedDBRow = new STupleType(2);

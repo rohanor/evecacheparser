@@ -391,6 +391,7 @@ namespace EveCacheParser
         /// <returns></returns>
         private byte GetByte()
         {
+            CheckSize(1);
             return Buffer[Position];
         }
 
@@ -402,6 +403,7 @@ namespace EveCacheParser
         /// <returns></returns>
         private byte[] GetBytes(byte[] destination, int count)
         {
+            CheckSize(count);
             int copyLength = Position + count < Length ? count : Length - Position;
             Array.Copy(Buffer, Position, destination, 0, copyLength);
             return destination;
