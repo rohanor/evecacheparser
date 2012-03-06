@@ -142,30 +142,16 @@ namespace EveCacheParser
         /// Reads a big int.
         /// </summary>
         /// <returns></returns>
-        internal SType ReadBigInt()
+        internal long ReadBigInt()
         {
-            SType sObject;
-
-            switch (ReadByte())
+            byte[] bytes = new byte[8];
+            int length = ReadLength();
+            for (int i = 0; i < length; i++)
             {
-                case 8:
-                    sObject = new SLongType(ReadLong());
-                    break;
-                case 4:
-                    sObject = new SIntType(ReadInt());
-                    break;
-                case 3:
-                    sObject = new SIntType(ReadByte() + (ReadByte() << 16));
-                    break;
-                case 2:
-                    sObject = new SShortType(ReadShort());
-                    break;
-                default:
-                    sObject = new SByteType(ReadByte());
-                    break;
+                bytes[i] = ReadByte();
             }
 
-            return sObject;
+            return BitConverter.ToInt64(bytes, 0);
         }
 
         /// <summary>
@@ -202,6 +188,15 @@ namespace EveCacheParser
         internal long ReadLong()
         {
             return BitConverter.ToInt64(ReadBytes(8), 0);
+        }
+
+        /// <summary>
+        /// Reads a long.
+        /// </summary>
+        /// <returns></returns>
+        internal long ReadLong(int length)
+        {
+            return BitConverter.ToInt64(ReadBytes(length), 0);
         }
 
         /// <summary>
@@ -277,14 +272,12 @@ namespace EveCacheParser
             if (m_sharePosition >= m_sharedMap.Length)
                 throw new IndexOutOfRangeException("sharePosition out of range");
 
-            int shareid = m_sharedMap[m_sharePosition] - 1;
+            int shareid = m_sharedMap[m_sharePosition++] - 1;
 
             if (shareid >= m_sharedMap.Length)
                 throw new IndexOutOfRangeException("shareid out of range");
 
             m_sharedObj[shareid] = obj.Clone();
-
-            m_sharePosition++;
         }
 
         /// <summary>
@@ -294,11 +287,10 @@ namespace EveCacheParser
         /// <returns></returns>
         internal SType GetSharedObj(int id)
         {
-            int position = id - 1;
-            if (m_sharedObj[position] == null)
-                throw new NullReferenceException("No shared object at position " + position);
+            if (m_sharedObj[id - 1] == null)
+                throw new NullReferenceException("No shared object at position " + (id - 1));
 
-            return m_sharedObj[position].Clone();
+            return m_sharedObj[id - 1].Clone();
         }
 
         /// <summary>

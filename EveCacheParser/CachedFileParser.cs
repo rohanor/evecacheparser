@@ -82,12 +82,14 @@ namespace EveCacheParser
         /// Uncompresses the provided data.
         /// </summary>
         /// <param name="data">The data.</param>
+        /// <param name="unpackedDataSize">Size of the unpacked data.</param>
+        /// <returns>A new array with the uncompressed data.</returns>
         /// <remarks>See http://yannramin.com/2009/12/28/about-rle_unpack-in-libevecache/ </remarks>
-        /// <returns></returns>
-        private static byte[] UncompressData(IList<byte> data)
+        private static byte[] UnpackData(IList<byte> data, int unpackedDataSize)
         {
-            // Initialize the list capacity to 64 + 2 bytes
-            List<byte> buffer = new List<byte>(66);
+            // Initialize the list with the calculated unpacked size
+            // (usually the size must be at least 64 + 1 bytes)
+            List<byte> buffer = new List<byte>(unpackedDataSize);
 
             if (data.Any())
             {
@@ -122,6 +124,9 @@ namespace EveCacheParser
                     }
                     else
                     {
+                        if (i == data.Count)
+                            break;
+
                         byte count = (byte)(8 - opcap.Blen);
                         for (; count > 0; count--)
                         {
@@ -129,12 +134,12 @@ namespace EveCacheParser
                         }
                     }
                 }
-            }
 
-            // Ensure that the buffer has enough data
-            while (buffer.Count < buffer.Capacity)
-            {
-                buffer.Add(0);
+                // Ensure that the buffer has enough data
+                while (buffer.Count < buffer.Capacity)
+                {
+                    buffer.Add(0);
+                }
             }
 
             return buffer.ToArray();
@@ -311,11 +316,11 @@ namespace EveCacheParser
                     Parse(sObject, 2);
                     break;
                 case StreamType.BigInt:
-                    sObject = m_reader.ReadBigInt();
+                    sObject = new SLongType(m_reader.ReadBigInt());
                     break;
                 case StreamType.Marker:
                     if (m_reader.ReadByte() != (byte)StreamType.Marker)
-                        throw new FormatException("Didn't encounter a double marker (0x2d) where it was expected at " +
+                        throw new FormatException("Didn't encounter a double marker (0x2d) where it was expected at position " +
                                                   (m_reader.Position - 2));
                     return null;
                 default:
@@ -393,8 +398,10 @@ namespace EveCacheParser
             if (fields == null)
                 return new SNoneType();
 
+            int unpackedDataSize = GetUnpackedDataSize(fields.Members);
+
             byte[] compressedData = m_reader.ReadBytes(m_reader.ReadLength());
-            byte[] uncompressedData = UncompressData(compressedData);
+            byte[] uncompressedData = UnpackData(compressedData, unpackedDataSize);
 
             CachedFileReader reader = new CachedFileReader(uncompressedData);
 
@@ -418,39 +425,41 @@ namespace EveCacheParser
                 {
                     SType fieldName = field.Members.First();
                     SLongType fieldType = (SLongType)field.Members.Last();
-                    long fieldTypeValue = fieldType.LongValue;
+                    DBTypes dbType = (DBTypes)fieldType.LongValue;
 
                     byte boolCount = 0;
                     bool boolBuffer = false;
                     SType obj = null;
 
-                    switch (fieldTypeValue)
+                    switch (dbType)
                     {
-                        case 2: // 16 bit int
+                        case DBTypes.Short:
+                        case DBTypes.UShort:
                             if (pass == 3)
                                 obj = new SShortType(reader.ReadShort());
                             break;
-                        case 3: // 32 bit int
-                        case 19:
+                        case DBTypes.Int:
+                        case DBTypes.UInt:
                             if (pass == 2)
                                 obj = new SIntType(reader.ReadInt());
                             break;
-                        case 4: // float
+                        case DBTypes.Float:
                             if (pass == 2)
                                 obj = new SDoubleType(reader.ReadFloat());
                             break;
-                        case 5: // double
+                        case DBTypes.Double:
                             if (pass == 1)
                                 obj = new SDoubleType(reader.ReadDouble());
                             break;
-                        case 6: // currency
-                        case 20: // 64 bit int
-                        case 21:
-                        case 64: // timestamp
+                        case DBTypes.Currency:
+                        case DBTypes.Long:
+                        case DBTypes.ULong:
+                        case DBTypes.Filetime: // Timestamp
+                        case DBTypes.DBTimestamp:
                             if (pass == 1)
                                 obj = new SLongType(reader.ReadLong());
                             break;
-                        case 11: // boolean
+                        case DBTypes.Bool:
                             if (pass == 5)
                             {
                                 if (boolCount == 0)
@@ -464,22 +473,19 @@ namespace EveCacheParser
                                           : new SBooleanType(0);
                             }
                             break;
-                        case 16:
-                        case 17:
+                        case DBTypes.Byte:
+                        case DBTypes.UByte:
                             if (pass == 4)
                                 obj = new SByteType(reader.ReadByte());
                             break;
-                        case 18: // 16 bit int
-                            if (pass == 3)
-                                obj = new SShortType(reader.ReadShort());
-                            break;
-                        case 128: // String types
-                        case 129:
-                        case 130:
-                            obj = new SStringType("Can't parse strings yet");
+                        case DBTypes.Bytes: // String types
+                        case DBTypes.String:
+                        case DBTypes.WideString:
+                            if (pass == 1)
+                                obj = new SStringType("Can't parse strings yet");
                             break;
                         default:
-                            throw new NotImplementedException("Unhandled ADO type " + fieldTypeValue);
+                            throw new NotImplementedException("Unhandled ADO type: " + dbType);
                     }
 
                     if (obj == null)
@@ -496,6 +502,72 @@ namespace EveCacheParser
             parsedDBRow.AddMember(header);
             parsedDBRow.AddMember(dict);
             return parsedDBRow;
+        }
+
+        /// <summary>
+        /// Gets the size of the unpacked data.
+        /// </summary>
+        /// <param name="fields">The fields.</param>
+        /// <returns></returns>
+        private static int GetUnpackedDataSize(Collection<SType> fields)
+        {
+            int[] sizes = new int[5];
+            int offset = 0;
+
+            foreach (DBTypes dbType in fields.Select(field => (DBTypes)field.Members.Last().LongValue))
+            {
+                switch (dbType)
+                {
+                    case DBTypes.Bool:
+                        sizes[4] = 0;
+                        break;
+                    case DBTypes.Byte:
+                    case DBTypes.UByte:
+                        sizes[3] = 1;
+                        break;
+                    case DBTypes.Short:
+                    case DBTypes.UShort:
+                        sizes[2] = 2;
+                        break;
+                    case DBTypes.Int:
+                    case DBTypes.UInt:
+                    case DBTypes.Float:
+                        sizes[1] = 3;
+                        break;
+                    case DBTypes.Currency:
+                    case DBTypes.Long:
+                    case DBTypes.ULong:
+                    case DBTypes.Filetime: // Timestamp
+                    case DBTypes.DBTimestamp:
+                    case DBTypes.Double:
+                    case DBTypes.Bytes: // String types
+                    case DBTypes.String:
+                    case DBTypes.WideString:
+                        sizes[0] = 4;
+                        break;
+                    default:
+                        throw new NotImplementedException("Unhandled DB row type " + dbType);
+                }
+            }
+
+            for (int i = 4; i > 0; i--)
+            {
+                offset += sizes[i] * (1 << (i - 1));
+            }
+
+            offset <<= 3;
+            int tempOffset = offset;
+            offset += sizes[0] + fields.Count;
+            offset = (offset + 7) >> 3;
+            offset += tempOffset;
+
+            // If less than 32 then adjust towards 64
+            if (offset < 0x20)
+            {   offset = (offset + 0x3) & ~0x3;
+                offset += fields.Count * 0x3;
+            }
+
+            return offset;
         }
 
         #endregion

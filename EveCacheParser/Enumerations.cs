@@ -50,4 +50,48 @@ namespace EveCacheParser
         SharedFlag = 0x40, // Flag for a shared object
         StreamStart = 0x7e // Start of each stream
     }
+
+    internal enum DBTypes
+    {
+        Empty = 0,
+        Null = 1,
+        Short = 2,
+        Int = 3,
+        Float = 4,
+        Double = 5,
+        Currency = 6,
+        Date = 7,
+        BinaryString = 8,
+        IDispatch = 9,
+        Error = 10,
+        Bool = 11,
+        Variant = 12,
+        BigInt = 13,
+        Decimal = 14,
+        Byte = 16,
+        UByte = 17,
+        UShort = 18,
+        UInt = 19,
+        Long = 20,
+        ULong = 21,
+        Filetime = 64,
+        Guid = 72,
+        Bytes = 128,
+        String = 129,
+        WideString = 130,
+        Numeric = 131,
+        UserDefinedType = 132,
+        DBDate = 133,
+        DBTime = 134,
+        DBTimestamp = 135,
+        HChapter = 136,
+        DBLifetime = 137,
+        PropVariant = 138,
+        VarNumeric = 139,
+
+        Vector = 0x1000,
+        Array = 0x2000,
+        ByRef = 0x4000,
+        Reserved = 0x8000,
+    }
 }
