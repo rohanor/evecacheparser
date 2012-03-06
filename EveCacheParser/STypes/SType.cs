@@ -67,7 +67,8 @@ namespace EveCacheParser.STypes
         /// <param name="type">The type.</param>
         internal virtual void AddMember(SType type)
         {
-            Members.Add(type);
+            if (type != null)
+                Members.Add(type);
         }
 
         /// <summary>

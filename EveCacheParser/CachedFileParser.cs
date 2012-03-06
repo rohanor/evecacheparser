@@ -85,7 +85,7 @@ namespace EveCacheParser
         /// <param name="unpackedDataSize">Size of the unpacked data.</param>
         /// <returns>A new array with the uncompressed data.</returns>
         /// <remarks>See http://yannramin.com/2009/12/28/about-rle_unpack-in-libevecache/ </remarks>
-        private static byte[] UnpackData(IList<byte> data, int unpackedDataSize)
+        private static byte[] Rle_Unpack(IList<byte> data, int unpackedDataSize)
         {
             // Initialize the list with the calculated unpacked size
             // (usually the size must be at least 64 + 1 bytes)
@@ -168,13 +168,9 @@ namespace EveCacheParser
         /// <param name="limit">The limit.</param>
         private void Parse(SType stream, int limit = 1)
         {
-            while (!m_reader.AtEnd && limit > 0)
+            while (!m_reader.AtEnd && limit-- > 0)
             {
-                SType sObject = GetObject();
-                if (sObject != null)
-                    stream.AddMember(sObject);
-
-                limit--;
+                stream.AddMember(GetObject());
             }
         }
 
@@ -346,8 +342,7 @@ namespace EveCacheParser
         private SType ParseObject()
         {
             SObjectType obj = new SObjectType();
-            SType sObject = obj;
-            Parse(sObject);
+            Parse(obj);
 
             if (obj.IsValidRowListName)
             {
@@ -359,7 +354,7 @@ namespace EveCacheParser
                         obj.AddMember(row);
                 } while (row != null);
             }
-            return sObject;
+            return obj;
         }
 
         /// <summary>
@@ -401,7 +396,7 @@ namespace EveCacheParser
             int unpackedDataSize = GetUnpackedDataSize(fields.Members);
 
             byte[] compressedData = m_reader.ReadBytes(m_reader.ReadLength());
-            byte[] uncompressedData = UnpackData(compressedData, unpackedDataSize);
+            byte[] uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
 
             CachedFileReader reader = new CachedFileReader(uncompressedData);
 
@@ -509,7 +504,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        private static int GetUnpackedDataSize(Collection<SType> fields)
+        private static int GetUnpackedDataSize(ICollection<SType> fields)
         {
             int[] sizes = new int[5];
             int offset = 0;
