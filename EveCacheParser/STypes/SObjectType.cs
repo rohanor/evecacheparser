@@ -34,23 +34,34 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether this objects name is a valid 'RowList' name.
+        /// Gets a value indicating whether this object is a 'RowList'.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this objects name is a valid 'RowList' name; otherwise, <c>false</c>.
+        /// 	<c>true</c> if this object is a 'RowList'; otherwise, <c>false</c>.
         /// </value>
-        internal bool IsValidRowListName
+        internal bool IsRowList
         {
             get { return Name == "dbutil.RowList"; }
         }
 
         /// <summary>
-        /// Gets a value indicating whether this objects name is a valid 'DBRowDescriptor' name.
+        /// Gets a value indicating whether this object is a 'CRowset'.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this objects name is a valid 'DBRowDescriptor' name; otherwise, <c>false</c>.
+        /// 	<c>true</c> if this object is a 'CRowset'; otherwise, <c>false</c>.
         /// </value>
-        internal bool IsValidDBRowDescriptorName
+        internal bool IsCRowset
+        {
+            get { return Name == "dbutil.CRowset"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'DBRowDescriptor'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'DBRowDescriptor'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsDBRowDescriptor
         {
             get { return Name == "blue.DBRowDescriptor"; }
         }

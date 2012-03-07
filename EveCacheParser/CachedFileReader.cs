@@ -13,7 +13,6 @@ namespace EveCacheParser
         private int[] m_sharedMap;
         private int m_sharePosition;
         private int m_shareSkip;
-        private readonly byte[] m_subBuffer;
 
         #endregion
 
@@ -27,13 +26,14 @@ namespace EveCacheParser
         /// <param name="doSecurityCheck">if set to <c>true</c> does a security check.</param>
         internal CachedFileReader(FileInfo file, bool doSecurityCheck = true)
         {
-            Filename = file.Name;
-            Fullname = file.FullName;
             using (FileStream stream = file.OpenRead())
             {
                 BinaryReader binaryReader = new BinaryReader(stream);
                 Buffer = binaryReader.ReadBytes((int)stream.Length);
             }
+
+            Filename = file.Name;
+            Fullname = file.FullName;
 
             if (doSecurityCheck)
                 SecurityCheck();
@@ -47,26 +47,6 @@ namespace EveCacheParser
         {
             Buffer = new byte[buffer.Length];
             Array.Copy(buffer, Buffer, buffer.Length);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="length">The length.</param>
-        internal CachedFileReader(CachedFileReader source, int length)
-        {
-            m_subBuffer = new byte[length];
-            Array.Copy(source.Buffer, source.Position, m_subBuffer, 0, length);
-
-            Buffer = m_subBuffer;
-            Filename = source.Filename;
-            Fullname = source.Fullname;
-            Position = 0;
-
-            SecurityCheck();
-
-            EndOfObjectsData = length - m_shareSkip;
         }
 
         #endregion
@@ -180,15 +160,6 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Reads a long.
-        /// </summary>
-        /// <returns></returns>
-        internal long ReadLong(int length)
-        {
-            return BitConverter.ToInt64(ReadBytes(length), 0);
-        }
-
-        /// <summary>
         /// Reads a string.
         /// </summary>
         /// <param name="length">The length.</param>
@@ -279,6 +250,10 @@ namespace EveCacheParser
         /// <returns></returns>
         internal SType GetSharedObj(int id)
         {
+            //int index = Array.IndexOf(m_sharedMap, id);
+
+            //return m_sharedObj[index].Clone();
+
             if (m_sharedObj[id - 1] == null)
                 throw new NullReferenceException("No shared object at position " + (id - 1));
 
@@ -286,12 +261,26 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Advances the readers position.
+        /// Seeks the data to the specified offset.
         /// </summary>
-        /// <param name="subReader">The sub stream reader.</param>
-        internal void AdvancePosition(CachedFileReader subReader)
+        /// <param name="offset">The offset.</param>
+        /// <param name="origin">The origin.</param>
+        internal void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
         {
-            Seek(Position + subReader.EndOfObjectsData + subReader.m_shareSkip, SeekOrigin.Begin);
+            switch (origin)
+            {
+                case SeekOrigin.Begin:
+                    Position = offset;
+                    break;
+                case SeekOrigin.Current:
+                    Position += offset;
+                    break;
+                case SeekOrigin.End:
+                    Position = Length - offset;
+                    break;
+                default:
+                    throw new IOException("Invalid origin");
+            }
         }
 
         #endregion
@@ -348,29 +337,6 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Seeks the data to the specified offset.
-        /// </summary>
-        /// <param name="offset">The offset.</param>
-        /// <param name="origin">The origin.</param>
-        private void Seek(int offset, SeekOrigin origin = SeekOrigin.Current)
-        {
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    Position = offset;
-                    break;
-                case SeekOrigin.Current:
-                    Position += offset;
-                    break;
-                case SeekOrigin.End:
-                    Position = Length - offset;
-                    break;
-                default:
-                    throw new IOException("Invalid origin");
-            }
-        }
-
-        /// <summary>
         /// Gets a byte.
         /// </summary>
         /// <returns></returns>
@@ -395,13 +361,15 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Checks the size.
+        /// Checks there are enough data ahead.
         /// </summary>
-        /// <param name="length">The length.</param>
+        /// <param name="length">The length of data to check.</param>
         private void CheckSize(int length)
         {
-            if (Position + length > Length)
-                throw new EndOfStreamException("Not enough data");
+            if (Position + length <= Length)
+                return;
+            
+            throw new EndOfStreamException("Not enough data");
         }
 
 

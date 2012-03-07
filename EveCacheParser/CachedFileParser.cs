@@ -314,7 +314,10 @@ namespace EveCacheParser
                     sObject = ParseDBRow();
                     break;
                 case StreamType.SubStream:
-                    sObject = ParseSubStream();
+                    {
+                        m_reader.Seek(m_reader.ReadLength());
+                        sObject = new SStreamType(StreamType.SubStream);
+                    }
                     break;
                 case StreamType.TupleTwo:
                     sObject = new STupleType(2);
@@ -340,7 +343,6 @@ namespace EveCacheParser
             if (shared)
                 m_reader.AddSharedObj(sObject);
 
-
             return sObject;
         }
 
@@ -353,35 +355,25 @@ namespace EveCacheParser
             SObjectType obj = new SObjectType();
             Parse(obj);
 
-            if (obj.IsValidRowListName)
+            SType row;
+            if (obj.IsRowList)
             {
-                SType row;
                 do
                 {
                     row = GetObject();
-                    if (row != null)
-                        obj.AddMember(row);
+                    obj.AddMember(row);
+                } while (row != null);
+            }
+
+            if (obj.IsCRowset)
+            {
+                do
+                {
+                    row = GetObject();
+                    obj.AddMember(row);
                 } while (row != null);
             }
             return obj;
-        }
-
-        /// <summary>
-        /// Parses a sub stream.
-        /// </summary>
-        /// <returns></returns>
-        private SStreamType ParseSubStream()
-        {
-            CachedFileReader subReader = new CachedFileReader(m_reader, m_reader.ReadLength());
-            CachedFileParser subParser = new CachedFileParser(subReader);
-            SStreamType subStream = new SStreamType(StreamType.SubStream);
-            subParser.Parse();
-
-            subStream.AddMember(subParser.m_stream.Clone());
-
-            m_reader.AdvancePosition(subReader);
-
-            return subStream;
         }
 
         /// <summary>
@@ -395,7 +387,7 @@ namespace EveCacheParser
             if (header == null)
                 throw new NullReferenceException("DBRow header not found");
 
-            if (!header.IsValidDBRowDescriptorName)
+            if (!header.IsDBRowDescriptor)
                 throw new FormatException("Bad DBRow descriptor name");
 
             STupleType fields = header.Members.First().Members.Last().Members.First() as STupleType;

@@ -10,8 +10,8 @@ namespace EveCacheParser.STypes
         #region Static Fields
 
         private static int s_count;
-        private static readonly Dictionary<int, bool> s_typeConsumed;
-        private static readonly List<SType> s_type;
+        private static readonly Dictionary<int, bool> s_typeConsumed = new Dictionary<int, bool>();
+        private static readonly List<SType> s_type = new List<SType>();
 
         #endregion
 
@@ -21,21 +21,6 @@ namespace EveCacheParser.STypes
         internal readonly int DebugID;
 
         #endregion Fields
-
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes the <see cref="SType"/> class.
-        /// </summary>
-        static SType()
-        {
-            s_count = 0;
-            s_typeConsumed = new Dictionary<int, bool>();
-            s_type = new List<SType>();
-        }
-
-        #endregion
 
 
         #region Static Methods
