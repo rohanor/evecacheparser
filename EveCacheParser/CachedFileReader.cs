@@ -113,14 +113,11 @@ namespace EveCacheParser
         /// <returns></returns>
         internal long ReadBigInt()
         {
-            byte[] bytes = new byte[8];
-            int length = ReadLength();
-            for (int i = 0; i < length; i++)
-            {
-                bytes[i] = ReadByte();
-            }
+            byte[] source = ReadBytes(ReadLength());
+            byte[] destination = new byte[8];
+            Array.Copy(source, destination, source.Length);
 
-            return BitConverter.ToInt64(bytes, 0);
+            return BitConverter.ToInt64(destination, 0);
         }
 
         /// <summary>
