@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using EveCacheParser.STypes;
@@ -35,11 +36,13 @@ namespace EveCacheParser
         #region Static Methods
 
         /// <summary>
-        /// Reads the specified file and projects it with an ASCII format.
+        /// Reads the specified file and shows it in an ASCII format.
         /// </summary>
-        /// <param name="cachedFile">The cachedFile.</param>
-        public static void ShowAsASCII(CachedFileReader cachedFile)
+        /// <param name="file">The file.</param>
+        public static void ShowAsASCII(FileInfo file)
         {
+            CachedFileReader cachedFile = new CachedFileReader(file);
+
             // Dump 16 bytes per line
             int len = cachedFile.Length;
             for (int i = 0; i < len; i += 16)
@@ -64,12 +67,13 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Parses the specified cached file.
+        /// Parses the specified file.
         /// </summary>
-        /// <param name="cachedFile">The cached file.</param>
+        /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static Tuple<Collection<SType>, Collection<SType>> Parse(CachedFileReader cachedFile)
+        public static Tuple<Collection<SType>, Collection<SType>> Parse(FileInfo file)
         {
+            CachedFileReader cachedFile = new CachedFileReader(file);
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
@@ -484,7 +488,7 @@ namespace EveCacheParser
                                 obj = new SStringType("Can't parse strings yet");
                             break;
                         default:
-                            throw new NotImplementedException("Unhandled ADO type: " + dbType);
+                            throw new NotImplementedException("Unhandled db column type: " + dbType);
                     }
 
                     if (obj == null)

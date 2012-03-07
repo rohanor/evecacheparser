@@ -8,30 +8,55 @@ namespace EveCacheParser
 {
     public static class CachedFilesFinder
     {
-        private static List<string> s_methodFilter = new List<string>();
+        private static List<string> s_methodIncludeFilter = new List<string>();
+        private static List<string> s_methodExcludeFilter = new List<string>();
 
         /// <summary>
-        /// Sets the methods filter.
+        /// Sets the included method filter.
         /// </summary>
         /// <param name="args">The args.</param>
-        public static void SetMethodFilter(params string[] args)
+        public static void SetIncludeMethodsFilter(params string[] args)
         {
-            SetMethodFilter(new List<string>(args));
+            SetIncludeMethodsFilter(new List<string>(args));
         }
 
         /// <summary>
-        /// Sets the methods filter.
+        /// Sets the included method filter.
         /// </summary>
         /// <param name="methods">The methods.</param>
-        public static void SetMethodFilter(IEnumerable<string> methods)
+        public static void SetIncludeMethodsFilter(IEnumerable<string> methods)
         {
             if (methods == null)
             {
-                s_methodFilter = new List<string>();
+                s_methodIncludeFilter = new List<string>();
                 return;
             }
 
-            s_methodFilter = methods.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+            s_methodIncludeFilter = methods.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+        }
+
+        /// <summary>
+        /// Sets the excluded method filter.
+        /// </summary>
+        /// <param name="args">The args.</param>
+        public static void SetExcludeMethodsFilter(params string[] args)
+        {
+            SetExcludeMethodsFilter(new List<string>(args));
+        }
+
+        /// <summary>
+        /// Sets the excluded method filter.
+        /// </summary>
+        /// <param name="methods">The methods.</param>
+        public static void SetExcludeMethodsFilter(IEnumerable<string> methods)
+        {
+            if (methods == null)
+            {
+                s_methodExcludeFilter = new List<string>();
+                return;
+            }
+
+            s_methodExcludeFilter = methods.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
         }
 
         /// <summary>
@@ -88,11 +113,15 @@ namespace EveCacheParser
                 cachedFile => new CachedFileReader(cachedFile, false)).Where(
                     reader => reader.Buffer.First() == (byte)StreamType.StreamStart).SelectMany(
                         cachedFile =>
-                        s_methodFilter.Any()
-                            ? s_methodFilter.Where(
+                        s_methodIncludeFilter.Any()
+                            ? s_methodIncludeFilter.Where(
                                 method => Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method)).Select(
                                     x => new FileInfo(cachedFile.Fullname))
-                            : new[] { new FileInfo(cachedFile.Fullname) }).ToArray();
+                            : s_methodExcludeFilter.Any()
+                                  ? s_methodExcludeFilter.Where(
+                                      method => !Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method)).Select(
+                                          x => new FileInfo(cachedFile.Fullname))
+                                  : new[] { new FileInfo(cachedFile.Fullname) }).ToArray();
         }
     }
 }

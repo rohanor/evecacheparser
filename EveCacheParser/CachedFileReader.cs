@@ -5,7 +5,7 @@ using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
-    public class CachedFileReader
+    internal class CachedFileReader
     {
         #region Fields
 
@@ -13,6 +13,7 @@ namespace EveCacheParser
         private int[] m_sharedMap;
         private int m_sharePosition;
         private int m_shareSkip;
+        private readonly byte[] m_subBuffer;
 
         #endregion
 
@@ -55,14 +56,17 @@ namespace EveCacheParser
         /// <param name="length">The length.</param>
         internal CachedFileReader(CachedFileReader source, int length)
         {
-            Buffer = source.Buffer;
+            m_subBuffer = new byte[length];
+            Array.Copy(source.Buffer, source.Position, m_subBuffer, 0, length);
+
+            Buffer = m_subBuffer;
             Filename = source.Filename;
             Fullname = source.Fullname;
-            Position = source.Position;
+            Position = 0;
 
             SecurityCheck();
 
-            EndOfObjectsData = length + source.Position - m_shareSkip;
+            EndOfObjectsData = length - m_shareSkip;
         }
 
         #endregion
@@ -116,21 +120,6 @@ namespace EveCacheParser
         internal bool AtEnd
         {
             get { return Position >= EndOfObjectsData; }
-        }
-
-        #endregion
-
-
-        #region Static Methods
-
-        /// <summary>
-        /// Reads the specified file.
-        /// </summary>
-        /// <param name="file">The file.</param>
-        /// <returns></returns>
-        public static CachedFileReader Read(FileInfo file)
-        {
-            return new CachedFileReader(file);
         }
 
         #endregion
@@ -269,6 +258,9 @@ namespace EveCacheParser
             if (m_sharedObj == null)
                 throw new NullReferenceException("sharedObj not initialized");
 
+            if (m_sharedMap.Length == 0)
+                return;
+
             if (m_sharePosition >= m_sharedMap.Length)
                 throw new IndexOutOfRangeException("sharePosition out of range");
 
@@ -299,7 +291,7 @@ namespace EveCacheParser
         /// <param name="subReader">The sub stream reader.</param>
         internal void AdvancePosition(CachedFileReader subReader)
         {
-            Seek(subReader.EndOfObjectsData + subReader.m_shareSkip, SeekOrigin.Begin);
+            Seek(Position + subReader.EndOfObjectsData + subReader.m_shareSkip, SeekOrigin.Begin);
         }
 
         #endregion
@@ -331,7 +323,7 @@ namespace EveCacheParser
             // Jump to the shared mapped data posistion in stream
             Seek(m_shareSkip, SeekOrigin.End);
 
-            // Store the shared mapped data  
+            // Create and store the shared mapped data
             m_sharedMap = new int[sharedMapsize];
             for (int i = 0; i < sharedMapsize; i++)
             {
@@ -345,9 +337,10 @@ namespace EveCacheParser
                     throw new IndexOutOfRangeException();
             }
 
+            // Create the shared objects table
             m_sharedObj = new SType[sharedMapsize];
 
-            // Mark the end of the data
+            // Store the end of the data
             EndOfObjectsData = Length - m_shareSkip;
 
             // Return to the stored position

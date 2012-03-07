@@ -36,7 +36,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SDoubleType '{0}'>", LongValue);
+            return string.Format("<SDoubleType '{0}'>", DoubleValue);
         }
 
         #endregion
