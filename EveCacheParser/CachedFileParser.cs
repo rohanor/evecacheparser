@@ -47,7 +47,6 @@ namespace EveCacheParser
             s_dumpStructure = true;
             SType.Reset();
             Parse(file);
-
             SType.DumpTypes(file.Name);
         }
 
@@ -90,17 +89,13 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static Tuple<String, CachedFileParser> Parse(FileInfo file)
+        public static void Parse(FileInfo file)
         {
             Console.WriteLine("Parsing...");
 
             CachedFileReader cachedFile = new CachedFileReader(file);
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
-
-            Collection<SType> key = parser.m_stream.Members[0].Members[0].Members;
-            Collection<SType> obj = parser.m_stream.Members[0].Members[1].Members;
-            return new Tuple<String, CachedFileParser>(cachedFile.Fullname, parser);
         }
 
         /// <summary>
