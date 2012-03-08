@@ -116,7 +116,7 @@ namespace EveCacheParser
                         ? s_methodIncludeFilter.Any(method => Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method))
                         : !s_methodExcludeFilter.Any() ||
                           s_methodExcludeFilter.All(method => !Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method))
-                ).Select(cachedFile => new FileInfo(cachedFile.Filename)).ToArray();
+                ).Select(cachedFile => new FileInfo(cachedFile.Fullname)).ToArray();
         }
     }
 }

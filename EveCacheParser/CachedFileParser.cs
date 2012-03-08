@@ -460,6 +460,7 @@ namespace EveCacheParser
             if (fields == null)
                 return new SNoneType();
 
+            // Check for double marker in stream (usually found in a file with one DBRow)
             int length = m_reader.ReadLength();
             if (length == (int)StreamType.Marker && m_reader.IsDoubleMarker())
                 length = m_reader.ReadLength();
