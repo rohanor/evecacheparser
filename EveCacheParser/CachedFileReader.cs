@@ -233,6 +233,38 @@ namespace EveCacheParser
         }
 
         /// <summary>
+        /// Reserves a slot in the share map.
+        /// </summary>
+        /// <param name="shared">if set to <c>true</c> the object is shared.</param>
+        /// <returns></returns>
+        internal int ReserveSlot(bool shared)
+        {
+            int store;
+            if (shared)
+            {
+                if (m_sharePosition >= m_sharedMap.Length)
+                    throw new IndexOutOfRangeException("shareid out of range");
+
+                store = m_sharedMap[m_sharePosition++];
+            }
+            else
+                store = 0;
+
+            return store;
+        }
+
+        /// <summary>
+        /// Updates the reserved slot with the object.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <param name="obj">The object.</param>
+        internal void UpdateSlot(int id, SType obj)
+        {
+            if (id > 0)
+                m_sharedObj[id - 1] = obj;
+        }
+
+        /// <summary>
         /// Adds a shared object.
         /// </summary>
         /// <param name="obj">The object.</param>
@@ -250,12 +282,12 @@ namespace EveCacheParser
             if (m_sharePosition >= m_sharedMap.Length)
                 throw new IndexOutOfRangeException("sharePosition out of range");
 
-            int shareid = m_sharedMap[m_sharePosition++] - 1;
+            int sharedId = m_sharedMap[m_sharePosition++] - 1;
 
-            if (shareid >= m_sharedMap.Length)
+            if (sharedId >= m_sharedMap.Length)
                 throw new IndexOutOfRangeException("shareid out of range");
 
-            m_sharedObj[shareid] = obj.Clone();
+            m_sharedObj[sharedId] = obj.Clone();
         }
 
         /// <summary>
@@ -265,9 +297,6 @@ namespace EveCacheParser
         /// <returns></returns>
         internal SType GetSharedObj(int id)
         {
-            //int index = Array.IndexOf(m_sharedMap, id+1);
-            //return m_sharedObj[index].Clone();
-
             if (m_sharedObj[id] == null)
                 throw new NullReferenceException("No shared object at position " + id);
 

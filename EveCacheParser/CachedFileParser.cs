@@ -107,51 +107,10 @@ namespace EveCacheParser
         private static byte[] Rle_Unpack(IList<byte> data, int unpackedDataSize)
         {
             // Initialize the list with the calculated unpacked size
-            //byte[] buffer = new byte[unpackedDataSize];
             List<byte> buffer = new List<byte>(unpackedDataSize);
 
             if (data.Any())
             {
-
-                //int i = 0;
-                //int o = 0;
-                //int run = 0;
-                //bool nibble = false;
-
-                //while (i < data.Count)
-                //{
-                //    int count;
-                //    nibble = !nibble;
-                //    if (nibble)
-                //    {
-                //        run = data[i++];
-                //        count = (run & 0x0f) - 8;
-                //    }
-                //    else
-                //        count = (run >> 4) - 8;
-
-                //    if (count >= 0)
-                //    {
-                //        if (o + count + 1 > buffer.Length)
-                //            throw new EndOfStreamException();
-
-                //        while (count-- >= 0)
-                //        buffer[o++] = 0;
-                //    }
-                //    else
-                //    {
-                //        if (o - count > buffer.Length)
-                //            throw new EndOfStreamException();
-
-                //        while (count++ <= 0 && i < data.Count)
-                //        buffer[o++] = data[i++];
-                //    }
-                //}
-
-                //while (o < buffer.Length)
-                //    buffer[o++] = 0;
-
-
                 int i = 0;
                 while (i < data.Count)
                 {
@@ -263,9 +222,11 @@ namespace EveCacheParser
                 case StreamType.StringGlobal:
                 case StreamType.StringUnicode:
                     sObject = new SStringType(m_reader.ReadString(m_reader.ReadByte()));
+                    CheckShared(shared, sObject);
                     break;
                 case StreamType.Long:
                     sObject = new SLongType(m_reader.ReadLong());
+                    CheckShared(shared, sObject);
                     break;
                 case StreamType.Int:
                     sObject = new SIntType(m_reader.ReadInt());
@@ -302,11 +263,13 @@ namespace EveCacheParser
                     break;
                 case StreamType.StringIdent:
                     sObject = new SIdentType(m_reader.ReadString(m_reader.ReadLength()));
+                    CheckShared(shared, sObject);
                     break;
                 case StreamType.Tuple:
                     {
                         int length = m_reader.ReadLength();
                         sObject = new STupleType((uint)length);
+                        CheckShared(shared, sObject);
                         Parse(sObject, length);
                         break;
                     }
@@ -314,6 +277,7 @@ namespace EveCacheParser
                     {
                         int length = m_reader.ReadLength();
                         sObject = new SListType((uint)length);
+                        CheckShared(shared, sObject);
                         Parse(sObject, length);
                         break;
                     }
@@ -321,11 +285,13 @@ namespace EveCacheParser
                     {
                         int length = (m_reader.ReadLength() * 2);
                         sObject = new SDictType((uint)length);
+                        CheckShared(shared, sObject);
                         Parse(sObject, length);
                         break;
                     }
                 case StreamType.ClassObject:
                     sObject = new SObjectType();
+                    CheckShared(shared, sObject);
                     Parse(sObject, 2);
                     break;
                 case StreamType.SharedObj:
@@ -343,20 +309,25 @@ namespace EveCacheParser
                     break;
                 case StreamType.NewObj:
                 case StreamType.Object:
+                    int store = m_reader.ReserveSlot(shared);
                     sObject = ParseObject();
+                    m_reader.UpdateSlot(store, sObject);
                     break;
                 case StreamType.TupleEmpty:
                     sObject = new STupleType(0);
                     break;
                 case StreamType.TupleOne:
                     sObject = new STupleType(1);
+                    CheckShared(shared, sObject);
                     Parse(sObject);
                     break;
                 case StreamType.ListEmpty:
                     sObject = new SListType(0);
+                    CheckShared(shared, sObject);
                     break;
                 case StreamType.ListOne:
                     sObject = new SListType(1);
+                    CheckShared(shared, sObject);
                     Parse(sObject);
                     break;
                 case StreamType.StringUnicodeEmpty:
@@ -370,13 +341,16 @@ namespace EveCacheParser
                     break;
                 case StreamType.SubStream:
                     sObject = ParseSubStream();
+                    CheckShared(shared, sObject);
                     break;
                 case StreamType.TupleTwo:
                     sObject = new STupleType(2);
+                    CheckShared(shared, sObject);
                     Parse(sObject, 2);
                     break;
                 case StreamType.BigInt:
                     sObject = new SLongType(m_reader.ReadBigInt());
+                    CheckShared(shared, sObject);
                     break;
                 case StreamType.Marker:
                     if (m_reader.ReadByte() != (byte)StreamType.Marker)
@@ -392,10 +366,18 @@ namespace EveCacheParser
             if (sObject == null)
                 throw new NullReferenceException("An object could not be created");
 
+            return sObject;
+        }
+
+        /// <summary>
+        /// Checks if an object is shared.
+        /// </summary>
+        /// <param name="shared">if set to <c>true</c> it's a shared object.</param>
+        /// <param name="sObject">The object.</param>
+        private void CheckShared(bool shared, SType sObject)
+        {
             if (shared)
                 m_reader.AddSharedObj(sObject);
-
-            return sObject;
         }
 
         /// <summary>
