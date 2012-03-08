@@ -57,7 +57,6 @@
     <Compile Include="STypes\SLongType.cs" />
     <Compile Include="STypes\SReferenceType.cs" />
     <Compile Include="STypes\SType.cs" />
-    <Compile Include="STypes\STypeDebug.cs" />
     <Compile Include="STypes\SNoneType.cs" />
     <Compile Include="STypes\SObjectType.cs" />
     <Compile Include="STypes\SStreamType.cs" />

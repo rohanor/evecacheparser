@@ -49,6 +49,24 @@ namespace EveCacheParser
             Array.Copy(buffer, Buffer, buffer.Length);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="length">The length.</param>
+        internal CachedFileReader(CachedFileReader source, int length)
+        {
+            Buffer = new byte[length];
+            Array.Copy(source.Buffer, source.Position, Buffer, 0, length);
+
+            Filename = source.Filename;
+            Fullname = source.Fullname;
+
+            SecurityCheck();
+
+            EndOfObjectsData = length - m_shareSkip;
+        }
+
         #endregion
 
 
@@ -365,7 +383,7 @@ namespace EveCacheParser
         {
             if (Position + length <= Length)
                 return;
-            
+
             throw new EndOfStreamException("Not enough data");
         }
 

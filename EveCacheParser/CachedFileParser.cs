@@ -14,6 +14,7 @@ namespace EveCacheParser
 
         private readonly CachedFileReader m_reader;
         private readonly SStreamType m_stream;
+        private static bool s_dumpStructure;
 
         #endregion
 
@@ -25,7 +26,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="reader">The reader.</param>
         private CachedFileParser(CachedFileReader reader)
-        {
+        {                    
             m_reader = reader;
             m_stream = new SStreamType(StreamType.StreamStart);
         }
@@ -36,11 +37,29 @@ namespace EveCacheParser
         #region Static Methods
 
         /// <summary>
+        /// Dumps the structure of the file to a file.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        public static void DumpStructure(FileInfo file)
+        {
+            Console.WriteLine("Dumping Structure...");
+
+            s_dumpStructure = true;
+            SType.Reset();
+            Parse(file);
+
+            SType.DumpTypes(file.Name);
+        }
+
+
+        /// <summary>
         /// Reads the specified file and shows it in an ASCII format.
         /// </summary>
         /// <param name="file">The file.</param>
         public static void ShowAsASCII(FileInfo file)
         {
+            Console.WriteLine("Converting to ASCII...");
+
             CachedFileReader cachedFile = new CachedFileReader(file);
 
             // Dump 16 bytes per line
@@ -71,15 +90,17 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static Tuple<Collection<SType>, Collection<SType>> Parse(FileInfo file)
+        public static Tuple<String, CachedFileParser> Parse(FileInfo file)
         {
+            Console.WriteLine("Parsing...");
+
             CachedFileReader cachedFile = new CachedFileReader(file);
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
             Collection<SType> key = parser.m_stream.Members[0].Members[0].Members;
             Collection<SType> obj = parser.m_stream.Members[0].Members[1].Members;
-            return new Tuple<Collection<SType>, Collection<SType>>(key, obj);
+            return new Tuple<String, CachedFileParser>(cachedFile.Fullname, parser);
         }
 
         /// <summary>
@@ -314,10 +335,7 @@ namespace EveCacheParser
                     sObject = ParseDBRow();
                     break;
                 case StreamType.SubStream:
-                    {
-                        m_reader.Seek(m_reader.ReadLength());
-                        sObject = new SStreamType(StreamType.SubStream);
-                    }
+                    sObject = ParseSubStream();
                     break;
                 case StreamType.TupleTwo:
                     sObject = new STupleType(2);
@@ -374,6 +392,28 @@ namespace EveCacheParser
                 } while (row != null);
             }
             return obj;
+        }
+
+        /// <summary>
+        /// Parses a sub stream.
+        /// </summary>
+        /// <returns></returns>
+        private SStreamType ParseSubStream()
+        {
+            SStreamType subStream = new SStreamType(StreamType.SubStream);
+            int length = m_reader.ReadLength();
+
+            if (s_dumpStructure)
+            {
+                CachedFileReader subReader = new CachedFileReader(m_reader, length);
+                CachedFileParser subParser = new CachedFileParser(subReader);
+                subParser.Parse();
+                subStream.AddMember(subParser.m_stream.Clone());
+            }
+
+            m_reader.Seek(length);
+
+            return subStream;
         }
 
         /// <summary>
@@ -552,7 +592,7 @@ namespace EveCacheParser
 
             offset <<= 3;
             int tempOffset = offset;
-            offset += sizes[0] + fields.Count;
+            offset += sizes.First() + fields.Count;
             offset = (offset + 7) >> 3;
             offset += tempOffset;
 
