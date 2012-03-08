@@ -109,19 +109,14 @@ namespace EveCacheParser
                 x => new DirectoryInfo(x)).Where(x => x.Exists).SelectMany(x => x.GetFiles("*.cache"));
 
             // Finds the cached files that are legit EVE files and satisfy the methods search criteria
-            return cachedFiles.Select(
-                cachedFile => new CachedFileReader(cachedFile, false)).Where(
-                    reader => reader.Buffer.First() == (byte)StreamType.StreamStart).SelectMany(
-                        cachedFile =>
-                        s_methodIncludeFilter.Any()
-                            ? s_methodIncludeFilter.Where(
-                                method => Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method)).Select(
-                                    x => new FileInfo(cachedFile.Fullname))
-                            : s_methodExcludeFilter.Any()
-                                  ? s_methodExcludeFilter.Where(
-                                      method => !Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method)).Select(
-                                          x => new FileInfo(cachedFile.Fullname))
-                                  : new[] { new FileInfo(cachedFile.Fullname) }).ToArray();
+            return cachedFiles.Select(cachedFile => new CachedFileReader(cachedFile, false)).Where(
+                reader => reader.Buffer.First() == (byte)StreamType.StreamStart).Where(
+                    cachedFile =>
+                    s_methodIncludeFilter.Any()
+                        ? s_methodIncludeFilter.Any(method => Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method))
+                        : !s_methodExcludeFilter.Any() ||
+                          s_methodExcludeFilter.All(method => !Encoding.ASCII.GetString(cachedFile.Buffer).Contains(method))
+                ).Select(cachedFile => new FileInfo(cachedFile.Filename)).ToArray();
         }
     }
 }

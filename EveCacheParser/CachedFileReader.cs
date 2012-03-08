@@ -76,7 +76,7 @@ namespace EveCacheParser
         /// Gets or sets the filename.
         /// </summary>
         /// <value>The filename.</value>
-        private string Filename { get; set; }
+        internal string Filename { get; private set; }
 
         /// <summary>
         /// Gets or sets the fullname.
@@ -265,14 +265,13 @@ namespace EveCacheParser
         /// <returns></returns>
         internal SType GetSharedObj(int id)
         {
-            //int index = Array.IndexOf(m_sharedMap, id);
-
+            //int index = Array.IndexOf(m_sharedMap, id+1);
             //return m_sharedObj[index].Clone();
 
-            if (m_sharedObj[id - 1] == null)
-                throw new NullReferenceException("No shared object at position " + (id - 1));
+            if (m_sharedObj[id] == null)
+                throw new NullReferenceException("No shared object at position " + id);
 
-            return m_sharedObj[id - 1].Clone();
+            return m_sharedObj[id].Clone();
         }
 
         /// <summary>
@@ -296,6 +295,21 @@ namespace EveCacheParser
                 default:
                     throw new IOException("Invalid origin");
             }
+        }
+
+        /// <summary>
+        /// Determines whether the next byte is a marker.
+        /// </summary>
+        /// <returns>
+        /// 	<c>true</c> if the next byte is a marker; otherwise, <c>false</c>.
+        /// </returns>
+        internal bool IsDoubleMarker()
+        {
+            if (GetByte() != (int)StreamType.Marker)
+                return false;
+
+            ReadByte();
+            return true;
         }
 
         #endregion

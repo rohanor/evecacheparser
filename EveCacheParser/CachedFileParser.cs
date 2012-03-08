@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -108,11 +107,51 @@ namespace EveCacheParser
         private static byte[] Rle_Unpack(IList<byte> data, int unpackedDataSize)
         {
             // Initialize the list with the calculated unpacked size
-            // (usually the size must be at least 64 + 1 bytes)
+            //byte[] buffer = new byte[unpackedDataSize];
             List<byte> buffer = new List<byte>(unpackedDataSize);
-            
+
             if (data.Any())
             {
+
+                //int i = 0;
+                //int o = 0;
+                //int run = 0;
+                //bool nibble = false;
+
+                //while (i < data.Count)
+                //{
+                //    int count;
+                //    nibble = !nibble;
+                //    if (nibble)
+                //    {
+                //        run = data[i++];
+                //        count = (run & 0x0f) - 8;
+                //    }
+                //    else
+                //        count = (run >> 4) - 8;
+
+                //    if (count >= 0)
+                //    {
+                //        if (o + count + 1 > buffer.Length)
+                //            throw new EndOfStreamException();
+
+                //        while (count-- >= 0)
+                //        buffer[o++] = 0;
+                //    }
+                //    else
+                //    {
+                //        if (o - count > buffer.Length)
+                //            throw new EndOfStreamException();
+
+                //        while (count++ <= 0 && i < data.Count)
+                //        buffer[o++] = data[i++];
+                //    }
+                //}
+
+                //while (o < buffer.Length)
+                //    buffer[o++] = 0;
+
+
                 int i = 0;
                 while (i < data.Count)
                 {
@@ -290,7 +329,7 @@ namespace EveCacheParser
                     Parse(sObject, 2);
                     break;
                 case StreamType.SharedObj:
-                    sObject = m_reader.GetSharedObj(m_reader.ReadLength());
+                    sObject = m_reader.GetSharedObj(m_reader.ReadLength() - 1);
                     break;
                 case StreamType.Checksum:
                     sObject = new SStringType("checksum");
@@ -368,9 +407,9 @@ namespace EveCacheParser
             SObjectType obj = new SObjectType();
             Parse(obj);
 
-            SType row;
-            if (obj.IsRowList)
+            if (obj.IsRowList || obj.IsCRowset)
             {
+                SType row;
                 do
                 {
                     row = GetObject();
@@ -378,14 +417,6 @@ namespace EveCacheParser
                 } while (row != null);
             }
 
-            if (obj.IsCRowset)
-            {
-                do
-                {
-                    row = GetObject();
-                    obj.AddMember(row);
-                } while (row != null);
-            }
             return obj;
         }
 
@@ -429,8 +460,12 @@ namespace EveCacheParser
             if (fields == null)
                 return new SNoneType();
 
+            int length = m_reader.ReadLength();
+            if (length == (int)StreamType.Marker && m_reader.IsDoubleMarker())
+                length = m_reader.ReadLength();
+
             int unpackedDataSize = GetUnpackedDataSize(fields.Members);
-            byte[] compressedData = m_reader.ReadBytes(m_reader.ReadLength());
+            byte[] compressedData = m_reader.ReadBytes(length);
             byte[] uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
 
             CachedFileReader reader = new CachedFileReader(uncompressedData);
@@ -442,7 +477,7 @@ namespace EveCacheParser
             // multiplied by the max elements of each field member
             SDictType dict = new SDictType((uint)(fields.Members.Count * maxElements));
             int pass = 1;
-            while (pass < 6)
+            while (pass < 7)
             {
                 // The pattern for what data to read on each pass is:
                 // 1: 64 bit (Int64, Double)
@@ -450,6 +485,7 @@ namespace EveCacheParser
                 // 3: 16 bit (Int16)
                 // 4: 8 bit (Byte)
                 // 5: 1 bit (Boolean)
+                // 6: strings
 
                 foreach (SType field in fields.Members)
                 {
@@ -511,8 +547,8 @@ namespace EveCacheParser
                         case DBTypes.Bytes: // String types
                         case DBTypes.String:
                         case DBTypes.WideString:
-                            if (pass == 1)
-                                obj = new SStringType("Can't parse strings yet");
+                            if (pass == 6)
+                                obj = GetObject();
                             break;
                         default:
                             throw new NotImplementedException("Unhandled db column type: " + dbType);
@@ -546,23 +582,24 @@ namespace EveCacheParser
 
             foreach (DBTypes dbType in fields.Select(field => (DBTypes)field.Members.Last().LongValue))
             {
+                int index;
                 switch (dbType)
                 {
                     case DBTypes.Bool:
-                        sizes[4] = 0;
+                        index = 0;
                         break;
                     case DBTypes.Byte:
                     case DBTypes.UByte:
-                        sizes[3] = 1;
+                        index = 1;
                         break;
                     case DBTypes.Short:
                     case DBTypes.UShort:
-                        sizes[2] = 2;
+                        index = 2;
                         break;
                     case DBTypes.Int:
                     case DBTypes.UInt:
                     case DBTypes.Float:
-                        sizes[1] = 3;
+                        index = 3;
                         break;
                     case DBTypes.Currency:
                     case DBTypes.Long:
@@ -570,32 +607,34 @@ namespace EveCacheParser
                     case DBTypes.Filetime: // Timestamp
                     case DBTypes.DBTimestamp:
                     case DBTypes.Double:
+                        index = 4;
+                        break;
+                    case DBTypes.Empty:
+                        continue;
                     case DBTypes.Bytes: // String types
                     case DBTypes.String:
                     case DBTypes.WideString:
-                        sizes[0] = 4;
-                        break;
+                        continue;
                     default:
                         throw new NotImplementedException("Unhandled DB row type " + dbType);
                 }
+
+                if (dbType != DBTypes.Empty)
+                    sizes[index]++;
             }
 
+            int[] offsets = new int[5];
+            
             for (int i = 4; i > 0; i--)
             {
+                offsets[i] = offset;
                 offset += sizes[i] * (1 << (i - 1));
             }
 
             offset <<= 3;
-            int tempOffset = offset;
+            offsets[0] = offset;
             offset += sizes.First() + fields.Count;
             offset = (offset + 7) >> 3;
-            offset += tempOffset;
-
-            // If less than 32 then adjust towards 64
-            if (offset < 0x20)
-            {   offset = (offset + 0x3) & ~0x3;
-                offset += fields.Count * 0x3;
-            }
 
             return offset;
         }
