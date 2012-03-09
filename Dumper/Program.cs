@@ -14,12 +14,14 @@ namespace Dumper
             //args = new[] { "--structure" };
             //CachedFilesFinder.SetIncludeMethodsFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
             //CachedFilesFinder.SetIncludeMethodsFilter("GetBookmarks", "GetSolarSystem");
-            CachedFilesFinder.SetIncludeMethodsFilter("GetChannels");
-            //CachedFilesFinder.SetIncludeMethodsFilter("GetBookmarks");
+            //CachedFilesFinder.SetIncludeMethodsFilter("GetMarketGroups");
+            //CachedFilesFinder.SetExcludeMethodsFilter("GetBookmarks");
             //CachedFilesFinder.SetExcludeMethodsFilter("GetBookmarks", "GetSolarSystem");
+            //CachedFilesFinder.SetCachedFilesFolders("CachedObjects");
+            CachedFilesFinder.SetCachedFilesFolders("CachedMethodCalls", "CachedObjects");
 
             //FileInfo cachedFile = CachedFilesFinder.GetMachoNetCachedFiles().First();
-            foreach (FileInfo cachedFile in CachedFilesFinder.GetMachoNetCachedFiles()/*.Where(x => x.Name == "2f79.cache" &&x.Name == "6c3b.cache") */)
+            foreach (FileInfo cachedFile in CachedFilesFinder.GetMachoNetCachedFiles()/*.Where(x => x.Name == "67b3.cache")*/)
             {
                 Console.WriteLine("Processing file: {0}", cachedFile.Name);
                 if (args.Any() && args.First() == "--ascii")

@@ -352,12 +352,12 @@ namespace EveCacheParser
         /// <returns>
         /// 	<c>true</c> if the next byte is a marker; otherwise, <c>false</c>.
         /// </returns>
-        internal bool IsDoubleMarker(int length)
+        internal bool IsDoubleMarker(int number)
         {
-            if (length != (int)StreamType.Marker || GetByte() != (int)StreamType.Marker)
+            if (number != (int)StreamType.Marker || GetByte() != (int)StreamType.Marker)
                 return false;
 
-            // It's a double marker, advance the reader to the next byte
+            // It's a double marker, advance to the next byte
             Seek(1);
             return true;
         }

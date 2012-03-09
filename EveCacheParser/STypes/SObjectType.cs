@@ -34,14 +34,36 @@
         }
 
         /// <summary>
+        /// Gets a value indicating whether this object is a 'DBRow'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'DBRow'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsDBRow
+        {
+            get { return IsRowList || IsCRowset || IsCFilterRowset || IsCIndexedRowset || IsRowDict; }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this object is a 'RowList'.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this object is a 'RowList'; otherwise, <c>false</c>.
         /// </value>
-        internal bool IsRowList
+        private bool IsRowList
         {
             get { return Name == "dbutil.RowList"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'RowDict'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'RowDict'; otherwise, <c>false</c>.
+        /// </value>
+        private bool IsRowDict
+        {
+            get { return Name == "dbutil.RowDict"; }
         }
 
         /// <summary>
@@ -50,9 +72,31 @@
         /// <value>
         /// 	<c>true</c> if this object is a 'CRowset'; otherwise, <c>false</c>.
         /// </value>
-        internal bool IsCRowset
+        private bool IsCRowset
         {
             get { return Name == "dbutil.CRowset"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'CFilterRowset'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'CFilterRowset'; otherwise, <c>false</c>.
+        /// </value>
+        private bool IsCFilterRowset
+        {
+            get { return Name == "dbutil.CFilterRowset"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'CIndexedRowset'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'CIndexedRowset'; otherwise, <c>false</c>.
+        /// </value>
+        private bool IsCIndexedRowset
+        {
+            get { return Name == "dbutil.CIndexedRowset"; }
         }
 
         /// <summary>

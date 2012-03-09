@@ -360,17 +360,14 @@ namespace EveCacheParser
                     CheckShared(shared, sObject);
                     break;
                 case StreamType.Marker:
-                    if (m_reader.ReadByte() != (byte)StreamType.Marker)
-                        throw new FormatException("Didn't encounter a double marker (0x2d) where it was expected at position " +
-                                                  (m_reader.Position - 2));
-                    return null;
+                    break;
                 default:
                     throw new NotImplementedException(
-                        String.Format("Can't identify type {0:x2} at position {1:x2} [{1}] and lenght {2}",
+                        String.Format("Can't identify type {0:x2} at position {1:x2} [{1}] and length {2}",
                                       type, m_reader.Position, m_reader.Length));
             }
 
-            if (sObject == null)
+            if (sObject == null && type != (byte)StreamType.Marker)
                 throw new NullReferenceException("An object could not be created");
 
             return sObject;
@@ -396,7 +393,7 @@ namespace EveCacheParser
             SObjectType obj = new SObjectType();
             Parse(obj);
 
-            if (obj.IsRowList || obj.IsCRowset)
+            if (obj.IsDBRow)
             {
                 SType row;
                 do

@@ -10,18 +10,44 @@ namespace EveCacheParser
     {
         private static List<string> s_methodIncludeFilter = new List<string>();
         private static List<string> s_methodExcludeFilter = new List<string>();
+        private static List<string> s_includedFolders = new List<string>(); 
+        private static string m_folder = "CachedMethodCalls";
 
         /// <summary>
-        /// Sets the included method filter.
+        /// Sets the folders to look for cached files.
         /// </summary>
-        /// <param name="args">The args.</param>
+        /// <param name="args">The folders.</param>
+        public static void SetCachedFilesFolders(params string[] args)
+        {
+            SetCachedFilesFolders(new List<string>(args));
+        }
+
+        /// <summary>
+        /// Sets the folders to look for cached files.
+        /// </summary>
+        /// <param name="folders">The folders.</param>
+        public static void SetCachedFilesFolders(IEnumerable<string> folders)
+        {
+            if (folders == null)
+            {
+                s_includedFolders = new List<string>();
+                return;
+            }
+
+            s_includedFolders = folders.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+        }
+
+        /// <summary>
+        /// Sets the methods to includ in filter.
+        /// </summary>
+        /// <param name="args">The methods.</param>
         public static void SetIncludeMethodsFilter(params string[] args)
         {
             SetIncludeMethodsFilter(new List<string>(args));
         }
 
         /// <summary>
-        /// Sets the included method filter.
+        /// Sets the methods to includ in filter.
         /// </summary>
         /// <param name="methods">The methods.</param>
         public static void SetIncludeMethodsFilter(IEnumerable<string> methods)
@@ -36,7 +62,7 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Sets the excluded method filter.
+        /// Sets the methods to exclude in filter.
         /// </summary>
         /// <param name="args">The args.</param>
         public static void SetExcludeMethodsFilter(params string[] args)
@@ -45,7 +71,7 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Sets the excluded method filter.
+        /// Sets the methods to exclude in filter.
         /// </summary>
         /// <param name="methods">The methods.</param>
         public static void SetExcludeMethodsFilter(IEnumerable<string> methods)
@@ -102,11 +128,14 @@ namespace EveCacheParser
                 x => x.GetDirectories()).Select(x => int.Parse(x.Name)).Concat(new[] { 0 }).Max().ToString();
 
             // Construct the final path to the cache folders
-            cacheFoldersPath = cacheFoldersPath.Select(x => x).Select(x => Path.Combine(x, latestFolder, "CachedMethodCalls"));
-
+            cacheFoldersPath = s_includedFolders.Any()
+                                   ? cacheFoldersPath.SelectMany(path => s_includedFolders,
+                                                                (path, folder) => Path.Combine(path, latestFolder, folder)).ToList()
+                                   : cacheFoldersPath.Select(path => Path.Combine(path, latestFolder, "CachedMethodCalls"));
+                
             // Get the cached files we need to scrap
             IEnumerable<FileInfo> cachedFiles = cacheFoldersPath.Select(
-                x => new DirectoryInfo(x)).Where(x => x.Exists).SelectMany(x => x.GetFiles("*.cache"));
+                x => new DirectoryInfo(x)).Where(x => x.Exists).SelectMany(x => x.GetFiles("*.cache*"));
 
             // Finds the cached files that are legit EVE files and satisfy the methods search criteria
             return cachedFiles.Select(cachedFile => new CachedFileReader(cachedFile, false)).Where(
