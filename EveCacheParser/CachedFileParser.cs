@@ -441,27 +441,25 @@ namespace EveCacheParser
             if (!header.IsDBRowDescriptor)
                 throw new FormatException("Bad DBRow descriptor name");
 
-            STupleType fields = header.Members.First().Members.Last().Members.First() as STupleType;
-            if (fields == null)
-                return new SNoneType();
+            IEnumerable<STupleType> fields = header.Members.First().Members.Last().Members.First().Members.Cast<STupleType>();
 
             // Check for double marker in stream (usually found in a file with one DBRow)
             int length = m_reader.ReadLength();
             if (m_reader.IsDoubleMarker(length))
                 length = m_reader.ReadLength();
 
-            int unpackedDataSize = GetUnpackedDataSize(fields.Members);
+            int unpackedDataSize = GetUnpackedDataSize(fields);
             byte[] compressedData = m_reader.ReadBytes(length);
             byte[] uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
 
             CachedFileReader reader = new CachedFileReader(uncompressedData);
 
             // Find the maximum number of elements for each field member
-            int maxElements = fields.Members.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();
+            int maxElements = fields.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();
 
             // The size of SDict must be the ammount of entries stored,
             // multiplied by the max elements of each field member
-            SDictType dict = new SDictType((uint)(fields.Members.Count * maxElements));
+            SDictType dict = new SDictType((uint)(fields.Count() * maxElements));
             int pass = 1;
             while (pass < 7)
             {
@@ -473,7 +471,7 @@ namespace EveCacheParser
                 // 5: 1 bit (Boolean)
                 // 6: strings
 
-                foreach (SType field in fields.Members)
+                foreach (STupleType field in fields)
                 {
                     SType fieldName = field.Members.First();
                     SLongType fieldType = (SLongType)field.Members.Last();

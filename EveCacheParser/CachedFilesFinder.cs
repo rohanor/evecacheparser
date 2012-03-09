@@ -11,7 +11,6 @@ namespace EveCacheParser
         private static List<string> s_methodIncludeFilter = new List<string>();
         private static List<string> s_methodExcludeFilter = new List<string>();
         private static List<string> s_includedFolders = new List<string>(); 
-        private static string m_folder = "CachedMethodCalls";
 
         /// <summary>
         /// Sets the folders to look for cached files.
