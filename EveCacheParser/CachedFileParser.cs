@@ -217,6 +217,8 @@ namespace EveCacheParser
                     sObject = new SNoneType();
                     break;
                 case StreamType.Utf8:
+                    sObject = new SStringType(m_reader.ReadUtf8String(m_reader.ReadLength()));
+                    break;
                 case StreamType.String:
                 case StreamType.StringLong:
                     sObject = new SStringType(m_reader.ReadString(m_reader.ReadLength()));
@@ -226,7 +228,7 @@ namespace EveCacheParser
                     CheckShared(shared, sObject);
                     break;
                 case StreamType.StringUnicode:
-                    sObject = new SStringType(m_reader.ReadString(m_reader.ReadLength() * 2));
+                    sObject = new SStringType(m_reader.ReadUnicodeString(m_reader.ReadLength() * 2));
                     break;
                 case StreamType.Long:
                     sObject = new SLongType(m_reader.ReadLong());

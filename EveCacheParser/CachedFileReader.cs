@@ -185,6 +185,29 @@ namespace EveCacheParser
         }
 
         /// <summary>
+        /// Reads a UTF8 string.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
+        internal string ReadUtf8String(int length)
+        {
+            return Encoding.UTF8.GetString(ReadBytes(length));
+        }
+
+        /// <summary>
+        /// Reads a Unicode string.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
+        internal string ReadUnicodeString(int length)
+        {
+
+            return BitConverter.IsLittleEndian
+                       ? Encoding.Unicode.GetString(ReadBytes(length))
+                       : Encoding.BigEndianUnicode.GetString(ReadBytes(length));
+        }
+
+        /// <summary>
         /// Reads an int.
         /// </summary>
         /// <returns></returns>
