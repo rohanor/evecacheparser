@@ -139,6 +139,9 @@ namespace EveCacheParser
 
                     if (bzero)
                     {
+                        if (i == data.Count)
+                            break;
+
                         byte count = (byte)(blen + 1);
                         for (; count > 0; count--)
                         {
@@ -159,7 +162,7 @@ namespace EveCacheParser
                 }
 
                 // Ensure that the buffer has enough data
-                while (buffer.Count < buffer.Capacity)
+                while (buffer.Count < unpackedDataSize)
                 {
                     buffer.Add(0);
                 }
@@ -561,7 +564,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        private static int GetUnpackedDataSize(IEnumerable<SType> fields)
+        private static int GetUnpackedDataSize(IEnumerable<STupleType> fields)
         {
             int[] sizes = new int[5];
             int offset = 0;
