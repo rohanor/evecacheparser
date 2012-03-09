@@ -212,6 +212,7 @@ namespace EveCacheParser
             {
                 case 0:
                 case StreamType.StreamStart:
+                case StreamType.Marker:
                     break;
                 case StreamType.None:
                     sObject = new SNoneType();
@@ -358,8 +359,6 @@ namespace EveCacheParser
                 case StreamType.BigInt:
                     sObject = new SLongType(m_reader.ReadBigInt());
                     CheckShared(shared, sObject);
-                    break;
-                case StreamType.Marker:
                     break;
                 default:
                     throw new NotImplementedException(
@@ -562,7 +561,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        private static int GetUnpackedDataSize(ICollection<SType> fields)
+        private static int GetUnpackedDataSize(IEnumerable<SType> fields)
         {
             int[] sizes = new int[5];
             int offset = 0;
