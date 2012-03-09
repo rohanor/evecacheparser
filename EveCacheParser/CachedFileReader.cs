@@ -223,17 +223,17 @@ namespace EveCacheParser
         internal int ReadLength()
         {
             CheckSize(1);
-            int lenght = ReadByte();
+            int length = ReadByte();
 
-            if (lenght != 255)
-                return lenght;
+            if (length != 255)
+                return length;
 
             CheckSize(4);
             return ReadInt();
         }
 
         /// <summary>
-        /// Reserves a slot in the share map.
+        /// Reserves a slot in the shared map table.
         /// </summary>
         /// <param name="shared">if set to <c>true</c> the object is shared.</param>
         /// <returns></returns>
@@ -254,7 +254,7 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Updates the reserved slot with the object.
+        /// Updates the reserved slot in the shared map table with the object.
         /// </summary>
         /// <param name="id">The id.</param>
         /// <param name="obj">The object.</param>
