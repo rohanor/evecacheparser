@@ -226,7 +226,6 @@ namespace EveCacheParser
                     break;
                 case StreamType.Long:
                     sObject = new SLongType(m_reader.ReadLong());
-                    CheckShared(shared, sObject);
                     break;
                 case StreamType.Int:
                     sObject = new SIntType(m_reader.ReadInt());
@@ -309,9 +308,11 @@ namespace EveCacheParser
                     break;
                 case StreamType.NewObj:
                 case StreamType.Object:
-                    int store = m_reader.ReserveSlot(shared);
-                    sObject = ParseObject();
-                    m_reader.UpdateSlot(store, sObject);
+                    {
+                        int storedId = m_reader.ReserveSlot(shared);
+                        sObject = ParseObject();
+                        m_reader.UpdateSlot(storedId, sObject);
+                    }
                     break;
                 case StreamType.TupleEmpty:
                     sObject = new STupleType(0);
@@ -444,7 +445,7 @@ namespace EveCacheParser
 
             // Check for double marker in stream (usually found in a file with one DBRow)
             int length = m_reader.ReadLength();
-            if (length == (int)StreamType.Marker && m_reader.IsDoubleMarker())
+            if (m_reader.IsDoubleMarker(length))
                 length = m_reader.ReadLength();
 
             int unpackedDataSize = GetUnpackedDataSize(fields.Members);
@@ -606,18 +607,12 @@ namespace EveCacheParser
                     sizes[index]++;
             }
 
-            int[] offsets = new int[5];
-            
             for (int i = 4; i > 0; i--)
             {
-                offsets[i] = offset;
                 offset += sizes[i] * (1 << (i - 1));
             }
 
-            offset <<= 3;
-            offsets[0] = offset;
-            offset += sizes.First() + fields.Count;
-            offset = (offset + 7) >> 3;
+            offset += sizes[0];
 
             return offset;
         }

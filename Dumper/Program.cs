@@ -13,6 +13,7 @@ namespace Dumper
             //args = new[] { "--ascii" };
             //args = new[] { "--structure" };
             //CachedFilesFinder.SetIncludeMethodsFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
+            //CachedFilesFinder.SetIncludeMethodsFilter("GetBookmarks", "GetSolarSystem");
             CachedFilesFinder.SetIncludeMethodsFilter("GetChannels");
             //CachedFilesFinder.SetIncludeMethodsFilter("GetBookmarks");
             //CachedFilesFinder.SetExcludeMethodsFilter("GetBookmarks", "GetSolarSystem");

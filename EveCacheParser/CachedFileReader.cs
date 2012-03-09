@@ -239,18 +239,18 @@ namespace EveCacheParser
         /// <returns></returns>
         internal int ReserveSlot(bool shared)
         {
-            int store;
+            int id;
             if (shared)
             {
                 if (m_sharePosition >= m_sharedMap.Length)
                     throw new IndexOutOfRangeException("shareid out of range");
 
-                store = m_sharedMap[m_sharePosition++];
+                id = m_sharedMap[m_sharePosition++];
             }
             else
-                store = 0;
+                id = 0;
 
-            return store;
+            return id;
         }
 
         /// <summary>
@@ -332,12 +332,13 @@ namespace EveCacheParser
         /// <returns>
         /// 	<c>true</c> if the next byte is a marker; otherwise, <c>false</c>.
         /// </returns>
-        internal bool IsDoubleMarker()
+        internal bool IsDoubleMarker(int length)
         {
-            if (GetByte() != (int)StreamType.Marker)
+            if (length != (int)StreamType.Marker || GetByte() != (int)StreamType.Marker)
                 return false;
 
-            ReadByte();
+            // It's a double marker, advance the reader to the next byte
+            Seek(1);
             return true;
         }
 
