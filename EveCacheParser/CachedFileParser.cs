@@ -221,7 +221,7 @@ namespace EveCacheParser
                 case StreamType.StringLong:
                 case StreamType.StringGlobal:
                 case StreamType.StringUnicode:
-                    sObject = new SStringType(m_reader.ReadString(m_reader.ReadByte()));
+                    sObject = new SStringType(m_reader.ReadString(m_reader.ReadLength()));
                     CheckShared(shared, sObject);
                     break;
                 case StreamType.Long:
@@ -258,7 +258,7 @@ namespace EveCacheParser
                     sObject = new SStringType(m_reader.ReadString(1));
                     break;
                 case StreamType.StringRef:
-                    sObject = new SReferenceType((byte)m_reader.ReadLength());
+                    sObject = new SReferenceType(m_reader.ReadByte());
                     break;
                 case StreamType.StringIdent:
                     sObject = new SIdentType(m_reader.ReadString(m_reader.ReadLength()));

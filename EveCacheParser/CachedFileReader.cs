@@ -276,9 +276,6 @@ namespace EveCacheParser
             if (m_sharedObj == null)
                 throw new NullReferenceException("sharedObj not initialized");
 
-            if (m_sharedMap.Length == 0)
-                return;
-
             if (m_sharePosition >= m_sharedMap.Length)
                 throw new IndexOutOfRangeException("sharePosition out of range");
 
