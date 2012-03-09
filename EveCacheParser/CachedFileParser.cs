@@ -442,6 +442,8 @@ namespace EveCacheParser
                 throw new FormatException("Bad DBRow descriptor name");
 
             IEnumerable<STupleType> fields = header.Members.First().Members.Last().Members.First().Members.Cast<STupleType>();
+            if (!fields.Any())
+                return new SNoneType();
 
             // Check for double marker in stream (usually found in a file with one DBRow)
             int length = m_reader.ReadLength();
