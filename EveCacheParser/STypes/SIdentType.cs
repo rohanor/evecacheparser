@@ -1,6 +1,6 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SIdentType : SType
+    internal sealed class SIdentType : SStringType
     {
         #region Constructors
 
@@ -22,7 +22,7 @@
         /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A memberwise clone of this instance.</returns>
         internal override SType Clone()
         {
             return (SIdentType)MemberwiseClone();

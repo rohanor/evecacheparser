@@ -37,9 +37,20 @@ namespace EveCacheParser.STypes
         }
 
         /// <summary>
+        /// Returns a <see cref="System.Object"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Object"/> that represents this instance.
+        /// </returns>
+        internal override object ToObject()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A memberwise clone of this instance.</returns>
         internal override SType Clone()
         {
             return (STupleType)MemberwiseClone();

@@ -27,7 +27,7 @@ namespace EveCacheParser.STypes
         /// Initializes a new instance of the <see cref="SType"/> class.
         /// </summary>
         /// <param name="streamType">Type of the stream.</param>
-        internal SType(StreamType streamType)
+        protected SType(StreamType streamType)
         {
             DebugID = s_count++;
             s_type.Add(this);
@@ -152,24 +152,18 @@ namespace EveCacheParser.STypes
         }
 
         /// <summary>
-        /// Clones this instance.
-        /// </summary>
-        /// <returns></returns>
-        internal virtual SType Clone()
-        {
-            return (SType)MemberwiseClone();
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="System.Object"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="System.Object"/> that represents this instance.
         /// </returns>
-        public override string ToString()
-        {
-            return string.Format("<SType [{0}]>", m_streamType);
-        }
+        internal abstract object ToObject();
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>A memberwise clone of this instance.</returns>
+        internal abstract SType Clone();
 
         #endregion
     }
