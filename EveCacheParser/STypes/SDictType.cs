@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EveCacheParser.STypes
 {
@@ -44,6 +46,18 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
+            Dictionary<object, object> dict = new Dictionary<object, object>();
+            object key = null;
+            foreach (SType member in Members)
+            {
+                if (Members.IndexOf(member) % 2 == 0)
+                    key = member.ToObject();
+
+                object value = member.ToObject();
+
+                dict.Add(key, value);
+            }
+
             return null;
         }
 

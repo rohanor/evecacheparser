@@ -95,6 +95,7 @@ namespace EveCacheParser
             CachedFileReader cachedFile = new CachedFileReader(file);
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
+            //SType.DumpObjects();
         }
 
         /// <summary>
@@ -196,7 +197,14 @@ namespace EveCacheParser
         {
             while (!m_reader.AtEnd && limit-- > 0)
             {
-                stream.AddMember(GetObject());
+                SType obj = GetObject();
+
+                // Marker objects are handled in base method
+                stream.AddMember(obj);
+
+                // Compensate for markers
+                if (obj is SMarkerType)
+                    limit++;
             }
         }
 
@@ -215,7 +223,9 @@ namespace EveCacheParser
             {
                 case 0:
                 case StreamType.StreamStart:
+                    break;
                 case StreamType.Marker:
+                    sObject = new SMarkerType();
                     break;
                 case StreamType.None:
                     sObject = new SNoneType();
@@ -369,7 +379,7 @@ namespace EveCacheParser
                                       type, m_reader.Position, m_reader.Length));
             }
 
-            if (sObject == null && type != (byte)StreamType.Marker)
+            if (sObject == null)
                 throw new NullReferenceException("An object could not be created");
 
             return sObject;
@@ -401,8 +411,10 @@ namespace EveCacheParser
                 do
                 {
                     row = GetObject();
+
+                    // Marker object  is handled in base method
                     obj.AddMember(row);
-                } while (row != null);
+                } while (!(row is SMarkerType));
             }
 
             return obj;

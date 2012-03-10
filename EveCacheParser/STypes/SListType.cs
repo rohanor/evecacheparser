@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EveCacheParser.STypes
 {
@@ -44,7 +46,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
-            return null;
+            return Members.Select(member => member.ToObject()).ToList();
         }
 
         /// <summary>

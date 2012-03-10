@@ -10,13 +10,14 @@ namespace EveCacheParser.STypes
     {
         #region Fields
 
-        internal readonly int DebugID;
+        protected readonly int DebugID;
 
         private readonly StreamType m_streamType;
 
         private static readonly Dictionary<int, bool> s_typeConsumed = new Dictionary<int, bool>();
         private static readonly List<SType> s_type = new List<SType>();
         private static int s_count;
+        private static readonly List<object> s_object = new List<object>();
 
         #endregion
 
@@ -38,6 +39,13 @@ namespace EveCacheParser.STypes
 
         #endregion
 
+         internal static void DumpObjects()
+        {
+            foreach (SType sType in s_type)
+            {
+                s_object.Add(sType.ToObject());
+            }
+        }
 
         #region Properties
 
@@ -147,8 +155,10 @@ namespace EveCacheParser.STypes
         /// <param name="obj">The object.</param>
         internal virtual void AddMember(SType obj)
         {
-            if (obj != null)
-                Members.Add(obj);
+            if (obj is SMarkerType)
+                return;
+
+            Members.Add(obj);
         }
 
         /// <summary>

@@ -1,41 +1,21 @@
-﻿using System;
-using System.Linq;
-
-namespace EveCacheParser.STypes
+﻿namespace EveCacheParser.STypes
 {
-    internal sealed class STupleType : SType
+    internal class SMarkerType : SType
     {
-        private readonly uint m_length;
-
-
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="STupleType"/> class.
+        /// Initializes a new instance of the <see cref="SMarkerType"/> class.
         /// </summary>
-        /// <param name="length">The length.</param>
-        internal STupleType(uint length)
-            : base(StreamType.Tuple)
+        internal SMarkerType()
+            : base(StreamType.Marker)
         {
-            m_length = length;
         }
 
         #endregion
 
 
         #region Methods
-
-        /// <summary>
-        /// Adds the member.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        internal override void AddMember(SType type)
-        {
-            if (Members.Count > m_length)
-                throw new IndexOutOfRangeException("Members exceed collection capacity");
-
-            base.AddMember(type);
-        }
 
         /// <summary>
         /// Returns a <see cref="System.Object"/> that represents this instance.
@@ -45,7 +25,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
-            return new Tuple<object>(Members.Select(member => member.ToObject()));
+            return "Marker";
         }
 
         /// <summary>
@@ -54,7 +34,7 @@ namespace EveCacheParser.STypes
         /// <returns>A memberwise clone of this instance.</returns>
         internal override SType Clone()
         {
-            return (STupleType)MemberwiseClone();
+            return (SMarkerType)MemberwiseClone();
         }
 
         /// <summary>
@@ -65,9 +45,9 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<STupleType [{0}]>", m_length);
+            return "<SMarkerType>";
         }
 
-        #endregion
+        #endregion 
     }
 }

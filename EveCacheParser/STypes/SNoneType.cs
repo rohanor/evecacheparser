@@ -12,7 +12,7 @@
         {
         }
 
-        #endregion Constructors
+        #endregion
 
 
         #region Methods
@@ -48,6 +48,6 @@
             return "<SNone>";
         }
 
-        #endregion Methods
+        #endregion
     }
 }
