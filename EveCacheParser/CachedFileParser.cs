@@ -7,7 +7,7 @@ using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
-    public class CachedFileParser
+    internal class CachedFileParser
     {
         #region Fields
 
@@ -39,7 +39,7 @@ namespace EveCacheParser
         /// Dumps the structure of the file to a file.
         /// </summary>
         /// <param name="file">The file.</param>
-        public static void DumpStructure(FileInfo file)
+        internal static void DumpStructure(FileInfo file)
         {
             Console.WriteLine("Dumping Structure...");
 
@@ -54,7 +54,7 @@ namespace EveCacheParser
         /// Reads the specified file and shows it in an ASCII format.
         /// </summary>
         /// <param name="file">The file.</param>
-        public static void ShowAsASCII(FileInfo file)
+        internal static void ShowAsASCII(FileInfo file)
         {
             Console.WriteLine("Converting to ASCII...");
 
@@ -88,7 +88,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static void Parse(FileInfo file)
+        internal static void Parse(FileInfo file)
         {
             Console.WriteLine("Parsing...");
 
@@ -480,7 +480,7 @@ namespace EveCacheParser
                 {
                     SType fieldName = field.Members.First();
                     SLongType fieldType = (SLongType)field.Members.Last();
-                    DBTypes dbType = (DBTypes)fieldType.LongValue;
+                    DBTypes dbType = (DBTypes)fieldType.Value;
 
                     byte boolCount = 0;
                     bool boolBuffer = false;
@@ -569,7 +569,7 @@ namespace EveCacheParser
             int[] sizes = new int[5];
             int offset = 0;
 
-            foreach (DBTypes dbType in fields.Select(field => (DBTypes)field.Members.Last().LongValue))
+            foreach (DBTypes dbType in fields.Select(field => (DBTypes)field.Members.Last().Value))
             {
                 int index;
                 switch (dbType)

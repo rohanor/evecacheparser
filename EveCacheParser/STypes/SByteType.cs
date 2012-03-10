@@ -11,7 +11,7 @@
         internal SByteType(byte value)
             : base(StreamType.Byte)
         {
-            LongValue = value;
+            Value = value;
         }
 
         #endregion
@@ -36,7 +36,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SByteType '{0}'>", LongValue);
+            return string.Format("<SByteType '{0}'>", Value);
         }
 
         #endregion

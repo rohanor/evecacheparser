@@ -6,7 +6,7 @@ using System.Text;
 
 namespace EveCacheParser
 {
-    public static class CachedFilesFinder
+    internal static class CachedFilesFinder
     {
         private static List<string> s_methodIncludeFilter = new List<string>();
         private static List<string> s_methodExcludeFilter = new List<string>();
@@ -16,7 +16,7 @@ namespace EveCacheParser
         /// Sets the folders to look for cached files.
         /// </summary>
         /// <param name="args">The folders.</param>
-        public static void SetCachedFilesFolders(params string[] args)
+        internal static void SetCachedFilesFolders(params string[] args)
         {
             SetCachedFilesFolders(new List<string>(args));
         }
@@ -25,7 +25,7 @@ namespace EveCacheParser
         /// Sets the folders to look for cached files.
         /// </summary>
         /// <param name="folders">The folders.</param>
-        public static void SetCachedFilesFolders(IEnumerable<string> folders)
+        internal static void SetCachedFilesFolders(IEnumerable<string> folders)
         {
             if (folders == null)
             {
@@ -40,7 +40,7 @@ namespace EveCacheParser
         /// Sets the methods to includ in filter.
         /// </summary>
         /// <param name="args">The methods.</param>
-        public static void SetIncludeMethodsFilter(params string[] args)
+        internal static void SetIncludeMethodsFilter(params string[] args)
         {
             SetIncludeMethodsFilter(new List<string>(args));
         }
@@ -49,7 +49,7 @@ namespace EveCacheParser
         /// Sets the methods to includ in filter.
         /// </summary>
         /// <param name="methods">The methods.</param>
-        public static void SetIncludeMethodsFilter(IEnumerable<string> methods)
+        internal static void SetIncludeMethodsFilter(IEnumerable<string> methods)
         {
             if (methods == null)
             {
@@ -64,7 +64,7 @@ namespace EveCacheParser
         /// Sets the methods to exclude in filter.
         /// </summary>
         /// <param name="args">The args.</param>
-        public static void SetExcludeMethodsFilter(params string[] args)
+        internal static void SetExcludeMethodsFilter(params string[] args)
         {
             SetExcludeMethodsFilter(new List<string>(args));
         }
@@ -73,7 +73,7 @@ namespace EveCacheParser
         /// Sets the methods to exclude in filter.
         /// </summary>
         /// <param name="methods">The methods.</param>
-        public static void SetExcludeMethodsFilter(IEnumerable<string> methods)
+        internal static void SetExcludeMethodsFilter(IEnumerable<string> methods)
         {
             if (methods == null)
             {
@@ -89,7 +89,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="folderPath">The folder location.</param>
         /// <returns></returns>
-        public static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderPath)
+        internal static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderPath)
         {
             if (String.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
                 return null;
@@ -101,7 +101,7 @@ namespace EveCacheParser
         /// Gets the macho net cached files.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<FileInfo> GetMachoNetCachedFiles()
+        internal static IEnumerable<FileInfo> GetMachoNetCachedFiles()
         {
             // Get the local appdata folder
             string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

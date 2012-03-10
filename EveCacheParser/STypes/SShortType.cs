@@ -11,7 +11,7 @@
         internal SShortType(short value)
             : base(StreamType.Short)
         {
-            LongValue = value;
+            Value = value;
         }
 
         #endregion
@@ -36,7 +36,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SShortType '{0}'>", LongValue);
+            return string.Format("<SShortType '{0}'>", Value);
         }
 
         #endregion

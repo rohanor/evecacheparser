@@ -20,7 +20,7 @@
         internal SLongType(long value)
             : base(StreamType.Long)
         {
-            LongValue = value;
+            Value = value;
         }
 
         #endregion
@@ -45,7 +45,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SLongType '{0}'>", LongValue);
+            return string.Format("<SLongType '{0}'>", Value);
         }
 
         #endregion

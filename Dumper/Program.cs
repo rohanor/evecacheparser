@@ -12,24 +12,24 @@ namespace Dumper
         {
             //args = new[] { "--ascii" };
             //args = new[] { "--structure" };
-            //CachedFilesFinder.SetIncludeMethodsFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
-            //CachedFilesFinder.SetIncludeMethodsFilter("GetBookmarks", "GetSolarSystem");
-            //CachedFilesFinder.SetIncludeMethodsFilter("GetMarketGroups");
-            //CachedFilesFinder.SetExcludeMethodsFilter("GetBookmarks");
-            //CachedFilesFinder.SetExcludeMethodsFilter("GetBookmarks", "GetSolarSystem");
-            //CachedFilesFinder.SetCachedFilesFolders("CachedObjects");
-            CachedFilesFinder.SetCachedFilesFolders("CachedMethodCalls", "CachedObjects");
+            //Parser.SetIncludeMethodsFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
+            //Parser.SetIncludeMethodsFilter("GetBookmarks", "GetSolarSystem");
+            //Parser.SetIncludeMethodsFilter("GetMarketGroups");
+            //Parser.SetExcludeMethodsFilter("GetBookmarks");
+            //Parser.SetExcludeMethodsFilter("GetBookmarks", "GetSolarSystem");
+            //Parser.SetCachedFilesFolders("CachedObjects");
+            //Parser.SetCachedFilesFolders("CachedMethodCalls", "CachedObjects");
 
             //FileInfo cachedFile = CachedFilesFinder.GetMachoNetCachedFiles().First();
-            foreach (FileInfo cachedFile in CachedFilesFinder.GetMachoNetCachedFiles()/*.Where(x => x.Name == "67b3.cache")*/)
+            foreach (FileInfo cachedFile in Parser.GetMachoNetCachedFiles()/*.Where(x => x.Name == "67b3.cache")*/)
             {
                 Console.WriteLine("Processing file: {0}", cachedFile.Name);
                 if (args.Any() && args.First() == "--ascii")
-                    CachedFileParser.ShowAsASCII(cachedFile);
+                    Parser.ShowAsASCII(cachedFile);
                 else if (args.Any() && args.First() == "--structure")
-                    CachedFileParser.DumpStructure(cachedFile);
+                    Parser.DumpStructure(cachedFile);
                 else
-                    CachedFileParser.Parse(cachedFile);
+                    Parser.Parse(cachedFile);
 
                 Console.WriteLine("Done...");
             }

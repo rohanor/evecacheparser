@@ -45,25 +45,25 @@ namespace EveCacheParser.STypes
         /// Gets or sets the text.
         /// </summary>
         /// <value>The text.</value>
-        public string Text { get; protected set; }
+        internal string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the long value.
+        /// Gets or sets the integral value.
         /// </summary>
-        /// <value>The long value.</value>
-        public long LongValue { get; protected set; }
+        /// <value>The integral value.</value>
+        internal long Value { get; set; }
 
         /// <summary>
         /// Gets or sets the double value.
         /// </summary>
         /// <value>The double value.</value>
-        public double DoubleValue { get; protected set; }
+        internal double DoubleValue { get; set; }
 
         /// <summary>
         /// Gets or sets a boolean.
         /// </summary>
         /// <value>The boolean value.</value>
-        public bool Boolean { get; protected set; }
+        internal bool Boolean { get; set; }
 
         /// <summary>
         /// Gets or sets the members.
@@ -92,22 +92,22 @@ namespace EveCacheParser.STypes
         /// <param name="fileName">Name of the file.</param>
         internal static void DumpTypes(string fileName)
         {
-            s_type.ForEach(node => s_typeConsumed[node.DebugID] = false);
+            s_type.ForEach(type => s_typeConsumed[type.DebugID] = false);
 
             StringBuilder fileContents = new StringBuilder();
-            foreach (SType n in s_type.Where(n => !s_typeConsumed[n.DebugID]))
+            foreach (SType type in s_type.Where(type => !s_typeConsumed[type.DebugID]))
             {
-                if (n.m_streamType == StreamType.StreamStart)
+                if (type.m_streamType == StreamType.StreamStart)
                 {
-                    s_typeConsumed[n.DebugID] = true;
+                    s_typeConsumed[type.DebugID] = true;
                     continue;
                 }
 
-                fileContents.Append(n.ToString());
-                fileContents.AppendFormat("[{0:00}]\n", n.DebugID);
-                fileContents.Append(DumpType(n, 1));
+                fileContents.Append(type.ToString());
+                fileContents.AppendFormat("[{0:00}]\n", type.DebugID);
+                fileContents.Append(DumpType(type, 1));
 
-                s_typeConsumed[n.DebugID] = true;
+                s_typeConsumed[type.DebugID] = true;
             }
             File.WriteAllText(Path.ChangeExtension(fileName, ".structure"), fileContents.ToString());
         }
@@ -115,22 +115,22 @@ namespace EveCacheParser.STypes
         /// <summary>
         /// Dumps the structure of the stream types.
         /// </summary>
-        /// <param name="type">The stream type.</param>
+        /// <param name="sType">The stream type.</param>
         /// <param name="offset">The offset.</param>
         /// <returns></returns>
-        private static string DumpType(SType type, int offset)
+        private static string DumpType(SType sType, int offset)
         {
-            if (type.Members.Count == 0)
+            if (!sType.Members.Any())
                 return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            foreach (SType n in type.Members)
+            foreach (SType type in sType.Members)
             {
-                sb.Append(n.ToString().PadLeft((2 * offset) + n.ToString().Length));
-                sb.AppendFormat("[{0:00}]\n", n.DebugID);
-                if (n.Members.Count > 0)
-                    sb.Append(DumpType(n, offset + 1));
-                s_typeConsumed[n.DebugID] = true;
+                sb.Append(type.ToString().PadLeft((2 * offset) + type.ToString().Length));
+                sb.AppendFormat("[{0:00}]\n", type.DebugID);
+                if (type.Members.Any())
+                    sb.Append(DumpType(type, offset + 1));
+                s_typeConsumed[type.DebugID] = true;
             }
 
             return sb.ToString();

@@ -11,7 +11,7 @@
         internal SIntType(int value)
             : base(StreamType.Int)
         {
-            LongValue = value;
+            Value = value;
         }
 
         #endregion
@@ -36,7 +36,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SIntType '{0}'>", LongValue);
+            return string.Format("<SIntType '{0}'>", Value);
         }
 
         #endregion
