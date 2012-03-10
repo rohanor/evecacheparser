@@ -105,7 +105,7 @@ namespace EveCacheParser.STypes
             StringBuilder fileContents = new StringBuilder();
             foreach (SType type in s_type.Where(type => !s_typeConsumed[type.DebugID]))
             {
-                if (type.m_streamType == StreamType.StreamStart)
+                if (type.m_streamType == StreamType.StreamStart || type.m_streamType == StreamType.Marker)
                 {
                     s_typeConsumed[type.DebugID] = true;
                     continue;
