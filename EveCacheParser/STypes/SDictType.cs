@@ -53,7 +53,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return "<SDictType>";
+            return string.Format("<SDictType [{0}]>", m_length);
         }
 
         #endregion Methods

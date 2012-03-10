@@ -53,7 +53,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return "<STupleType>";
+            return string.Format("<STupleType [{0}]>", m_length);
         }
 
         #endregion

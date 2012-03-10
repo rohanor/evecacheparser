@@ -53,7 +53,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return "<SListType>";
+            return string.Format("<SListType [{0}]>", m_length);
         }
 
         #endregion
