@@ -105,7 +105,7 @@ namespace EveCacheParser.STypes
             StringBuilder fileContents = new StringBuilder();
             foreach (SType type in s_type.Where(type => !s_typeConsumed[type.DebugID]))
             {
-                if (type.m_streamType == StreamType.StreamStart || type.m_streamType == StreamType.Marker)
+                if (type.m_streamType == StreamType.StreamStart)
                 {
                     s_typeConsumed[type.DebugID] = true;
                     continue;
@@ -155,10 +155,8 @@ namespace EveCacheParser.STypes
         /// <param name="obj">The object.</param>
         internal virtual void AddMember(SType obj)
         {
-            if (obj is SMarkerType)
-                return;
-
-            Members.Add(obj);
+            if (obj != null)
+                Members.Add(obj);
         }
 
         /// <summary>

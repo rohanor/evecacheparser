@@ -51,7 +51,6 @@
     <Compile Include="STypes\SBooleanType.cs" />
     <Compile Include="STypes\SListType.cs" />
     <Compile Include="STypes\SByteType.cs" />
-    <Compile Include="STypes\SMarkerType.cs" />
     <Compile Include="STypes\SShortType.cs" />
     <Compile Include="STypes\SDictType.cs" />
     <Compile Include="STypes\SIdentType.cs" />

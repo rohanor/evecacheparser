@@ -199,11 +199,11 @@ namespace EveCacheParser
             {
                 SType obj = GetObject();
 
-                // Marker objects are handled in base method
+                // Null object is marker and is handled in base method
                 stream.AddMember(obj);
 
                 // Compensate for markers
-                if (obj is SMarkerType)
+                if (obj == null)
                     limit++;
             }
         }
@@ -225,7 +225,6 @@ namespace EveCacheParser
                 case StreamType.StreamStart:
                     break;
                 case StreamType.Marker:
-                    sObject = new SMarkerType();
                     break;
                 case StreamType.None:
                     sObject = new SNoneType();
@@ -379,7 +378,7 @@ namespace EveCacheParser
                                       type, m_reader.Position, m_reader.Length));
             }
 
-            if (sObject == null)
+            if (sObject == null && type != (byte)StreamType.Marker)
                 throw new NullReferenceException("An object could not be created");
 
             return sObject;
@@ -412,9 +411,9 @@ namespace EveCacheParser
                 {
                     row = GetObject();
 
-                    // Marker object  is handled in base method
+                    // Null object is marker
                     obj.AddMember(row);
-                } while (!(row is SMarkerType));
+                } while (row != null);
             }
 
             return obj;
