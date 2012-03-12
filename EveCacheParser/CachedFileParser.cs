@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -102,7 +101,7 @@ namespace EveCacheParser
 
         private KeyValuePair<Tuple<object>, Dictionary<object, object>> ToObjects()
         {
-            Collection<SType> tupleTwoMembers = m_stream.Members.First().Members;
+            List<SType> tupleTwoMembers = m_stream.Members.First().Members;
             Tuple<object> key = tupleTwoMembers.First().ToObject() as Tuple<object>;
             Dictionary<object, object> value = tupleTwoMembers.Last().ToObject() as Dictionary<object, object>;
 
@@ -415,7 +414,7 @@ namespace EveCacheParser
             SObjectType obj = new SObjectType();
             Parse(obj);
 
-            if (obj.IsRowList || obj.IsCRowset || obj.IsDBRowDescriptor)
+            if (obj.IsRowList || obj.IsCRowset)
             {
                 do
                 {

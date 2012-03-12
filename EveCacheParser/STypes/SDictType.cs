@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EveCacheParser.STypes
 {
@@ -23,6 +22,35 @@ namespace EveCacheParser.STypes
 
         #endregion
 
+        internal static Dictionary<object, object> ToDictionary(IList<SType> members, int sortCriteria)
+        {
+            Dictionary<object, object> dictionary = new Dictionary<object, object>();
+            object key = null;
+            object value = null;
+            foreach (SType member in members)
+            {
+                // Odd members are keys
+                if (members.IndexOf(member) % 2 == sortCriteria)
+                    key = member.ToObject();
+                else
+                    // Even members are values
+                    value = member.ToObject();
+
+                // Keep iterating till we have a pair
+                if (key == null || value == null)
+                    continue;
+
+                // Add to dictionary
+                dictionary.Add(key, value);
+
+                // Reset
+                key = null;
+                value = null;
+            }
+
+            return dictionary;
+
+        }
 
         #region Methods
 
@@ -46,31 +74,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
-            Dictionary<object, object> dict = new Dictionary<object, object>();
-            object key = null;
-            object value = null;
-            foreach (SType member in Members)
-            {
-                // Odd members are keys
-                if (Members.IndexOf(member) % 2 == 1)
-                    key = member.ToObject();
-                else
-                    // Even members are values
-                    value = member.ToObject();
-
-                // Keep iterating till we have a pair
-                if (key == null || value == null)
-                    continue;
-
-                // Add to dictionary
-                dict.Add(key, value);
-                
-                // Reset
-                key = null;
-                value = null;
-            }
-
-            return dict;
+            return ToDictionary(Members, 1);
         }
 
         /// <summary>

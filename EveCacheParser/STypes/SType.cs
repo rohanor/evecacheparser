@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,7 +31,7 @@ namespace EveCacheParser.STypes
             DebugID = s_count++;
             s_type.Add(this);
 
-            Members = new Collection<SType>();
+            Members = new List<SType>();
             m_streamType = streamType;
         }
 
@@ -69,7 +68,7 @@ namespace EveCacheParser.STypes
         /// Gets or sets the members.
         /// </summary>
         /// <value>The members.</value>
-        internal Collection<SType> Members { get; private set; }
+        internal List<SType> Members { get; private set; }
 
         #endregion
 

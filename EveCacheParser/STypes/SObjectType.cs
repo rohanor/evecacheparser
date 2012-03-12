@@ -151,10 +151,7 @@ namespace EveCacheParser.STypes
             }
 
             if (IsCFilterRowset)
-            {
-                var result = Members.First().Members.First(member => member != Members.First().Members.First()).ToObject();
-                return result;
-            }
+                return SDictType.ToDictionary(Members.Where(member => member != Members.First()).ToList(), 0);
 
             if (IsCachedMethodCallResult)
                 return ((Tuple<object>)Members.First(member => member != Members.First()).ToObject()).Item1;
