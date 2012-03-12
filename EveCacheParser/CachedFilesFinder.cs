@@ -66,7 +66,7 @@ namespace EveCacheParser
         /// <param name="args">The args.</param>
         internal static void SetExcludeMethodsFilter(params string[] args)
         {
-            SetExcludeMethodsFilter(new List<string>(args));
+            SetExcludeMethodsFilter(args.ToList());
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace EveCacheParser
                 return;
             }
 
-            s_methodExcludeFilter = methods.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+            s_methodExcludeFilter.AddRange(methods.Where(x => !String.IsNullOrWhiteSpace(x)));
         }
 
         /// <summary>

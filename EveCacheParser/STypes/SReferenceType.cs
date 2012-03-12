@@ -1,6 +1,6 @@
 ﻿namespace EveCacheParser.STypes
 {
-    internal sealed class SReferenceType : SType
+    internal sealed class SReferenceType : SStringType
     {
         private readonly byte m_id;
 
