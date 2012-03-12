@@ -50,7 +50,7 @@ namespace EveCacheParser
         /// <param name="args">The args.</param>
         public static void SetExcludeMethodsFilter(params string[] args)
         {
-            CachedFilesFinder.SetExcludeMethodsFilter(new List<string>(args));
+            CachedFilesFinder.SetExcludeMethodsFilter(args);
         }
 
         /// <summary>

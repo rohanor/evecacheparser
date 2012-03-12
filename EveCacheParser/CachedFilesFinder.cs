@@ -18,7 +18,7 @@ namespace EveCacheParser
         /// <param name="args">The folders.</param>
         internal static void SetCachedFilesFolders(params string[] args)
         {
-            SetCachedFilesFolders(new List<string>(args));
+            SetCachedFilesFolders(args.ToList());
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace EveCacheParser
                 return;
             }
 
-            s_includedFolders = folders.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+            s_includedFolders.AddRange(folders.Where(x => !String.IsNullOrWhiteSpace(x)));
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace EveCacheParser
         /// <param name="args">The methods.</param>
         internal static void SetIncludeMethodsFilter(params string[] args)
         {
-            SetIncludeMethodsFilter(new List<string>(args));
+            SetIncludeMethodsFilter(args.ToList());
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace EveCacheParser
                 return;
             }
 
-            s_methodIncludeFilter = methods.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+            s_methodIncludeFilter.AddRange(methods.Where(x => !String.IsNullOrWhiteSpace(x)));
         }
 
         /// <summary>
