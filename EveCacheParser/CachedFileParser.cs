@@ -97,7 +97,7 @@ namespace EveCacheParser
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
-            return parser.ToObjects();
+            return !s_dumpStructure ? parser.ToObjects() : new KeyValuePair<Tuple<object>, Dictionary<object, object>>();
         }
 
         private KeyValuePair<Tuple<object>, Dictionary<object, object>> ToObjects()
@@ -415,16 +415,24 @@ namespace EveCacheParser
             SObjectType obj = new SObjectType();
             Parse(obj);
 
-            if (obj.IsDBRow)
+            if (obj.IsRowList || obj.IsCRowset || obj.IsDBRowDescriptor)
             {
-                SType row;
                 do
                 {
-                    row = GetObject();
+                    obj.AddMember(GetObject());
+                } while (!m_reader.IsDoubleMarker(m_reader.Buffer[m_reader.Position - 1]));
+            }
 
-                    // Null object is marker
-                    obj.AddMember(row);
-                } while (row != null);
+            if (obj.IsCFilterRowset)
+            {
+                // Check for single marker
+                if (GetObject() == null)
+                {
+                    do
+                    {
+                        obj.AddMember(GetObject());
+                    } while (!m_reader.IsDoubleMarker(m_reader.Buffer[m_reader.Position - 1]));
+                }
             }
 
             return obj;
