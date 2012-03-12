@@ -48,17 +48,29 @@ namespace EveCacheParser.STypes
         {
             Dictionary<object, object> dict = new Dictionary<object, object>();
             object key = null;
+            object value = null;
             foreach (SType member in Members)
             {
-                if (Members.IndexOf(member) % 2 == 0)
+                // Odd members are keys
+                if (Members.IndexOf(member) % 2 == 1)
                     key = member.ToObject();
+                else
+                    // Even members are values
+                    value = member.ToObject();
 
-                object value = member.ToObject();
+                // Keep iterating till we have a pair
+                if (key == null || value == null)
+                    continue;
 
+                // Add to dictionary
                 dict.Add(key, value);
+                
+                // Reset
+                key = null;
+                value = null;
             }
 
-            return null;
+            return dict;
         }
 
         /// <summary>

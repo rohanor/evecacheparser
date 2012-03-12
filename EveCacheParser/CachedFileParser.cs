@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -88,14 +89,24 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        internal static void Parse(FileInfo file)
+        internal static KeyValuePair<Tuple<object>, Dictionary<object, object>> Parse(FileInfo file)
         {
             Console.WriteLine("Parsing...");
 
             CachedFileReader cachedFile = new CachedFileReader(file);
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
-            //SType.DumpObjects();
+
+            return parser.ToObjects();
+        }
+
+        private KeyValuePair<Tuple<object>, Dictionary<object, object>> ToObjects()
+        {
+            Collection<SType> tupleTwoMembers = m_stream.Members.First().Members;
+            Tuple<object> key = tupleTwoMembers.First().ToObject() as Tuple<object>;
+            Dictionary<object, object> value = tupleTwoMembers.Last().ToObject() as Dictionary<object, object>;
+
+            return new KeyValuePair<Tuple<object>, Dictionary<object, object>>(key, value);
         }
 
         /// <summary>

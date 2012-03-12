@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace EveCacheParser
@@ -109,9 +110,9 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static void Parse(FileInfo file)
+        public static KeyValuePair<Tuple<object>, Dictionary<object, object>> Parse(FileInfo file)
         {
-            CachedFileParser.Parse(file);
+            return CachedFileParser.Parse(file);
         }
 
         #endregion

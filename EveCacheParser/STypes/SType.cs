@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,6 @@ namespace EveCacheParser.STypes
         private static readonly Dictionary<int, bool> s_typeConsumed = new Dictionary<int, bool>();
         private static readonly List<SType> s_type = new List<SType>();
         private static int s_count;
-        private static readonly List<object> s_object = new List<object>();
 
         #endregion
 
@@ -39,13 +39,6 @@ namespace EveCacheParser.STypes
 
         #endregion
 
-         internal static void DumpObjects()
-        {
-            foreach (SType sType in s_type)
-            {
-                s_object.Add(sType.ToObject());
-            }
-        }
 
         #region Properties
 

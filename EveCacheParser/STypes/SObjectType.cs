@@ -1,4 +1,9 @@
-﻿namespace EveCacheParser.STypes
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+
+namespace EveCacheParser.STypes
 {
     internal sealed class SObjectType : SType
     {
@@ -15,7 +20,34 @@
         #endregion
 
 
-        #region Properties
+        #region Internal Properties
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'DBRow'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'DBRow'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsDBRow
+        {
+            get { return IsRowList || IsCRowset || IsCFilterRowset || IsCIndexedRowset || IsRowDict; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'DBRowDescriptor'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'DBRowDescriptor'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsDBRowDescriptor
+        {
+            get { return Name == "blue.DBRowDescriptor"; }
+        }
+
+        #endregion
+
+
+        #region Private Properties
 
         private string Name
         {
@@ -31,17 +63,6 @@
 
                 return stringType != null ? stringType.Text : string.Empty;
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this object is a 'DBRow'.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this object is a 'DBRow'; otherwise, <c>false</c>.
-        /// </value>
-        internal bool IsDBRow
-        {
-            get { return IsRowList || IsCRowset || IsCFilterRowset || IsCIndexedRowset || IsRowDict; }
         }
 
         /// <summary>
@@ -100,14 +121,25 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether this object is a 'DBRowDescriptor'.
+        /// Gets a value indicating whether this object is a 'CachedMethodCallResult'.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this object is a 'DBRowDescriptor'; otherwise, <c>false</c>.
+        /// 	<c>true</c> if this object is a 'CachedMethodCallResult'; otherwise, <c>false</c>.
         /// </value>
-        internal bool IsDBRowDescriptor
+        private bool IsCachedMethodCallResult
         {
-            get { return Name == "blue.DBRowDescriptor"; }
+            get { return Name == "objectCaching.CachedMethodCallResult"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'CachedObject'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'CachedObject'; otherwise, <c>false</c>.
+        /// </value>
+        private bool IsCachedObject
+        {
+            get { return Name == "objectCaching.CachedObject"; }
         }
 
         #endregion
@@ -123,7 +155,26 @@
         /// </returns>
         internal override object ToObject()
         {
-            return null;
+            if (IsRowList || IsCRowset)
+            {
+                return Members.Where(member => member != Members.First()).Select(
+                    member => member.Members).SelectMany(obj => obj, (obj, type) => new { obj, type }).Where(
+                        obj => !(obj.type is SObjectType)).Select(
+                            obj => obj.type.ToObject()).ToList();
+            }
+
+            if (IsCachedMethodCallResult)
+                return ((Tuple<object>)Members.First(member => member != Members.First()).ToObject()).Item1;
+
+            if (IsDBRowDescriptor)
+                return null;
+
+            if (IsCachedObject)
+            {
+
+            }
+
+            return this.Clone();
         }
 
         /// <summary>

@@ -30,7 +30,7 @@
         /// </returns>
         internal override object ToObject()
         {
-            return null;
+            return "StreamData";
         }
 
         /// <summary>
