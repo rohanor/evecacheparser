@@ -43,6 +43,17 @@ namespace EveCacheParser.STypes
         }
 
         /// <summary>
+        /// Gets a value indicating whether this object is a 'RowDict'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'RowDict'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsRowDict
+        {
+            get { return Name == "dbutil.RowDict"; }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this object is a 'CRowset'.
         /// </summary>
         /// <value>
@@ -62,17 +73,6 @@ namespace EveCacheParser.STypes
         internal bool IsCFilterRowset
         {
             get { return Name == "dbutil.CFilterRowset"; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this object is a 'RowDict'.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this object is a 'RowDict'; otherwise, <c>false</c>.
-        /// </value>
-        internal bool IsRowDict
-        {
-            get { return Name == "dbutil.RowDict"; }
         }
 
         /// <summary>
@@ -105,6 +105,17 @@ namespace EveCacheParser.STypes
 
                 return stringType != null ? stringType.Text : string.Empty;
             }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'KeyVal'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'KeyVal'; otherwise, <c>false</c>.
+        /// </value>
+        private bool IsKeyVal
+        {
+            get { return Name == "util.KeyVal"; }
         }
 
         /// <summary>
@@ -150,16 +161,19 @@ namespace EveCacheParser.STypes
                             obj => obj.type.ToObject()).ToList();
             }
 
-            if (IsCFilterRowset)
+            if (IsCFilterRowset || IsRowDict || IsCIndexedRowset)
                 return SDictType.ToDictionary(Members.Where(member => member != Members.First()).ToList(), 0);
 
             if (IsCachedMethodCallResult)
                 return ((Tuple<object>)Members.First(member => member != Members.First()).ToObject()).Item1;
 
+            if (IsKeyVal)
+                return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
+
             if (IsDBRowDescriptor)
                 return null;
 
-            return this.Clone();
+            return Clone(); // 'Clone()' is used for debugging purposes, should be 'null' otherwise
         }
 
         /// <summary>

@@ -413,24 +413,31 @@ namespace EveCacheParser
         {
             SObjectType obj = new SObjectType();
             Parse(obj);
+            SType row;
 
             if (obj.IsRowList || obj.IsCRowset)
             {
                 do
                 {
-                    obj.AddMember(GetObject());
-                } while (!m_reader.IsDoubleMarker(m_reader.Buffer[m_reader.Position - 1]));
+                    row = GetObject();
+                    obj.AddMember(row);
+                } while (row != null); // Null object is marker
+
+                // Check for sequencial marker
+                if (GetObject() != null)
+                    throw new InvalidDataException("Marker was expected but not found");
             }
 
-            if (obj.IsCFilterRowset)
+            if (obj.IsCFilterRowset || obj.IsRowDict || obj.IsCIndexedRowset)
             {
                 // Check for single marker
                 if (GetObject() == null)
                 {
                     do
                     {
-                        obj.AddMember(GetObject());
-                    } while (!m_reader.IsDoubleMarker(m_reader.Buffer[m_reader.Position - 1]));
+                        row = GetObject();
+                        obj.AddMember(row);
+                    } while (row != null); // Null object is marker
                 }
             }
 
