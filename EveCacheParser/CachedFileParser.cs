@@ -104,8 +104,6 @@ namespace EveCacheParser
             IList<SType> tupleTwoMembers = m_stream.Members.First().Members;
             object key = tupleTwoMembers.First().ToObject();
             object value = tupleTwoMembers.Last().ToObject();
-            //Tuple<object> key = tupleTwoMembers.First().ToObject() as Tuple<object>;
-            //Dictionary<object, object> value = tupleTwoMembers.Last().ToObject() as Dictionary<object, object>;
 
             return new KeyValuePair<object, object>(key, value);
         }
