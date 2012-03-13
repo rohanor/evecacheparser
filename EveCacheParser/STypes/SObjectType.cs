@@ -86,6 +86,50 @@ namespace EveCacheParser.STypes
             get { return Name == "dbutil.CIndexedRowset"; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'KeyVal'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'KeyVal'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsKeyVal
+        {
+            get { return Name == "util.KeyVal"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'CachedMethodCallResult'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'CachedMethodCallResult'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsCachedMethodCallResult
+        {
+            get { return Name == "objectCaching.CachedMethodCallResult"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'CachedObject'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'CachedObject'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsCachedObject
+        {
+            get { return Name == "util.CachedObject"; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'CachedObject'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'CachedObject'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsObjectCachingCachedObject
+        {
+            get { return Name == "objectCaching.CachedObject"; }
+        }
+
         #endregion
 
 
@@ -105,39 +149,6 @@ namespace EveCacheParser.STypes
 
                 return stringType != null ? stringType.Text : string.Empty;
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this object is a 'KeyVal'.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this object is a 'KeyVal'; otherwise, <c>false</c>.
-        /// </value>
-        private bool IsKeyVal
-        {
-            get { return Name == "util.KeyVal"; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this object is a 'CachedMethodCallResult'.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this object is a 'CachedMethodCallResult'; otherwise, <c>false</c>.
-        /// </value>
-        private bool IsCachedMethodCallResult
-        {
-            get { return Name == "objectCaching.CachedMethodCallResult"; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this object is a 'CachedObject'.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this object is a 'CachedObject'; otherwise, <c>false</c>.
-        /// </value>
-        private bool IsCachedObject
-        {
-            get { return Name == "objectCaching.CachedObject"; }
         }
 
         #endregion
@@ -162,12 +173,15 @@ namespace EveCacheParser.STypes
             }
 
             if (IsCFilterRowset || IsRowDict || IsCIndexedRowset)
-                return SDictType.ToDictionary(Members.Where(member => member != Members.First()).ToList(), 0);
+                return ToDictionary(Members.Where(member => member != Members.First()).ToList(), 0);
+
+            if (IsKeyVal || IsCachedObject)
+                return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
 
             if (IsCachedMethodCallResult)
                 return ((Tuple<object>)Members.First(member => member != Members.First()).ToObject()).Item1;
-
-            if (IsKeyVal)
+            
+            if (IsObjectCachingCachedObject)
                 return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
 
             if (IsDBRowDescriptor)

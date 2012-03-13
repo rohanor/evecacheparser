@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -120,7 +121,7 @@ namespace EveCacheParser.STypes
         private static string DumpType(SType sType, int offset)
         {
             if (!sType.Members.Any())
-                return string.Empty;
+                return String.Empty;
 
             StringBuilder sb = new StringBuilder();
             foreach (SType type in sType.Members)
@@ -133,6 +134,36 @@ namespace EveCacheParser.STypes
             }
 
             return sb.ToString();
+        }
+
+        internal static Dictionary<object, object> ToDictionary(IList<SType> members, int sortCriteria)
+        {
+            Dictionary<object, object> dictionary = new Dictionary<object, object>();
+            object key = null;
+            object value = null;
+            foreach (SType member in members)
+            {
+                // Odd members are keys
+                if (members.IndexOf(member) % 2 == sortCriteria)
+                    key = member.ToObject();
+                else
+                    // Even members are values
+                    value = member.ToObject();
+
+                // Keep iterating till we have a pair
+                if (key == null || value == null)
+                    continue;
+
+                // Add to dictionary
+                dictionary.Add(key, value);
+
+                // Reset
+                key = null;
+                value = null;
+            }
+
+            return dictionary;
+
         }
 
         #endregion

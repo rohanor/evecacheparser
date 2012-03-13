@@ -110,7 +110,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public static KeyValuePair<Tuple<object>, Dictionary<object, object>> Parse(FileInfo file)
+        public static KeyValuePair<object, object> Parse(FileInfo file)
         {
             return CachedFileParser.Parse(file);
         }

@@ -88,7 +88,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        internal static KeyValuePair<Tuple<object>, Dictionary<object, object>> Parse(FileInfo file)
+        internal static KeyValuePair<object, object> Parse(FileInfo file)
         {
             Console.WriteLine("Parsing...");
 
@@ -96,16 +96,18 @@ namespace EveCacheParser
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
-            return !s_dumpStructure ? parser.ToObjects() : new KeyValuePair<Tuple<object>, Dictionary<object, object>>();
+            return !s_dumpStructure ? parser.ToObjects() : new KeyValuePair<object, object>();
         }
 
-        private KeyValuePair<Tuple<object>, Dictionary<object, object>> ToObjects()
+        private KeyValuePair<object, object> ToObjects()
         {
-            List<SType> tupleTwoMembers = m_stream.Members.First().Members;
-            Tuple<object> key = tupleTwoMembers.First().ToObject() as Tuple<object>;
-            Dictionary<object, object> value = tupleTwoMembers.Last().ToObject() as Dictionary<object, object>;
+            IList<SType> tupleTwoMembers = m_stream.Members.First().Members;
+            object key = tupleTwoMembers.First().ToObject();
+            object value = tupleTwoMembers.Last().ToObject();
+            //Tuple<object> key = tupleTwoMembers.First().ToObject() as Tuple<object>;
+            //Dictionary<object, object> value = tupleTwoMembers.Last().ToObject() as Dictionary<object, object>;
 
-            return new KeyValuePair<Tuple<object>, Dictionary<object, object>>(key, value);
+            return new KeyValuePair<object, object>(key, value);
         }
 
         /// <summary>
@@ -317,11 +319,6 @@ namespace EveCacheParser
                         Parse(sObject, length);
                         break;
                     }
-                case StreamType.ClassObject:
-                    sObject = new SObjectType();
-                    CheckShared(shared, sObject);
-                    Parse(sObject, 2);
-                    break;
                 case StreamType.SharedObj:
                     sObject = m_reader.GetSharedObj(m_reader.ReadLength() - 1);
                     break;
@@ -335,6 +332,7 @@ namespace EveCacheParser
                 case StreamType.BoolFalse:
                     sObject = new SBooleanType(0);
                     break;
+                case StreamType.ClassObject:
                 case StreamType.NewObj:
                 case StreamType.Object:
                     {
@@ -411,9 +409,17 @@ namespace EveCacheParser
         /// <returns></returns>
         private SType ParseObject()
         {
+            SType row;
             SObjectType obj = new SObjectType();
             Parse(obj);
-            SType row;
+
+            if (obj.IsCachedMethodCallResult || obj.IsCachedObject || obj.IsKeyVal)
+                obj.AddMember(GetObject());
+
+            if(obj.IsObjectCachingCachedObject)
+            {
+                obj.AddMember(GetObject());
+            }
 
             if (obj.IsRowList || obj.IsCRowset)
             {

@@ -45,8 +45,9 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
-            return new Tuple<object>(Members.Select(
+            var result = new Tuple<object>(Members.Select(
                 member => member.ToObject()).Where(member => member != null).ToList());
+            return result;
         }
 
         /// <summary>

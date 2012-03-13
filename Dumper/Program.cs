@@ -14,19 +14,19 @@ namespace Dumper
             //args = new[] { "-ascii" };
             //args = new[] { "-structure" };
             //Parser.SetIncludeMethodsFilter("GetOrders", "GetOldPriceHistory", "GetNewPriceHistory");
-            //Parser.SetIncludeMethodsFilter("GetOrders");
+            //Parser.SetIncludeMethodsFilter("GetOldPriceHistory");
             //Parser.SetIncludeMethodsFilter("GetBookmarks");
             //Parser.SetIncludeMethodsFilter("GetMarketGroups");
             //Parser.SetExcludeMethodsFilter("GetMarketGroups");
             //Parser.SetExcludeMethodsFilter("GetBookmarks", "GetSolarSystem");
             //Parser.SetCachedFilesFolders("CachedMethodCalls");
-            //Parser.SetCachedFilesFolders("CachedMethodCalls", "CachedObjects");
+            Parser.SetCachedFilesFolders("CachedObjects");
 
             //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
             int count = 0;
-            KeyValuePair<Tuple<object>, Dictionary<object, object>> result = new KeyValuePair<Tuple<object>, Dictionary<object, object>>();
+            KeyValuePair<object, object> result = new KeyValuePair<object, object>();
             IEnumerable<FileInfo> cachedFiles = Parser.GetMachoNetCachedFiles();
-            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "1c13.cache")*/)
+            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "522c.cache")*/)
             {
                 try
                 {
@@ -55,62 +55,71 @@ namespace Dumper
             Console.ReadLine();
         }
 
-        private static void CheckResult(KeyValuePair<Tuple<object>, Dictionary<object, object>> result)
+        private static void CheckResult(KeyValuePair<object, object> result)
         {
-            if (result.Key == null)
+            if (result.Key == null || result.Value == null)
             {
                 Console.WriteLine("Parsing failed: Yielded no result");
                 return;
             }
 
-            string id = ((List<object>)result.Key.Item1)[0] as string ??
-                        ((List<object>)((Tuple<object>)((List<object>)result.Key.Item1)[0]).Item1)[0] as string;
-
-            string method = ((List<object>)result.Key.Item1)[1].ToString();
             object value;
-            switch (id)
+            object id = result.Key as string ??
+                        ((List<object>)((Tuple<object>)result.Key).Item1)[0] as string ??
+                        ((List<object>)((Tuple<object>)((List<object>)((Tuple<object>)result.Key).Item1)[0]).Item1)[0] as string;
+
+            if (result.Value as Dictionary<object, object> == null)
+            {
+                value = ((Tuple<object>)((List<object>)result.Value)[0]).Item1;
+                return;
+            }
+
+            object method = ((List<object>)((Tuple<object>)result.Key).Item1)[1] as string;
+            switch ((string)id)
             {
                 case "marketProxy":
                     {
-                        switch (method)
+                        switch ((string)method)
                         {
                             case "GetMarketGroups":
                             case "GetRegionBest":
-                                value = (((Dictionary<object, object>)result.Value["lret"]).ToList())[0];
+                                value =
+                                    (((Dictionary<object, object>)((Dictionary<object, object>)result.Value)["lret"]).ToList())[0];
                                 break;
                             case "StartupCheck":
-                                value = result.Value["lret"];
+                                value = ((Dictionary<object, object>)result.Value)["lret"];
                                 break;
                             default:
-                                value = ((List<object>)result.Value["lret"])[0];
+                                value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
                                 break;
                         }
                     }
                     break;
                 case "stationSvc":
                     {
-                        switch (method)
+                        switch ((string)method)
                         {
                             case "GetStation":
-                                value = ((List<object>)result.Value["lret"])[0];
+                                value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
                                 break;
                             default:
-                                value = ((List<object>)((Tuple<object>)result.Value["lret"]).Item1)[0];
+                                value =
+                                    ((List<object>)((Tuple<object>)((Dictionary<object, object>)result.Value)["lret"]).Item1)[0];
                                 break;
                         }
                     }
                     break;
                 case "charMgr":
                     {
-                        switch (method)
+                        switch ((string)method)
                         {
                             case "GetCloneTypeID":
                             case "GetHomeStation":
                             case "GetImageServerLink":
-                                value = result.Value["lret"];
+                                value = ((Dictionary<object, object>)result.Value)["lret"];
                                 break;
                             default:
-                                value = ((List<object>)result.Value["lret"])[0];
+                                value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
                                 break;
                         }
                     }
@@ -119,18 +128,18 @@ namespace Dumper
                 case "beyonce":
                 case "corporationSvc":
                 case "bookmark":
-                    value = ((List<object>)((Tuple<object>)result.Value["lret"]).Item1)[0];
+                    value = ((List<object>)((Tuple<object>)((Dictionary<object, object>)result.Value)["lret"]).Item1)[0];
                     break;
                 case "agentMgr":
                 case "corpStationMgr":
-                    value = result.Value["lret"];
+                    value = ((Dictionary<object, object>)result.Value)["lret"];
                     break;
                 case "dogma":
                 case "facWarMgr":
-                    value = (((Dictionary<object, object>)result.Value["lret"]).ToList())[0];
+                    value = (((Dictionary<object, object>)((Dictionary<object, object>)result.Value)["lret"]).ToList())[0];
                     break;
                 default:
-                    value = ((List<object>)result.Value["lret"])[0];
+                    value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
                     break;
             }
         }
