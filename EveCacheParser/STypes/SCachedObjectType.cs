@@ -8,6 +8,8 @@ namespace EveCacheParser.STypes
 {
     internal class SCachedObjectType : SType
     {
+        #region Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SCachedObjectType"/> class.
         /// </summary>
@@ -27,6 +29,8 @@ namespace EveCacheParser.STypes
 
             //GetCachedObject();
         }
+
+        #endregion
 
 
         #region Properties
@@ -87,23 +91,14 @@ namespace EveCacheParser.STypes
 
             if (RawData is SNoneType)
                 throw new InvalidDataException("No object?!");
-            if (IsCompressed)
-            {
-                //byte[] data = Decompress();
-                //CachedFileReader reader = new CachedFileReader(data);
-                //CachedFileParser parser = new CachedFileParser(reader);
-                //parser.Parse();
-                //Object = parser.m_stream;
-                Object = new SObjectType().ToObject();
-            }
-            else
-            {
-                byte[] data = (byte[])RawData;
-                CachedFileReader reader = new CachedFileReader(data, data.Length);
-                CachedFileParser parser = new CachedFileParser(reader);
-                parser.Parse();
-                Object = parser.m_stream.Members.Select(member => member.ToObject()).ToList();
-            }
+
+            byte[] data = IsCompressed ? Decompress() : (byte[])RawData;
+
+            CachedFileReader reader = new CachedFileReader(data, data.Length);
+            CachedFileParser parser = new CachedFileParser(reader);
+            parser.Parse();
+            Object = parser.Stream.Members.Select(member => member.ToObject()).ToList();
+
             RawData = new SNoneType().ToObject();
         }
 

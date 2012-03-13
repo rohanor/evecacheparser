@@ -11,8 +11,9 @@ namespace EveCacheParser
     {
         #region Fields
 
+        internal readonly SStreamType Stream;
+
         private readonly CachedFileReader m_reader;
-        internal readonly SStreamType m_stream;
         private static bool s_dumpStructure;
         private static bool s_cachedObject;
 
@@ -28,7 +29,7 @@ namespace EveCacheParser
         internal CachedFileParser(CachedFileReader reader)
         {
             m_reader = reader;
-            m_stream = new SStreamType(StreamType.StreamStart);
+            Stream = new SStreamType(StreamType.StreamStart);
         }
 
         #endregion
@@ -103,7 +104,7 @@ namespace EveCacheParser
 
         private KeyValuePair<object, object> ToObjects()
         {
-            IList<SType> tupleTwoMembers = m_stream.Members.First().Members;
+            IList<SType> tupleTwoMembers = Stream.Members.First().Members;
             object key = tupleTwoMembers.First().ToObject();
             object value = tupleTwoMembers.Last().ToObject();
 
@@ -196,7 +197,7 @@ namespace EveCacheParser
         {
             while (!m_reader.AtEnd)
             {
-                Parse(m_stream);
+                Parse(Stream);
             }
         }
 
@@ -467,7 +468,7 @@ namespace EveCacheParser
                 CachedFileReader subReader = new CachedFileReader(m_reader, length);
                 CachedFileParser subParser = new CachedFileParser(subReader);
                 subParser.Parse();
-                subStream.AddMember(subParser.m_stream.Clone());
+                subStream.AddMember(subParser.Stream.Clone());
             }
 
             if (s_cachedObject)
