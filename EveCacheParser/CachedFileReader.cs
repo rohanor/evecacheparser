@@ -67,6 +67,21 @@ namespace EveCacheParser
             EndOfObjectsData = length - m_shareSkip;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
+        /// </summary>
+        /// <param name="buffer">The source.</param>
+        /// <param name="length">The length.</param>
+        internal CachedFileReader(byte[] buffer, int length)
+        {
+            Buffer = new byte[length];
+            Array.Copy(buffer, Buffer, length);
+
+            SecurityCheck();
+
+            EndOfObjectsData = length - m_shareSkip;
+        }
+
         #endregion
 
 

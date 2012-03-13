@@ -12,8 +12,9 @@ namespace EveCacheParser
         #region Fields
 
         private readonly CachedFileReader m_reader;
-        private readonly SStreamType m_stream;
+        internal readonly SStreamType m_stream;
         private static bool s_dumpStructure;
+        private static bool s_cachedObject;
 
         #endregion
 
@@ -24,8 +25,8 @@ namespace EveCacheParser
         /// Initializes a new instance of the <see cref="CachedFileParser"/> class.
         /// </summary>
         /// <param name="reader">The reader.</param>
-        private CachedFileParser(CachedFileReader reader)
-        {                    
+        internal CachedFileParser(CachedFileReader reader)
+        {
             m_reader = reader;
             m_stream = new SStreamType(StreamType.StreamStart);
         }
@@ -47,6 +48,7 @@ namespace EveCacheParser
             SType.Reset();
             Parse(file);
             SType.DumpTypes(file.Name);
+            s_dumpStructure = false;
         }
 
 
@@ -190,7 +192,7 @@ namespace EveCacheParser
         /// <summary>
         /// Parses the data of a stream.
         /// </summary>
-        private void Parse()
+        internal void Parse()
         {
             while (!m_reader.AtEnd)
             {
@@ -407,6 +409,8 @@ namespace EveCacheParser
         /// <returns></returns>
         private SType ParseObject()
         {
+            s_cachedObject = false;
+
             SType row;
             SObjectType obj = new SObjectType();
             Parse(obj);
@@ -414,9 +418,10 @@ namespace EveCacheParser
             if (obj.IsCachedMethodCallResult || obj.IsCachedObject || obj.IsKeyVal)
                 obj.AddMember(GetObject());
 
-            if(obj.IsObjectCachingCachedObject)
+            if (obj.IsObjectCachingCachedObject)
             {
-                obj.AddMember(GetObject());
+                s_cachedObject = true;
+                obj.AddMember(new SCachedObjectType(GetObject()));
             }
 
             if (obj.IsRowList || obj.IsCRowset)
@@ -452,9 +457,9 @@ namespace EveCacheParser
         /// Parses a sub stream.
         /// </summary>
         /// <returns></returns>
-        private SStreamType ParseSubStream()
+        private SType ParseSubStream()
         {
-            SStreamType subStream = new SStreamType(StreamType.SubStream);
+            SType subStream = new SStreamType(StreamType.SubStream);
             int length = m_reader.ReadLength();
 
             if (s_dumpStructure)
@@ -464,6 +469,9 @@ namespace EveCacheParser
                 subParser.Parse();
                 subStream.AddMember(subParser.m_stream.Clone());
             }
+
+            if (s_cachedObject)
+                return new SStringType(m_reader.ReadString(length));
 
             m_reader.Seek(length);
 
@@ -573,7 +581,8 @@ namespace EveCacheParser
                             if (pass == 4)
                                 obj = new SByteType(reader.ReadByte());
                             break;
-                        case DBTypes.Bytes: // String types
+                        case DBTypes.Utf8: // String types
+                        case DBTypes.Bytes:
                         case DBTypes.String:
                         case DBTypes.WideString:
                             if (pass == 6)
@@ -640,7 +649,8 @@ namespace EveCacheParser
                         break;
                     case DBTypes.Empty:
                         continue;
-                    case DBTypes.Bytes: // String types
+                    case DBTypes.Utf8: // String types
+                    case DBTypes.Bytes:
                     case DBTypes.String:
                     case DBTypes.WideString:
                         continue;
@@ -663,5 +673,6 @@ namespace EveCacheParser
         }
 
         #endregion
+
     }
 }
