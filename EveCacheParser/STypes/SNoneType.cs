@@ -25,7 +25,7 @@
         /// </returns>
         internal override object ToObject()
         {
-            return "None";
+            return null;
         }
 
         /// <summary>

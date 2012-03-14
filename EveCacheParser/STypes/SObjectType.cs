@@ -172,7 +172,7 @@ namespace EveCacheParser.STypes
             }
 
             if (IsCFilterRowset || IsRowDict || IsCIndexedRowset)
-                return ToDictionary(Members.Where(member => member != Members.First()).ToList(), 0);
+                return ToDictionary(Members.Where(member => member != Members.First()).ToList());
 
             if (IsKeyVal || IsCachedObject || IsCachedMethodCallResult)
                 return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();

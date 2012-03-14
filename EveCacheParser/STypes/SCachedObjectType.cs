@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
@@ -13,21 +13,19 @@ namespace EveCacheParser.STypes
         /// <summary>
         /// Initializes a new instance of the <see cref="SCachedObjectType"/> class.
         /// </summary>
-        /// <param name="obj">The obj.</param>
+        /// <param name="obj">The object.</param>
         public SCachedObjectType(SType obj)
             : base(StreamType.ClassObject)
         {
-            var objects = obj.Members.ToList();
+            List<SType> objects = obj.Members.ToList();
 
             Version = objects[0].ToObject();
             Object = objects[1].ToObject();
             NodeID = objects[2].ToObject();
-            IsCompressed = Convert.ToBoolean(objects[3].ToObject());
-            RawData = Encoding.ASCII.GetBytes(objects[4].Text);
-            Shared = Convert.ToBoolean(objects[5].ToObject());
+            Shared = Convert.ToBoolean(objects[3].ToObject());
+            RawData = objects[4].ToObject();
+            IsCompressed = Convert.ToBoolean(objects[5].ToObject());
             ObjectID = objects[6].ToObject();
-
-            //GetCachedObject();
         }
 
         #endregion
@@ -84,42 +82,35 @@ namespace EveCacheParser.STypes
 
         #region Methods
 
-        private void GetCachedObject()
+        /// <summary>
+        /// Gets the cached object.
+        /// </summary>
+        /// <returns></returns>
+        private object GetCachedObject()
         {
-            if (!(Object is SNoneType))
-                return;
+            if (Object == null)
+            {
+                if (RawData == null)
+                    throw new InvalidDataException("No object?!");
 
-            if (RawData is SNoneType)
-                throw new InvalidDataException("No object?!");
+                byte[] rawData = Encoding.ASCII.GetBytes((string)RawData);
+                byte[] data = IsCompressed ? Decompress(rawData) : rawData;
 
-            byte[] data = IsCompressed ? Decompress() : (byte[])RawData;
+                Object = CachedFileParser.Parse(data);
+                RawData = null;
+            }
 
-            CachedFileReader reader = new CachedFileReader(data, data.Length);
-            CachedFileParser parser = new CachedFileParser(reader);
-            parser.Parse();
-            Object = parser.Stream.Members.Select(member => member.ToObject()).ToList();
-
-            RawData = new SNoneType().ToObject();
+            return Object;
         }
 
-        private byte[] Decompress()
+        /// <summary>
+        /// Decompresses the specified raw data.
+        /// </summary>
+        /// <param name="rawData">The raw data.</param>
+        /// <returns></returns>
+        private static byte[] Decompress(byte[] rawData)
         {
-            byte[] compressedData = (byte[])RawData;
-            byte[] decompressedData = new byte[4096];
-            using (MemoryStream outMemoryStream = new MemoryStream())
-            using (DeflateStream outZStream = new DeflateStream(outMemoryStream, CompressionMode.Decompress))
-            using (Stream inMemoryStream = new MemoryStream(compressedData))
-            {
-                byte[] buffer = new byte[4096];
-                int len;
-                while ((len = inMemoryStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    outZStream.Read(buffer, 0, len);
-                }
-                outZStream.Flush();
-                decompressedData = outMemoryStream.ToArray();
-            }
-            return decompressedData;
+            throw new NotImplementedException("Need to find a way to decompress Python zlib compressed data");
         }
 
         /// <summary>
@@ -130,7 +121,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
-            return Clone();
+            return GetCachedObject();
         }
 
         /// <summary>

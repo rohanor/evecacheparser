@@ -11,9 +11,9 @@ namespace EveCacheParser
     {
         #region Fields
 
-        internal readonly SStreamType Stream;
 
         private readonly CachedFileReader m_reader;
+        private readonly SStreamType m_stream;
         private static bool s_dumpStructure;
         private static bool s_cachedObject;
 
@@ -26,10 +26,10 @@ namespace EveCacheParser
         /// Initializes a new instance of the <see cref="CachedFileParser"/> class.
         /// </summary>
         /// <param name="reader">The reader.</param>
-        internal CachedFileParser(CachedFileReader reader)
+        private CachedFileParser(CachedFileReader reader)
         {
             m_reader = reader;
-            Stream = new SStreamType(StreamType.StreamStart);
+            m_stream = new SStreamType(StreamType.StreamStart);
         }
 
         #endregion
@@ -87,6 +87,20 @@ namespace EveCacheParser
         }
 
         /// <summary>
+        /// Parses the specified data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        internal static object Parse(byte[] data)
+        {
+            CachedFileReader reader = new CachedFileReader(data, data.Length);
+            CachedFileParser parser = new CachedFileParser(reader);
+            parser.Parse();
+
+            return parser.m_stream.Members.Select(member => member.ToObject()).ToList();
+        }
+
+        /// <summary>
         /// Parses the specified file.
         /// </summary>
         /// <param name="file">The file.</param>
@@ -102,9 +116,13 @@ namespace EveCacheParser
             return !s_dumpStructure ? parser.ToObjects() : new KeyValuePair<object, object>();
         }
 
+        /// <summary>
+        /// Converts the stream into objects.
+        /// </summary>
+        /// <returns></returns>
         private KeyValuePair<object, object> ToObjects()
         {
-            IList<SType> tupleTwoMembers = Stream.Members.First().Members;
+            IList<SType> tupleTwoMembers = m_stream.Members.First().Members;
             object key = tupleTwoMembers.First().ToObject();
             object value = tupleTwoMembers.Last().ToObject();
 
@@ -193,11 +211,11 @@ namespace EveCacheParser
         /// <summary>
         /// Parses the data of a stream.
         /// </summary>
-        internal void Parse()
+        private void Parse()
         {
             while (!m_reader.AtEnd)
             {
-                Parse(Stream);
+                Parse(m_stream);
             }
         }
 
@@ -468,7 +486,7 @@ namespace EveCacheParser
                 CachedFileReader subReader = new CachedFileReader(m_reader, length);
                 CachedFileParser subParser = new CachedFileParser(subReader);
                 subParser.Parse();
-                subStream.AddMember(subParser.Stream.Clone());
+                subStream.AddMember(subParser.m_stream.Clone());
             }
 
             if (s_cachedObject)

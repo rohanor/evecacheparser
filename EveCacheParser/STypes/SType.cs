@@ -136,18 +136,18 @@ namespace EveCacheParser.STypes
             return sb.ToString();
         }
 
-        internal static Dictionary<object, object> ToDictionary(IList<SType> members, int sortCriteria)
+        internal static Dictionary<object, object> ToDictionary(IList<SType> members, int sortCriteria = 0)
         {
             Dictionary<object, object> dictionary = new Dictionary<object, object>();
             object key = null;
             object value = null;
             foreach (SType member in members)
             {
-                // Odd members are keys
+                // 'sortCriteria' determines which members are keys
                 if (members.IndexOf(member) % 2 == sortCriteria)
                     key = member.ToObject();
                 else
-                    // Even members are values
+                    // 'sortCriteria' determines which members are values
                     value = member.ToObject();
 
                 // Keep iterating till we have a pair
