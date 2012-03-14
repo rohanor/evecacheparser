@@ -26,7 +26,7 @@ namespace Dumper
             int count = 0;
             KeyValuePair<object, object> result = new KeyValuePair<object, object>();
             IEnumerable<FileInfo> cachedFiles = Parser.GetMachoNetCachedFiles();
-            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "6c3b.cache")*/)
+            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "c173.cache")*/)
             {
                 try
                 {
@@ -70,7 +70,7 @@ namespace Dumper
 
             if (result.Value as Dictionary<object, object> == null)
             {
-                value = ((List<object>)result.Value)[0];
+                value = ((List<object>)Parser.GetObject(((List<object>)result.Value)[0]))[0];
                 return;
             }
 
