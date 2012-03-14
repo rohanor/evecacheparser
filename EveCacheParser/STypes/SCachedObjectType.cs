@@ -86,7 +86,7 @@ namespace EveCacheParser.STypes
         /// Gets the cached object.
         /// </summary>
         /// <returns></returns>
-        private object GetCachedObject()
+        internal object GetCachedObject()
         {
             if (Object == null)
             {
@@ -121,7 +121,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         internal override object ToObject()
         {
-            return GetCachedObject();
+            return Clone();
         }
 
         /// <summary>

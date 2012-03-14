@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
@@ -112,6 +113,17 @@ namespace EveCacheParser
         public static KeyValuePair<object, object> Parse(FileInfo file)
         {
             return CachedFileParser.Parse(file);
+        }
+
+        /// <summary>
+        /// Gets the object of a cached object.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns></returns>
+        public static object GetObject(object obj)
+        {
+            SCachedObjectType cachedObject = obj as SCachedObjectType;
+            return cachedObject == null ? null : cachedObject.GetCachedObject();
         }
 
         #endregion
