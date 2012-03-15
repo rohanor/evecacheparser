@@ -74,7 +74,6 @@ namespace EveCacheParser
         UInt = 19,
         Long = 20,
         ULong = 21,
-        Utf8 = 63,
         Filetime = 64,
         Guid = 72,
         Bytes = 128,

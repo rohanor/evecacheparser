@@ -600,8 +600,7 @@ namespace EveCacheParser
                             if (pass == 4)
                                 obj = new SByteType(reader.ReadByte());
                             break;
-                        case DBTypes.Utf8: // String types
-                        case DBTypes.Bytes:
+                        case DBTypes.Bytes: // String types
                         case DBTypes.String:
                         case DBTypes.WideString:
                             if (pass == 6)
@@ -668,8 +667,7 @@ namespace EveCacheParser
                         break;
                     case DBTypes.Empty:
                         continue;
-                    case DBTypes.Utf8: // String types
-                    case DBTypes.Bytes:
+                    case DBTypes.Bytes: // String types
                     case DBTypes.String:
                     case DBTypes.WideString:
                         continue;

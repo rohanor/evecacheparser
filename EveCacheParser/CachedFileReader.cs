@@ -196,7 +196,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal string ReadString(int length)
         {
-            return Encoding.ASCII.GetString(ReadBytes(length));
+            return Encoding.Default.GetString(ReadBytes(length));
         }
 
         /// <summary>

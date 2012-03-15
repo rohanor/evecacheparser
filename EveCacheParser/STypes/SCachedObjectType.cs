@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
@@ -93,7 +94,7 @@ namespace EveCacheParser.STypes
                 if (RawData == null)
                     throw new InvalidDataException("No object?!");
 
-                byte[] rawData = Encoding.ASCII.GetBytes((string)RawData);
+                byte[] rawData = Encoding.Default.GetBytes((string)RawData);
                 byte[] data = IsCompressed ? Decompress(rawData) : rawData;
 
                 Object = CachedFileParser.Parse(data);
@@ -110,9 +111,40 @@ namespace EveCacheParser.STypes
         /// <returns></returns>
         private static byte[] Decompress(byte[] rawData)
         {
-            throw new NotImplementedException("Need to find a way to decompress Python zlib compressed data");
+            byte[] decompressedData;
+
+            // The 'rawData' are actually data compressed with zlib ("BEST_SPEED" compression)
+            // The following code lines remove the need of 'zlib' usage,
+            // because 'zlib' actually uses the same algorith as 'DeflateStream'
+            // To make the data compatible for 'DeflateStream', we only have to remove
+            // the four last bytes which are the adler32 checksum and
+            // the two first bytes which are the zlib header
+            byte[] choppedRawData = new byte[(rawData.Length - 4)];
+            Array.Copy(rawData, 0, choppedRawData, 0, choppedRawData.Length);
+            choppedRawData = choppedRawData.Skip(2).ToArray();
+
+            // Decompress the data
+            using (MemoryStream inStream = new MemoryStream(choppedRawData))
+            using (MemoryStream outStream = new MemoryStream())
+            using (DeflateStream outZStream = new DeflateStream(inStream, CompressionMode.Decompress))
+            {
+                outZStream.CopyTo(outStream);
+                decompressedData = outStream.ToArray();
+            }
+
+            return decompressedData;
         }
 
+        public static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[2000];
+            int len;
+            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, len);
+            }
+            output.Flush();
+        }
         /// <summary>
         /// Returns a <see cref="System.Object"/> that represents this instance.
         /// </summary>
