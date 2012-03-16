@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Globalization;
+
+namespace EveCacheParser.STypes
 {
     internal sealed class SIntType : SLongType
     {
@@ -46,7 +48,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SIntType '{0}'>", Value);
+            return string.Format(CultureInfo.InvariantCulture, "<SIntType '{0}'>", Value);
         }
 
         #endregion

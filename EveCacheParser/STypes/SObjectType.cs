@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 namespace EveCacheParser.STypes
@@ -209,7 +210,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SObjectType '{0}' [{1:X4}]>", Name, DebugID);
+            return string.Format(CultureInfo.InvariantCulture, "<SObjectType '{0}' [{1:X4}]>", Name, DebugID);
         }
 
         #endregion

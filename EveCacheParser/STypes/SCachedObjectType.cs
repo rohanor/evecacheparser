@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -23,9 +24,9 @@ namespace EveCacheParser.STypes
             Version = objects[0].ToObject();
             Object = objects[1].ToObject();
             NodeID = objects[2].ToObject();
-            Shared = Convert.ToBoolean(objects[3].ToObject());
+            Shared = Convert.ToBoolean(objects[3].ToObject(), CultureInfo.InvariantCulture);
             RawData = objects[4].ToObject();
-            IsCompressed = Convert.ToBoolean(objects[5].ToObject());
+            IsCompressed = Convert.ToBoolean(objects[5].ToObject(), CultureInfo.InvariantCulture);
             ObjectID = objects[6].ToObject();
         }
 

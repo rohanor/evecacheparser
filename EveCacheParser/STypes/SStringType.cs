@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Globalization;
+
+namespace EveCacheParser.STypes
 {
     internal class SStringType : SType
     {
@@ -56,7 +58,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SStringType '{0}'>", Text);
+            return string.Format(CultureInfo.InvariantCulture, "<SStringType '{0}'>", Text);
         }
 
         #endregion

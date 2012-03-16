@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace EveCacheParser.STypes
 {
@@ -30,7 +31,7 @@ namespace EveCacheParser.STypes
         internal override void AddMember(SType type)
         {
             if (Members.Count > m_length)
-                throw new IndexOutOfRangeException("Members exceed collection capacity");
+                throw new ParserException("Members exceed collection capacity");
 
             base.AddMember(type);
         }
@@ -63,7 +64,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SDictType [{0}]>", m_length);
+            return string.Format(CultureInfo.InvariantCulture, "<SDictType [{0}]>", m_length);
         }
 
         #endregion Methods

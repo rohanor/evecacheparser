@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -57,7 +58,7 @@ namespace EveCacheParser
         /// Reads the specified file and shows it in an ASCII format.
         /// </summary>
         /// <param name="file">The file.</param>
-        internal static void ShowAsASCII(FileInfo file)
+        internal static void ShowAsAscii(FileInfo file)
         {
             Console.WriteLine("Converting to ASCII...");
 
@@ -400,13 +401,14 @@ namespace EveCacheParser
                     CheckShared(shared, sObject);
                     break;
                 default:
-                    throw new NotImplementedException(
-                        String.Format("Can't identify type {0:x2} at position {1:x2} [{1}] and length {2}",
+                    throw new ParserException(
+                        String.Format(CultureInfo.InvariantCulture,
+                                      "Can't identify type {0:x2} at position {1:x2} [{1}] and length {2}",
                                       type, m_reader.Position, m_reader.Length));
             }
 
             if (sObject == null && type != (byte)StreamType.Marker)
-                throw new NullReferenceException("An object could not be created");
+                throw new ParserException("An object could not be created");
 
             return sObject;
         }
@@ -453,7 +455,7 @@ namespace EveCacheParser
 
                 // Check for sequencial marker
                 if (GetObject() != null)
-                    throw new InvalidDataException("Marker was expected but not found");
+                    throw new ParserException("Marker was expected but not found");
             }
 
             if (obj.IsCFilterRowset || obj.IsRowDict || obj.IsCIndexedRowset)
@@ -506,10 +508,10 @@ namespace EveCacheParser
             SObjectType header = GetObject() as SObjectType;
 
             if (header == null)
-                throw new NullReferenceException("DBRow header not found");
+                throw new ParserException("DBRow header not found");
 
             if (!header.IsDBRowDescriptor)
-                throw new FormatException("Bad DBRow descriptor name");
+                throw new ParserException("Bad DBRow descriptor name");
 
             IEnumerable<STupleType> fields = header.Members.First().Members.Last().Members.First().Members.Cast<STupleType>();
             if (!fields.Any())
@@ -607,7 +609,7 @@ namespace EveCacheParser
                                 obj = GetObject();
                             break;
                         default:
-                            throw new NotImplementedException("Unhandled db column type: " + dbType);
+                            throw new ParserException("Unhandled db column type: " + dbType);
                     }
 
                     if (obj == null)
@@ -672,7 +674,7 @@ namespace EveCacheParser
                     case DBTypes.WideString:
                         continue;
                     default:
-                        throw new NotImplementedException("Unhandled DB row type " + dbType);
+                        throw new ParserException("Unhandled DB row type " + dbType);
                 }
 
                 if (dbType != DBTypes.Empty)

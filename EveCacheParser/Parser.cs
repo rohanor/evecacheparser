@@ -135,9 +135,9 @@ namespace EveCacheParser
         /// Reads the specified file and shows it in an ASCII format.
         /// </summary>
         /// <param name="file">The file.</param>
-        public static void ShowAsASCII(FileInfo file)
+        public static void ShowAsAscii(FileInfo file)
         {
-            CachedFileParser.ShowAsASCII(file);
+            CachedFileParser.ShowAsAscii(file);
         }
 
         /// <summary>
@@ -153,11 +153,11 @@ namespace EveCacheParser
         /// <summary>
         /// Gets the object of a cached object.
         /// </summary>
-        /// <param name="obj">The object.</param>
+        /// <param name="value">The object.</param>
         /// <returns></returns>
-        public static object GetObject(object obj)
+        public static object GetObject(object value)
         {
-            SCachedObjectType cachedObject = obj as SCachedObjectType;
+            SCachedObjectType cachedObject = value as SCachedObjectType;
             return cachedObject == null ? null : cachedObject.GetCachedObject();
         }
 

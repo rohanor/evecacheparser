@@ -31,7 +31,7 @@ namespace Dumper
                 {
                     Console.WriteLine("Processing file: {0}", cachedFile.Name);
                     if (args.Any() && args.First() == "-ascii")
-                        Parser.ShowAsASCII(cachedFile);
+                        Parser.ShowAsAscii(cachedFile);
                     else if (args.Any() && args.First() == "-structure")
                         Parser.DumpStructure(cachedFile);
                     else
@@ -43,7 +43,7 @@ namespace Dumper
                     count++;
                     Console.WriteLine("Parsing succeeded");
                 }
-                catch (Exception ex)
+                catch (ParserException ex)
                 {
                     Console.WriteLine("Parsing failed: {0}", ex.Message);
                 }

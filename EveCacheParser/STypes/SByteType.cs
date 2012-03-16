@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Globalization;
+
+namespace EveCacheParser.STypes
 {
     internal sealed class SByteType : SLongType
     {
@@ -47,7 +49,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SByteType '{0}'>", Value);
+            return string.Format(CultureInfo.InvariantCulture, "<SByteType '{0}'>", Value);
         }
 
         #endregion

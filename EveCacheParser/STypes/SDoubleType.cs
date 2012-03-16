@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Globalization;
+
+namespace EveCacheParser.STypes
 {
     internal sealed class SDoubleType : SType
     {
@@ -47,7 +49,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SDoubleType '{0}'>", DoubleValue);
+            return string.Format(CultureInfo.InvariantCulture, "<SDoubleType '{0}'>", DoubleValue);
         }
 
         #endregion

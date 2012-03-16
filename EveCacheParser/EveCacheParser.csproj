@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <DebugSymbols>true</DebugSymbols>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,7 +43,9 @@
     <Compile Include="CachedFileParser.cs" />
     <Compile Include="CachedFileReader.cs" />
     <Compile Include="CachedFilesFinder.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="ParserException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\AssemblyInfo.template.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

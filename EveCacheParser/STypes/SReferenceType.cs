@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Globalization;
+
+namespace EveCacheParser.STypes
 {
     internal sealed class SReferenceType : SStringType
     {
@@ -54,7 +56,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SReferenceType ID: {0} '{1}'>", m_id, Text);
+            return string.Format(CultureInfo.InvariantCulture, "<SReferenceType ID: {0} '{1}'>", m_id, Text);
         }
 
         #endregion

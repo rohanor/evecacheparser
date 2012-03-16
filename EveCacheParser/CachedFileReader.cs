@@ -272,7 +272,7 @@ namespace EveCacheParser
             if (shared)
             {
                 if (m_sharePosition >= m_sharedMap.Length)
-                    throw new IndexOutOfRangeException("shareid out of range");
+                    throw new ParserException("shareid out of range");
 
                 id = m_sharedMap[m_sharePosition++];
             }
@@ -300,18 +300,18 @@ namespace EveCacheParser
         internal void AddSharedObj(SType obj)
         {
             if (m_sharedMap == null)
-                throw new NullReferenceException("sharedMap not initialized");
+                throw new ParserException("sharedMap not initialized");
 
             if (m_sharedObj == null)
-                throw new NullReferenceException("sharedObj not initialized");
+                throw new ParserException("sharedObj not initialized");
 
             if (m_sharePosition >= m_sharedMap.Length)
-                throw new IndexOutOfRangeException("sharePosition out of range");
+                throw new ParserException("sharePosition out of range");
 
             int sharedId = m_sharedMap[m_sharePosition++] - 1;
 
             if (sharedId >= m_sharedMap.Length)
-                throw new IndexOutOfRangeException("shareid out of range");
+                throw new ParserException("shareid out of range");
 
             m_sharedObj[sharedId] = obj.Clone();
         }
@@ -324,7 +324,7 @@ namespace EveCacheParser
         internal SType GetSharedObj(int id)
         {
             if (m_sharedObj[id] == null)
-                throw new NullReferenceException("No shared object at position " + id);
+                throw new ParserException("No shared object at position " + id);
 
             return m_sharedObj[id].Clone();
         }
@@ -348,7 +348,7 @@ namespace EveCacheParser
                     Position = Length - offset;
                     break;
                 default:
-                    throw new IOException("Invalid origin");
+                    throw new ParserException("Invalid origin");
             }
         }
 
@@ -389,7 +389,7 @@ namespace EveCacheParser
 
             // Security check #1
             if (Position + m_shareSkip > Length)
-                throw new EndOfStreamException();
+                throw new ParserException("Not enough room in stream for map");
 
             // Store the position to return to
             int positionTemp = Position;
@@ -408,7 +408,7 @@ namespace EveCacheParser
             for (int i = 0; i < sharedMapsize; i++)
             {
                 if ((m_sharedMap[i] > sharedMapsize) || (m_sharedMap[i] < 1))
-                    throw new IndexOutOfRangeException();
+                    throw new ParserException("Bogus map data in stream");
             }
 
             // Create the shared objects table
@@ -454,7 +454,7 @@ namespace EveCacheParser
             if (Position + length <= Length)
                 return;
 
-            throw new EndOfStreamException("Not enough data");
+            throw new ParserException("Not enough data");
         }
 
 

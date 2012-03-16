@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace EveCacheParser.STypes
 {
@@ -49,7 +50,7 @@ namespace EveCacheParser.STypes
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SBooleanType '{0}'>", Boolean);
+            return string.Format(CultureInfo.InvariantCulture, "<SBooleanType '{0}'>", Boolean);
         }
 
         #endregion

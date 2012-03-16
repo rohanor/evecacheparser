@@ -1,4 +1,6 @@
-﻿namespace EveCacheParser.STypes
+﻿using System.Globalization;
+
+namespace EveCacheParser.STypes
 {
     internal sealed class SIdentType : SStringType
     {
@@ -36,7 +38,7 @@
         /// </returns>
         public override string ToString()
         {
-            return string.Format("<SIdentType '{0}'>", Text);
+            return string.Format(CultureInfo.InvariantCulture, "<SIdentType '{0}'>", Text);
         }
 
         #endregion

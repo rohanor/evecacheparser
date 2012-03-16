@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -124,7 +125,9 @@ namespace EveCacheParser
             // Get the latest cache folder (differs on every client patch version)
             // We take into consideration the edge case where the user has multiple clients but uses only one
             string latestFolder = cacheFoldersPath.Select(x => new DirectoryInfo(x)).Where(x => x.Exists).SelectMany(
-                x => x.GetDirectories()).Select(x => int.Parse(x.Name)).Concat(new[] { 0 }).Max().ToString();
+                x => x.GetDirectories()).Select(
+                    x => int.Parse(x.Name, CultureInfo.InvariantCulture)).Concat(new[] { 0 }).Max().ToString(
+                        CultureInfo.InvariantCulture);
 
             // Construct the final path to the cache folders
             cacheFoldersPath = s_includedFolders.Any()
