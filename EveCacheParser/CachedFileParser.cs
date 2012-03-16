@@ -513,7 +513,9 @@ namespace EveCacheParser
             if (!header.IsDBRowDescriptor)
                 throw new ParserException("Bad DBRow descriptor name");
 
-            IEnumerable<STupleType> fields = header.Members.First().Members.Last().Members.First().Members.Cast<STupleType>();
+            IEnumerable<STupleType> fields = header.Members.First().Members.First(
+                member => member is STupleType).Members.First().Members.Cast<STupleType>();
+
             if (!fields.Any())
                 return new SNoneType();
 

@@ -68,6 +68,9 @@ namespace EveCacheParser
             if (String.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
                 return null;
 
+            if (!folderPath.Contains("bulkdata"))
+                folderPath = Path.Combine(folderPath, "bulkdata");
+
             return new DirectoryInfo(folderPath).GetFiles("*.cache2");
         }
 
