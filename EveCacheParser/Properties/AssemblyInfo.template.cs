@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 
@@ -21,6 +22,9 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("90d4f36f-7079-4077-ad28-f116bb5c8444")]
+
+// Indicates whether a program element is compliant with the Common Language Specification (CLS). 
+[assembly: CLSCompliant(true)]
 
 // Version information for an assembly consists of the following four values:
 //
