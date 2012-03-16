@@ -98,7 +98,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="folderPath">The folder location.</param>
         /// <returns></returns>
-        internal static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderPath)
+        internal static FileInfo[] GetBulkDataCachedFiles(string folderPath)
         {
             if (String.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
                 return null;
@@ -113,7 +113,7 @@ namespace EveCacheParser
         /// Gets the macho net cached files.
         /// </summary>
         /// <returns></returns>
-        internal static IEnumerable<FileInfo> GetMachoNetCachedFiles(string folderPath = null)
+        internal static FileInfo[] GetMachoNetCachedFiles(string folderPath = null)
         {
             // Construct the path to the EVE cache folder
             string eveApplicationDataDir = String.IsNullOrWhiteSpace(folderPath)
@@ -124,7 +124,7 @@ namespace EveCacheParser
 
             // Quit if folder not found
             if (!Directory.Exists(eveApplicationDataDir))
-                return new List<FileInfo>();
+                return new FileInfo[] { };
 
             // Find all eve clients data folders
             DirectoryInfo directory = new DirectoryInfo(eveApplicationDataDir);

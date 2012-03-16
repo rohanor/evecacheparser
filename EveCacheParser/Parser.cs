@@ -75,7 +75,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="folderPath">The folder location.</param>
         /// <returns></returns>
-        public static IEnumerable<FileInfo> GetBulkDataCachedFiles(string folderPath)
+        public static FileInfo[] GetBulkDataCachedFiles(string folderPath)
         {
             return CachedFilesFinder.GetBulkDataCachedFiles(folderPath);
         }
@@ -84,7 +84,7 @@ namespace EveCacheParser
         /// Gets the macho net cached files.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<FileInfo> GetMachoNetCachedFiles(string folderPath = null)
+        public static FileInfo[] GetMachoNetCachedFiles(string folderPath = null)
         {
             return CachedFilesFinder.GetMachoNetCachedFiles(folderPath);
         }
