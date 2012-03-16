@@ -25,6 +25,7 @@ namespace Dumper
             //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
             int count = 0;
             IEnumerable<FileInfo> cachedFiles = Parser.GetMachoNetCachedFiles();
+            //IEnumerable<FileInfo> cachedFiles = Parser.GetMachoNetCachedFiles(@"E:\CCP\EVE");
             //IEnumerable<FileInfo> cachedFiles = Parser.GetBulkDataCachedFiles(@"E:\CCP\EVE");
 
             foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "6c3b.cache")*/)

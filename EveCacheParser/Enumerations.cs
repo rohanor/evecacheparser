@@ -1,5 +1,5 @@
 # region License
-/* EveCacheParser - .NET 4/C# EVE Cache File Parser Library
+/* EVECacheParser - .NET 4/C# EVE Cache File Parser Library
  * Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
  *
  * Based on:
