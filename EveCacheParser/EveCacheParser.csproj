@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,6 +43,7 @@
     <Compile Include="CachedFilesFinder.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Properties\AssemblyInfo.template.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -76,12 +78,18 @@
   <ItemGroup>
     <None Include="Resources\StringsTable.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="gpl.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+       Other similar extension points exist, see Microsoft.Common.targets. -->
+  <UsingTask TaskName="HgVersionFile" AssemblyFile="MSBuildVersioning\MSBuildVersioning.dll" />
+  <Target Name="BeforeBuild" Condition=" '$(Configuration)' == 'Release' ">
+    <HgVersionFile TemplateFile="Properties\AssemblyInfo.template.cs" DestinationFile="Properties\AssemblyInfo.cs" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
 </Project>

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EVE Cache File Dumper")]
-[assembly: AssemblyDescription("An EVE Online Cache File Dumper")]
+[assembly: AssemblyTitle("EVE Cache Parser Library")]
+[assembly: AssemblyDescription("An EVE Online Cache File Parser library. Revision Number: $REVNUM$ Repository URL: https://bitbucket.org/Desmont_McCallock/evecacheparser")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jimi C")]
-[assembly: AssemblyProduct("EVE Cache File Dumper")]
+[assembly: AssemblyProduct("EVE Cache Parser Library")]
 [assembly: AssemblyCopyright("Copyright ©  2012, Jimi C")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a9768e3b-e1cf-4812-a1d5-bd9764b40f7d")]
+[assembly: Guid("90d4f36f-7079-4077-ad28-f116bb5c8444")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.$REVNUM$")]
 
 // Neutral Language
 [assembly: NeutralResourcesLanguage("en")]
