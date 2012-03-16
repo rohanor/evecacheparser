@@ -6,7 +6,7 @@ using EveCacheParser;
 
 namespace Dumper
 {
-    internal class Program
+    internal static class Program
     {
 
         private static void Main(params string[] args)
@@ -19,14 +19,13 @@ namespace Dumper
             //Parser.SetIncludeMethodsFilter("GetMarketGroups");
             //Parser.SetExcludeMethodsFilter("GetMarketGroups");
             //Parser.SetExcludeMethodsFilter("GetBookmarks", "GetSolarSystem");
-            //Parser.SetCachedFilesFolders("CachedMethodCalls");
+            Parser.SetCachedFilesFolders("CachedMethodCalls");
             Parser.SetCachedFilesFolders("CachedObjects");
 
             //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
             int count = 0;
-            KeyValuePair<object, object> result = new KeyValuePair<object, object>();
             IEnumerable<FileInfo> cachedFiles = Parser.GetMachoNetCachedFiles();
-            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "c173.cache")*/)
+            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "6c3b.cache")*/)
             {
                 try
                 {
@@ -37,7 +36,7 @@ namespace Dumper
                         Parser.DumpStructure(cachedFile);
                     else
                     {
-                        result = Parser.Parse(cachedFile);
+                        KeyValuePair<object, object> result = Parser.Parse(cachedFile);
                         CheckResult(result);
                     }
 

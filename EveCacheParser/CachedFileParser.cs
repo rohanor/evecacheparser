@@ -93,7 +93,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal static object Parse(byte[] data)
         {
-            CachedFileReader reader = new CachedFileReader(data, data.Length);
+            CachedFileReader reader = new CachedFileReader(data);
             CachedFileParser parser = new CachedFileParser(reader);
             parser.Parse();
 
@@ -524,7 +524,7 @@ namespace EveCacheParser
             byte[] compressedData = m_reader.ReadBytes(length);
             byte[] uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
 
-            CachedFileReader reader = new CachedFileReader(uncompressedData);
+            CachedFileReader reader = new CachedFileReader(uncompressedData, false);
 
             // Find the maximum number of elements for each field member
             int maxElements = fields.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();

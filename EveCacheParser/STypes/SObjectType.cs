@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 
 namespace EveCacheParser.STypes
 {
@@ -134,6 +135,10 @@ namespace EveCacheParser.STypes
 
         #region Private Properties
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
         private string Name
         {
             get
@@ -183,7 +188,8 @@ namespace EveCacheParser.STypes
             if (IsDBRowDescriptor)
                 return null;
 
-            return Clone(); // 'Clone()' is used for debugging purposes, should be 'null' otherwise
+            // 'Clone()' is returned for debugging purposes
+            return Debugger.IsAttached ? Clone() : null;
         }
 
         /// <summary>
