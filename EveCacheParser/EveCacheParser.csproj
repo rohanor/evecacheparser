@@ -90,8 +90,11 @@
     <None Include="Resources\StringsTable.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="gpl.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="license.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

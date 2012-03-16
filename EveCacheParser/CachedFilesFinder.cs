@@ -1,4 +1,39 @@
-﻿using System;
+﻿# region License
+/* EveCacheParser - .NET 4/C# EVE Cache File Parser Library
+ * Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
+ *
+ * Based on:
+ * - reverence - Python library for processing EVE Online cache and bulkdata
+ *    Copyright © 2003-2011 Jamie 'Entity' van den Berge <jamie@hlekkir.com>
+ *    https://github.com/ntt/reverence
+ *
+ * - libevecache - C++ EVE online reverse engineered cache reading library
+ *    Copyright © 2009-2010  StackFoundry LLC and Yann 'Kaladr' Ramin <yann@stackfoundry.com>
+ *    http://dev.eve-central.com/libevecache/
+ *    http://gitorious.org/libevecache
+ *    https://github.com/theatrus/libevecache
+ *
+ * - EveCache.Net - A port of libevecache to C#
+ *    Copyright © 2011 Jason Watkins <jason@blacksunsystems.net>
+ *    https://github.com/jwatkins42/EveCache.Net
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+# endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -11,7 +46,7 @@ namespace EveCacheParser
     {
         private static List<string> s_methodIncludeFilter = new List<string>();
         private static List<string> s_methodExcludeFilter = new List<string>();
-        private static List<string> s_includedFolders = new List<string>(); 
+        private static List<string> s_includedFolders = new List<string>();
 
         /// <summary>
         /// Sets the folders to look for cached files.
@@ -78,13 +113,14 @@ namespace EveCacheParser
         /// Gets the macho net cached files.
         /// </summary>
         /// <returns></returns>
-        internal static IEnumerable<FileInfo> GetMachoNetCachedFiles()
+        internal static IEnumerable<FileInfo> GetMachoNetCachedFiles(string folderPath = null)
         {
-            // Get the local appdata folder
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-            // Construct the path to the EVE folder
-            string eveApplicationDataDir = Path.Combine(localAppData, "CCP", "EVE");
+            // Construct the path to the EVE cache folder
+            string eveApplicationDataDir = String.IsNullOrWhiteSpace(folderPath)
+                                               ? Path.Combine(
+                                                   Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                                   "CCP", "EVE")
+                                               : folderPath;
 
             // Quit if folder not found
             if (!Directory.Exists(eveApplicationDataDir))
@@ -95,8 +131,11 @@ namespace EveCacheParser
             DirectoryInfo[] foldersIn = directory.GetDirectories("*_tranquility").OrderBy(dir => dir.CreationTimeUtc).ToArray();
 
             // Get the path to the cache folder of each eve client
-            IEnumerable<string> cacheFoldersPath = foldersIn.Select(folder => folder.Name).Select(
-                folder => Path.Combine(eveApplicationDataDir, folder, "cache", "MachoNet", "87.237.38.200"));
+            IEnumerable<string> cacheFoldersPath =
+                !foldersIn.Any()
+                    ? new List<string> { Path.Combine(eveApplicationDataDir, "cache", "MachoNet", "87.237.38.200") }
+                    : foldersIn.Select(folder => folder.Name).Select(
+                        folder => Path.Combine(eveApplicationDataDir, folder, "cache", "MachoNet", "87.237.38.200"));
 
             // Get the latest cache folder (differs on every client patch version)
             // We take into consideration the edge case where the user has multiple clients but uses only one
@@ -107,10 +146,11 @@ namespace EveCacheParser
 
             // Construct the final path to the cache folders
             cacheFoldersPath = s_includedFolders.Any()
-                                   ? cacheFoldersPath.SelectMany(path => s_includedFolders,
-                                                                (path, folder) => Path.Combine(path, latestFolder, folder)).ToList()
+                                   ? cacheFoldersPath.SelectMany(
+                                       path => s_includedFolders,
+                                       (path, folder) => Path.Combine(path, latestFolder, folder)).ToList()
                                    : cacheFoldersPath.Select(path => Path.Combine(path, latestFolder, "CachedMethodCalls"));
-                
+
             // Get the cached files we need to scrap
             IEnumerable<FileInfo> cachedFiles = cacheFoldersPath.Select(
                 x => new DirectoryInfo(x)).Where(x => x.Exists).SelectMany(x => x.GetFiles("*.cache*"));

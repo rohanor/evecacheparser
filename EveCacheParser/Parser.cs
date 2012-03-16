@@ -1,5 +1,5 @@
 ﻿# region License
-/* EveCacheParser - C# EVE Cache File Parser Library
+/* EveCacheParser - .NET 4/C# EVE Cache File Parser Library
  * Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
  *
  * Based on:
@@ -84,9 +84,9 @@ namespace EveCacheParser
         /// Gets the macho net cached files.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<FileInfo> GetMachoNetCachedFiles()
+        public static IEnumerable<FileInfo> GetMachoNetCachedFiles(string folderPath = null)
         {
-            return CachedFilesFinder.GetMachoNetCachedFiles();
+            return CachedFilesFinder.GetMachoNetCachedFiles(folderPath);
         }
 
         #endregion
