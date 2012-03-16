@@ -43,10 +43,17 @@ namespace EveCacheParser
         /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
-        internal CachedFileReader(byte[] buffer)
+        /// <param name="doSecurityCheck"> </param>
+        internal CachedFileReader(byte[] buffer, bool doSecurityCheck = true)
         {
             Buffer = new byte[buffer.Length];
             Array.Copy(buffer, Buffer, buffer.Length);
+
+            if (!doSecurityCheck)
+                return;
+
+            SecurityCheck();
+            EndOfObjectsData = buffer.Length - m_shareSkip;
         }
 
         /// <summary>
@@ -61,24 +68,8 @@ namespace EveCacheParser
 
             Filename = source.Filename;
             Fullname = source.Fullname;
-
+            
             SecurityCheck();
-
-            EndOfObjectsData = length - m_shareSkip;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachedFileReader"/> class.
-        /// </summary>
-        /// <param name="buffer">The source.</param>
-        /// <param name="length">The length.</param>
-        internal CachedFileReader(byte[] buffer, int length)
-        {
-            Buffer = new byte[length];
-            Array.Copy(buffer, Buffer, length);
-
-            SecurityCheck();
-
             EndOfObjectsData = length - m_shareSkip;
         }
 

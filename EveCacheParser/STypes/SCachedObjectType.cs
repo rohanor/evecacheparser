@@ -135,16 +135,6 @@ namespace EveCacheParser.STypes
             return decompressedData;
         }
 
-        public static void CopyStream(Stream input, Stream output)
-        {
-            byte[] buffer = new byte[2000];
-            int len;
-            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                output.Write(buffer, 0, len);
-            }
-            output.Flush();
-        }
         /// <summary>
         /// Returns a <see cref="System.Object"/> that represents this instance.
         /// </summary>
