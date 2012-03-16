@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EVE Cache Parser Library")]
+[assembly: AssemblyTitle("EVE Cache File Parser Library")]
 [assembly: AssemblyDescription("An EVE Online Cache File Parser library. Revision Number: $REVNUM$ Repository URL: https://bitbucket.org/Desmont_McCallock/evecacheparser")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jimi C")]
-[assembly: AssemblyProduct("EVE Cache Parser Library")]
+[assembly: AssemblyProduct("EVE Cache File Parser Library")]
 [assembly: AssemblyCopyright("Copyright ©  2012, Jimi C")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

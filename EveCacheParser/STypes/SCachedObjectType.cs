@@ -126,8 +126,8 @@ namespace EveCacheParser.STypes
             // Decompress the data
             using (MemoryStream inStream = new MemoryStream(choppedRawData))
             using (MemoryStream outStream = new MemoryStream())
-            using (DeflateStream outZStream = new DeflateStream(inStream, CompressionMode.Decompress))
             {
+                DeflateStream outZStream = new DeflateStream(inStream, CompressionMode.Decompress);
                 outZStream.CopyTo(outStream);
                 decompressedData = outStream.ToArray();
             }
