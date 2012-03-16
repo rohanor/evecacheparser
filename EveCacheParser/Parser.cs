@@ -53,15 +53,6 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Sets the folders to look for cached files.
-        /// </summary>
-        /// <param name="folders">The folders.</param>
-        public static void SetCachedFilesFolders(IEnumerable<string> folders)
-        {
-            CachedFilesFinder.SetCachedFilesFolders(folders);
-        }
-
-        /// <summary>
         /// Sets the methods to includ in filter.
         /// </summary>
         /// <param name="args">The methods.</param>
@@ -71,30 +62,12 @@ namespace EveCacheParser
         }
 
         /// <summary>
-        /// Sets the methods to includ in filter.
-        /// </summary>
-        /// <param name="methods">The methods.</param>
-        public static void SetIncludeMethodsFilter(IEnumerable<string> methods)
-        {
-            CachedFilesFinder.SetIncludeMethodsFilter(methods);
-        }
-
-        /// <summary>
         /// Sets the methods to exclude in filter.
         /// </summary>
         /// <param name="args">The args.</param>
         public static void SetExcludeMethodsFilter(params string[] args)
         {
             CachedFilesFinder.SetExcludeMethodsFilter(args);
-        }
-
-        /// <summary>
-        /// Sets the methods to exclude in filter.
-        /// </summary>
-        /// <param name="methods">The methods.</param>
-        public static void SetExcludeMethodsFilter(IEnumerable<string> methods)
-        {
-            CachedFilesFinder.SetExcludeMethodsFilter(methods);
         }
 
         /// <summary>

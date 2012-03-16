@@ -16,17 +16,8 @@ namespace EveCacheParser
         /// <summary>
         /// Sets the folders to look for cached files.
         /// </summary>
-        /// <param name="args">The folders.</param>
-        internal static void SetCachedFilesFolders(params string[] args)
-        {
-            SetCachedFilesFolders(args.ToList());
-        }
-
-        /// <summary>
-        /// Sets the folders to look for cached files.
-        /// </summary>
         /// <param name="folders">The folders.</param>
-        internal static void SetCachedFilesFolders(IEnumerable<string> folders)
+        internal static void SetCachedFilesFolders(params string[] folders)
         {
             if (folders == null)
             {
@@ -40,17 +31,8 @@ namespace EveCacheParser
         /// <summary>
         /// Sets the methods to includ in filter.
         /// </summary>
-        /// <param name="args">The methods.</param>
-        internal static void SetIncludeMethodsFilter(params string[] args)
-        {
-            SetIncludeMethodsFilter(args.ToList());
-        }
-
-        /// <summary>
-        /// Sets the methods to includ in filter.
-        /// </summary>
         /// <param name="methods">The methods.</param>
-        internal static void SetIncludeMethodsFilter(IEnumerable<string> methods)
+        internal static void SetIncludeMethodsFilter(params string[] methods)
         {
             if (methods == null)
             {
@@ -64,17 +46,8 @@ namespace EveCacheParser
         /// <summary>
         /// Sets the methods to exclude in filter.
         /// </summary>
-        /// <param name="args">The args.</param>
-        internal static void SetExcludeMethodsFilter(params string[] args)
-        {
-            SetExcludeMethodsFilter(args.ToList());
-        }
-
-        /// <summary>
-        /// Sets the methods to exclude in filter.
-        /// </summary>
-        /// <param name="methods">The methods.</param>
-        internal static void SetExcludeMethodsFilter(IEnumerable<string> methods)
+        /// <param name="methods">The args.</param>
+        internal static void SetExcludeMethodsFilter(params string[] methods)
         {
             if (methods == null)
             {
