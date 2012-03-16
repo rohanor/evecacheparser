@@ -1,14 +1,14 @@
 ﻿# region License
 /* EveCacheParser - C# EVE Cache File Parser Library
- * Copyright © 2012 Jimi C <jimikar@gmail.com>
+ * Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
  *
  * Based on:
  * - reverence - Python library for processing EVE Online cache and bulkdata
- *    Copyright © 2003-2011 Jamie "Entity" van den Berge <jamie@hlekkir.com>
+ *    Copyright © 2003-2011 Jamie 'Entity' van den Berge <jamie@hlekkir.com>
  *    https://github.com/ntt/reverence
  *
  * - libevecache - C++ EVE online reverse engineered cache reading library
- *    Copyright © 2009-2010  StackFoundry LLC and Yann Ramin <yann@stackfoundry.com>
+ *    Copyright © 2009-2010  StackFoundry LLC and Yann 'Kaladr' Ramin <yann@stackfoundry.com>
  *    http://dev.eve-central.com/libevecache/
  *    http://gitorious.org/libevecache
  *    https://github.com/theatrus/libevecache
