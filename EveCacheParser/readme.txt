@@ -78,7 +78,7 @@ Parser exposes the following methods:
 	Use to explicitely exclude methods of cached files.
 	You can either set them all at once or one by one,
 	internally they get accumulated.
-	Note: A list of available methods can be found at the appendix section.
+	Note: A list of available methods can be found at http://wiki.eve-id.net/Cache_Resources
 	e.g.
 		Parser.SetExcludeMethodsFilter("GetOrders", "GetBookmarks");
 	or
@@ -155,33 +155,3 @@ Possible types for Value are:
 	(Dictionary<object, object>)Dictionary<object, object>
 	(List<object>)((Tuple<object>)Dictionary<object, object>)
 
-==APPENDIX==
-
-Examples of methods of cache files
-----------------------
- * GetOrders
- * GetOldPriceHistory
- * GetNewPriceHistory
- * GetCharOrders
- * GetBookmarks
- * GetSolarSystem
- * GetMarketGroups
- * GetKeyMap
- * GetStation
- * GetCharStandings
- * GetMapObjects
- * GetAgents
- * StartupCheck
- * GetBillTypes
- * GetStationOffices
- * GetChannels
- * GetCorporateStationOffice
- * GetMyJournalDetails
- * GetFactionInfo
- * GetStationExtraInfo
- * GetNPCNPCStandings
- * GetWarFactions
- * GetOperandsForChar
-and more
-
- 
