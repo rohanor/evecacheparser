@@ -4,14 +4,14 @@ Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
 EVECacheParser is an EVE Online cache/bulkdata file parser library.
 
 
-LICENSE
-=======
+==LICENSE==
+
 EVECacheParser is distributed under GPL v2 
 (see license.txt that is included with the distribution).
 
 
-REQUIREMENTS
-============
+==REQUIREMENTS==
+
 - Windows (XP or later).
 - x86/x64 compatible processor.
 - .NET Framework 4 or higher (possible support from Mono, although not tested)
@@ -26,27 +26,24 @@ Notes:
   (in Local AppData, or EVE's root when EVE is normally run with /LUA:OFF).
 
   
-SECURITY WARNING
-================
+==SECURITY WARNING==
+
 !!! DO NOT DECODE DATA FROM UNTRUSTED SOURCES WITH THIS LIBRARY !!!
 Decoding maliciously constructed or erroneous data may compromise 
 your system's security and/or stability.
 
 
-ACKNOWLEDGEMENTS
-================
-This product contains code that emulates or copies aspects of the internal API
-of EVE Online, with permission from CCP.
+==ACKNOWLEDGEMENTS==
 
-Thanks to CCP for granting permission for releasing this product.
+This product does not modify in any way any file associated with the 
+EVE client or writes files that change the EVE client behavior, 
+therefore does not violate CCP's EVE Online EULA.
 
 EVE Online is a registered trademark of CCP hf.
 
 
-USAGE
-=====
+==HOW TO USE==
 
-When building EVECacheParser I had in mind to make it as easy to use as possible.
 Every method is static and can be accessed via the Parser class.
 Parser exposes the following methods:
 
@@ -151,15 +148,14 @@ Notice here that each Key and Value have to be cast to their proper type
 in order to be usable (see examples in Dumper project).
 
 Possible types for Key are:
-String, Tuple<object>, (List<object>)Tuple<object>
+	String, Tuple<object>, (List<object>)Tuple<object>
 
 Possible types for Value are:
-Dictionary<object, object>,(List<object>)Dictionary<object, object>,
-(Dictionary<object, object>)Dictionary<object, object>
-(List<object>)((Tuple<object>)Dictionary<object, object>)
+	Dictionary<object, object>,(List<object>)Dictionary<object, object>,
+	(Dictionary<object, object>)Dictionary<object, object>
+	(List<object>)((Tuple<object>)Dictionary<object, object>)
 
-APPENDIX
-========
+==APPENDIX==
 
 Examples of methods of cache files
 ----------------------
