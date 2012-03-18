@@ -51,6 +51,7 @@ Parser exposes the following methods:
 		Method parameter: The name or names of a cache folder.
 	Use to explicitly set which folders that contain cache files
 	you want the parser to search.
+	Default folder is "CachedMethodCalls" if none is set.
 	You can either set them all at once or one by one,
 	internally they get accumulated.
 	e.g.
