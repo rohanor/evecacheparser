@@ -63,7 +63,6 @@ namespace Dumper
             //        Console.WriteLine("Parsing failed: {0}", ex.Message);
             //    }
             //}
-
             //Console.WriteLine("Successfully parsed {0} of {1} files", count, cachedFiles.Count());
             //Console.ReadLine();
 
@@ -71,11 +70,25 @@ namespace Dumper
             //Parser.SetIncludeMethodsFilter("GetOrders");
             //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
             //KeyValuePair<object, object> result = Parser.Parse(cachedFile);
+            //List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
+            //long regionID = (long)key[2];
+            //short typeID = (short)key[3];
             //List<object> value = (List<object>)((Dictionary<object, object>)result.Value)["lret"];
             //List<MarketOrder> orders = value.Cast<List<object>>().SelectMany(
             //    obj => obj.Cast<Dictionary<object, object>>(), (obj, order) => new MarketOrder(order)).ToList();
             //List<MarketOrder> sellOrders = orders.Where(order => !order.Bid).ToList();
             //List<MarketOrder> buyOrders = orders.Where(order => order.Bid).ToList();
+
+            /* Code snippet of extracting market history */
+            //Parser.SetIncludeMethodsFilter("GetOldPriceHistory","GetNewPriceHistory");
+            //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
+            //KeyValuePair<object, object> result = Parser.Parse(cachedFile);
+            //List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
+            //long regionID = (long)key[2];
+            //short typeID = (short)key[3];
+            //List<object> value = (List<object>)((Dictionary<object, object>)result.Value)["lret"];
+            //List<PriceHistoryEntry> priceHistory = value.Cast<Dictionary<object, object>>().Select(
+            //    entry => new PriceHistoryEntry(entry)).ToList();
         }
 
         private static void CheckResult(KeyValuePair<object, object> result)
