@@ -47,7 +47,6 @@ namespace EveCacheParser
     {
         #region Fields
 
-
         private readonly CachedFileReader m_reader;
         private readonly SStreamType m_stream;
         private static bool s_dumpStructure;
@@ -144,6 +143,7 @@ namespace EveCacheParser
         {
             Console.WriteLine("Parsing...");
 
+            SType.Reset();
             CachedFileReader cachedFile = new CachedFileReader(file);
             CachedFileParser parser = new CachedFileParser(cachedFile);
             parser.Parse();
@@ -248,8 +248,6 @@ namespace EveCacheParser
         /// </summary>
         private void Parse()
         {
-            SType.Reset();
-
             while (!m_reader.AtEnd)
             {
                 Parse(m_stream);

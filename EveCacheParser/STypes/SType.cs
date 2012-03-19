@@ -67,8 +67,8 @@ namespace EveCacheParser.STypes
             DebugID = s_count++;
             s_type.Add(this);
 
-            Members = new List<SType>();
             m_streamType = streamType;
+            Members = new List<SType>();
         }
 
         #endregion

@@ -41,7 +41,7 @@ namespace Dumper
 
             /* Code snippet of testing the parsing of the cached files */
             //int count = 0;
-            //foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "6c3b.cache")*/)
+            //foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "1970.cache")*/)
             //{
             //    try
             //    {
@@ -80,7 +80,7 @@ namespace Dumper
             //List<MarketOrder> buyOrders = orders.Where(order => order.Bid).ToList();
 
             /* Code snippet of extracting market history */
-            //Parser.SetIncludeMethodsFilter("GetOldPriceHistory","GetNewPriceHistory");
+            //Parser.SetIncludeMethodsFilter("GetOldPriceHistory", "GetNewPriceHistory");
             //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
             //KeyValuePair<object, object> result = Parser.Parse(cachedFile);
             //List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
@@ -156,6 +156,20 @@ namespace Dumper
                                 break;
                             default:
                                 value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
+                                break;
+                        }
+                    }
+                    break;
+                case "certificateMgr":
+                    {
+                        switch ((string)method)
+                        {
+                            case "GetCertificateClasses":
+                            case "GetCertificateCategories":
+                                value = (((Dictionary<object, object>)((Dictionary<object, object>)result.Value)["lret"]).ToList())[0];
+                                break;
+                            default:
+                                value = ((Dictionary<object, object>)result.Value)["lret"];
                                 break;
                         }
                     }
