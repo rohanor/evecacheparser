@@ -33,7 +33,7 @@ Decoding maliciously constructed or erroneous data may compromise
 your system's security and/or stability.
 
 
-==ACKNOWLEDGEMENTS==
+==DISCLAIMER==
 
 This product does not modify in any way any file associated with the 
 EVE client or writes files that change the EVE client behavior, 
