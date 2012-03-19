@@ -82,7 +82,6 @@ namespace EveCacheParser
             Console.WriteLine("Dumping Structure...");
 
             s_dumpStructure = true;
-            SType.Reset();
             Parse(file);
             SType.DumpTypes(file.Name);
             s_dumpStructure = false;
@@ -249,6 +248,8 @@ namespace EveCacheParser
         /// </summary>
         private void Parse()
         {
+            SType.Reset();
+
             while (!m_reader.AtEnd)
             {
                 Parse(m_stream);
