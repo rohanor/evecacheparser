@@ -14,7 +14,7 @@
  *    https://github.com/theatrus/libevecache
  *
  * - EveCache.Net - A port of libevecache to C#
- *    Copyright © 2011 Jason Watkins <jason@blacksunsystems.net>
+ *    Copyright © 2011 Jason 'Jay Wareth' Watkins <jason@blacksunsystems.net>
  *    https://github.com/jwatkins42/EveCache.Net
  * 
  * This library is free software; you can redistribute it and/or
