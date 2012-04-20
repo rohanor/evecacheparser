@@ -612,6 +612,9 @@ namespace EveCacheParser
                                 obj = new SDoubleType(reader.ReadDouble());
                             break;
                         case DBTypes.Currency:
+                            if (pass == 1)
+                                obj = new SDoubleType(reader.ReadLong()/10000.0);
+                            break;
                         case DBTypes.Long:
                         case DBTypes.ULong:
                         case DBTypes.Filetime: // Timestamp
