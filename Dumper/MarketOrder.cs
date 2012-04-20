@@ -6,7 +6,7 @@ namespace Dumper
     {
         public MarketOrder(IDictionary<object, object> order)
         {
-            Price = (long)order["price"];
+            Price = (decimal)(double)order["price"];
             VolumeRemaining = (double)order["volRemaining"];
             OrderID = (long)order["orderID"];
             IssueDate = (long)order["issueDate"];
@@ -22,7 +22,7 @@ namespace Dumper
             Bid = (bool)order["bid"];
         }
 
-        internal long Price { get; private set; }
+        internal decimal Price { get; private set; }
 
         internal double VolumeRemaining { get; private set; }
 
