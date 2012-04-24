@@ -61,17 +61,28 @@ namespace EveCacheParser
         /// <param name="doSecurityCheck">if set to <c>true</c> does a security check.</param>
         internal CachedFileReader(FileInfo file, bool doSecurityCheck = true)
         {
-            using (FileStream stream = file.OpenRead())
+            try
             {
-                BinaryReader binaryReader = new BinaryReader(stream);
-                Buffer = binaryReader.ReadBytes((int)stream.Length);
+                using (FileStream stream = file.OpenRead())
+                {
+                    BinaryReader binaryReader = new BinaryReader(stream);
+                    Buffer = binaryReader.ReadBytes((int)stream.Length);
+                }
+
+                Filename = file.Name;
+                Fullname = file.FullName;
+
+                if (doSecurityCheck)
+                    SecurityCheck();
             }
-
-            Filename = file.Name;
-            Fullname = file.FullName;
-
-            if (doSecurityCheck)
-                SecurityCheck();
+            catch (AccessViolationException ex)
+            {
+                throw new ParserException(ex.Message, ex.InnerException);
+            }
+            catch (IOException ex)
+            {
+                throw new ParserException(ex.Message, ex.InnerException);
+            }
         }
 
         /// <summary>
