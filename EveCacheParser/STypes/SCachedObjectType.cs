@@ -145,20 +145,17 @@ namespace EveCacheParser.STypes
         /// </summary>
         /// <param name="rawData">The raw data.</param>
         /// <returns></returns>
-        private static byte[] Decompress(byte[] rawData)
+        private static byte[] Decompress(ICollection<byte> rawData)
         {
-            byte[] decompressedData;
-
             // The 'rawData' are actually data compressed with zlib ("BEST_SPEED" compression)
             // The following code lines remove the need of 'zlib' usage,
             // because 'zlib' actually uses the same algorith as 'DeflateStream'
             // To make the data compatible for 'DeflateStream', we only have to remove
             // the four last bytes which are the adler32 checksum and
             // the two first bytes which are the zlib header
-            byte[] choppedRawData = new byte[(rawData.Length - 4)];
-            Array.Copy(rawData, 0, choppedRawData, 0, choppedRawData.Length);
-            choppedRawData = choppedRawData.Skip(2).ToArray();
-
+            byte[] choppedRawData = rawData.Take(rawData.Count - 4).Skip(2).ToArray();
+            byte[] decompressedData;
+            
             // Decompress the data
             using (MemoryStream inStream = new MemoryStream(choppedRawData))
             using (MemoryStream outStream = new MemoryStream())
