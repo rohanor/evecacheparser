@@ -164,7 +164,7 @@ namespace EveCacheParser
                 x => new DirectoryInfo(x)).Where(x => x.Exists).SelectMany(x => x.GetFiles(CacheFileExtensionLookup));
 
             // Finds the cached files that are legit EVE files and satisfy the methods search criteria
-            return cachedFiles.Select(cachedFile => new CachedFileReader(cachedFile, false)).Where(
+            return cachedFiles.Where(x => x.Exists).Select(cachedFile => new CachedFileReader(cachedFile, false)).Where(
                 reader => reader.Buffer.First() == (byte)StreamType.StreamStart).Where(
                     cachedFile =>
                     s_methodIncludeFilter.Any()
