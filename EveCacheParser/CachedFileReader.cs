@@ -61,6 +61,9 @@ namespace EveCacheParser
         /// <param name="doSecurityCheck">if set to <c>true</c> does a security check.</param>
         internal CachedFileReader(FileInfo file, bool doSecurityCheck = true)
         {
+            if (!file.Exists)
+                return;
+
             try
             {
                 using (FileStream stream = file.OpenRead())
