@@ -82,6 +82,10 @@ namespace EveCacheParser
             {
                 throw new ParserException(ex.Message, ex.InnerException);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new ParserException(ex.Message, ex.InnerException);
+            }
             catch (IOException ex)
             {
                 throw new ParserException(ex.Message, ex.InnerException);
