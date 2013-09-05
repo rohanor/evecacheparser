@@ -41,7 +41,7 @@ namespace Dumper
 
             /* Code snippet of testing the parsing of the cached files */
             //int count = 0;
-            //foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "1970.cache")*/)
+            //foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "9d34.cache")*/)
             //{
             //    try
             //    {
@@ -62,6 +62,10 @@ namespace Dumper
             //    {
             //        Console.WriteLine("Parsing failed: {0}", ex.Message);
             //    }
+            //    //catch (Exception ex)
+            //    //{
+            //    //    Console.WriteLine("Parsing failed: {0}", ex.Message);
+            //    //}
             //}
             //Console.WriteLine("Successfully parsed {0} of {1} files", count, cachedFiles.Count());
             //Console.ReadLine();
@@ -73,7 +77,7 @@ namespace Dumper
             //List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
             //long regionID = (long)key[2];
             //short typeID = (short)key[3];
-            //List<object> value = (List<object>)((Dictionary<object, object>)result.Value)["lret"];
+            //List<object> value = (List<object>)lret;
             //List<MarketOrder> orders = value.Cast<List<object>>().SelectMany(
             //    obj => obj.Cast<Dictionary<object, object>>(), (obj, order) => new MarketOrder(order)).ToList();
             //List<MarketOrder> sellOrders = orders.Where(order => !order.Bid).ToList();
@@ -86,7 +90,7 @@ namespace Dumper
             //List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
             //long regionID = (long)key[2];
             //short typeID = (short)key[3];
-            //List<object> value = (List<object>)((Dictionary<object, object>)result.Value)["lret"];
+            //List<object> value = (List<object>)lret;
             //List<PriceHistoryEntry> priceHistory = value.Cast<Dictionary<object, object>>().Select(
             //    entry => new PriceHistoryEntry(entry)).ToList();
         }
@@ -101,95 +105,122 @@ namespace Dumper
 
             object value;
             object id = result.Key as string ??
-                        ((List<object>)((Tuple<object>)result.Key).Item1)[0] as string ??
-                        ((List<object>)((Tuple<object>)((List<object>)((Tuple<object>)result.Key).Item1)[0]).Item1)[0] as string;
+                        ((List<object>)((Tuple<object>)result.Key).Item1).First() as string ??
+                        ((List<object>)((Tuple<object>)((List<object>)((Tuple<object>)result.Key).Item1).First()).Item1)
+                            .First() as string;
 
-            if (result.Value as Dictionary<object, object> == null)
+            Dictionary<object, object> resultValue = result.Value as Dictionary<object, object>;
+            if (resultValue == null)
             {
-                value = ((List<object>)Parser.GetObject(((List<object>)result.Value)[0]))[0];
+                value = ((List<object>)Parser.GetObject(((List<object>)result.Value).First())).First();
                 return;
             }
 
-            object method = ((List<object>)((Tuple<object>)result.Key).Item1)[1] as string;
+            object lret = resultValue["lret"];
+            object method = ((List<object>)((Tuple<object>)result.Key).Item1).Skip(1).First() as string;
             switch ((string)id)
             {
-                case "marketProxy":
+                case "config":
+                {
+                    switch ((string)method)
                     {
-                        switch ((string)method)
-                        {
-                            case "GetMarketGroups":
-                            case "GetRegionBest":
-                                value =
-                                    (((Dictionary<object, object>)((Dictionary<object, object>)result.Value)["lret"]).ToList())[0];
-                                break;
-                            case "StartupCheck":
-                                value = ((Dictionary<object, object>)result.Value)["lret"];
-                                break;
-                            default:
-                                value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
-                                break;
-                        }
+                        case "GetAverageMarketPricesForClient":
+                            value = ((Dictionary<object, object>)lret).FirstOrDefault();
+                            break;
+                        default:
+                            value = ((List<object>)lret).FirstOrDefault();
+                            break;
                     }
+                }
+                    break;
+                case "marketProxy":
+                {
+                    switch ((string)method)
+                    {
+                        case "GetMarketGroups":
+                        case "GetRegionBest":
+                            value = (((Dictionary<object, object>)lret).ToList()).FirstOrDefault();
+                            break;
+                        case "StartupCheck":
+                            value = lret;
+                            break;
+                        default:
+                            value = ((List<object>)lret).FirstOrDefault();
+                            break;
+                    }
+                }
                     break;
                 case "stationSvc":
+                {
+                    switch ((string)method)
                     {
-                        switch ((string)method)
-                        {
-                            case "GetStation":
-                                value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
-                                break;
-                            default:
-                                value =
-                                    ((List<object>)((Tuple<object>)((Dictionary<object, object>)result.Value)["lret"]).Item1)[0];
-                                break;
-                        }
+                        case "GetAllianceSystems":
+                        case "GetStation":
+                            value = ((List<object>)lret).First();
+                            break;
+                        default:
+                            value = ((List<object>)((Tuple<object>)lret).Item1).FirstOrDefault();
+                            break;
                     }
+                }
                     break;
                 case "charMgr":
+                {
+                    switch ((string)method)
                     {
-                        switch ((string)method)
-                        {
-                            case "GetCloneTypeID":
-                            case "GetHomeStation":
-                            case "GetImageServerLink":
-                                value = ((Dictionary<object, object>)result.Value)["lret"];
-                                break;
-                            default:
-                                value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
-                                break;
-                        }
+                        case "GetCloneTypeID":
+                        case "GetHomeStation":
+                        case "GetImageServerLink":
+                            value = lret;
+                            break;
+                        default:
+                            value = ((List<object>)lret).FirstOrDefault();
+                            break;
                     }
+                }
                     break;
                 case "certificateMgr":
+                {
+                    switch ((string)method)
                     {
-                        switch ((string)method)
-                        {
-                            case "GetCertificateClasses":
-                            case "GetCertificateCategories":
-                                value = (((Dictionary<object, object>)((Dictionary<object, object>)result.Value)["lret"]).ToList())[0];
-                                break;
-                            default:
-                                value = ((Dictionary<object, object>)result.Value)["lret"];
-                                break;
-                        }
+                        case "GetCertificateClasses":
+                        case "GetCertificateCategories":
+                            value = (((Dictionary<object, object>)lret).ToList()).FirstOrDefault();
+                            break;
+                        default:
+                            value = ((List<object>)lret).FirstOrDefault();
+                            break;
                     }
+                }
                     break;
                 case "map":
                 case "beyonce":
                 case "corporationSvc":
                 case "bookmark":
-                    value = ((List<object>)((Tuple<object>)((Dictionary<object, object>)result.Value)["lret"]).Item1)[0];
+                    value = ((List<object>)((Tuple<object>)lret).Item1).FirstOrDefault();
                     break;
                 case "agentMgr":
                 case "corpStationMgr":
-                    value = ((Dictionary<object, object>)result.Value)["lret"];
+                    value = lret;
                     break;
                 case "dogma":
+                case "rewardMgr":
                 case "facWarMgr":
-                    value = (((Dictionary<object, object>)((Dictionary<object, object>)result.Value)["lret"]).ToList())[0];
+                case "dungeonExplorationMgr":
+                {
+                    switch ((string)method)
+                    {
+                        case "GetFacWarSystems":
+                            value = ((List<object>)lret).FirstOrDefault();
+                            break;
+                        default:
+                            value = (((Dictionary<object, object>)lret).ToList()).FirstOrDefault();
+                            break;
+                    }
+                }
                     break;
                 default:
-                    value = ((List<object>)((Dictionary<object, object>)result.Value)["lret"])[0];
+                    value = ((List<object>)lret).FirstOrDefault();
                     break;
             }
         }
