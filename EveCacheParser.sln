@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dumper", "Dumper\Dumper.csproj", "{D0F83DD2-6081-4FDA-96F0-D0883EAD7023}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EveCacheParser", "EveCacheParser\EveCacheParser.csproj", "{8948DCA5-C664-4093-A1FC-6C37C575FBE0}"
