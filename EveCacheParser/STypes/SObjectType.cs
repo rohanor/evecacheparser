@@ -217,20 +217,20 @@ namespace EveCacheParser.STypes
         {
             if (IsRowList || IsCRowset)
             {
-                return Members.Where(member => member != Members.FirstOrDefault()).Select(
+                return Members.Where(member => member != Members.First()).Select(
                     member => member.Members).SelectMany(obj => obj, (obj, type) => new { obj, type }).Where(
                         obj => !(obj.type is SObjectType)).Select(
                             obj => obj.type.ToObject()).ToList();
             }
 
-            if (IsCFilterRowset || IsRowDict || IsCIndexedRowset )
-                return ToDictionary(Members.Where(member => member != Members.FirstOrDefault()).ToList());
+            if (IsCFilterRowset || IsRowDict || IsCIndexedRowset)
+                return ToDictionary(Members.Where(member => member != Members.First()).ToList());
 
             if (IsKeyVal || IsCachedObject || IsCachedMethodCallResult)
-                return Members.Where(member => member != Members.FirstOrDefault()).Select(member => member.ToObject()).ToList();
+                return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
             
             if (IsObjectCachingCachedObject)
-                return Members.Where(member => member != Members.FirstOrDefault()).Select(member => member.ToObject()).ToList();
+                return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
 
             if (IsDBRowDescriptor)
                 return null;
