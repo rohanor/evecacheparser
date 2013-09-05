@@ -64,7 +64,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsDBRowDescriptor
         {
-            get { return Name == "blue.DBRowDescriptor"; }
+            get { return Name.EndsWith(".DBRowDescriptor"); }
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsRowList
         {
-            get { return Name == "dbutil.RowList"; }
+            get { return Name.EndsWith(".RowList"); }
         }
 
         /// <summary>
@@ -86,7 +86,18 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsRowDict
         {
-            get { return Name == "dbutil.RowDict"; }
+            get { return Name.EndsWith(".RowDict"); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a 'Rowset'.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this object is a 'Rowset'; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsRowset
+        {
+            get { return Name.EndsWith(".Rowset"); }
         }
 
         /// <summary>
@@ -97,7 +108,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCRowset
         {
-            get { return Name == "dbutil.CRowset"; }
+            get { return Name.EndsWith(".CRowset"); }
         }
 
         /// <summary>
@@ -108,7 +119,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCFilterRowset
         {
-            get { return Name == "dbutil.CFilterRowset"; }
+            get { return Name.EndsWith(".CFilterRowset"); }
         }
 
         /// <summary>
@@ -119,7 +130,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCIndexedRowset
         {
-            get { return Name == "dbutil.CIndexedRowset"; }
+            get { return Name.EndsWith(".CIndexedRowset"); }
         }
 
         /// <summary>
@@ -130,7 +141,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsKeyVal
         {
-            get { return Name == "util.KeyVal"; }
+            get { return Name.EndsWith(".KeyVal"); }
         }
 
         /// <summary>
@@ -141,7 +152,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCachedMethodCallResult
         {
-            get { return Name == "objectCaching.CachedMethodCallResult"; }
+            get { return Name.EndsWith(".CachedMethodCallResult"); }
         }
 
         /// <summary>
@@ -152,7 +163,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCachedObject
         {
-            get { return Name == "util.CachedObject"; }
+            get { return Name.EndsWith(".CachedObject"); }
         }
 
         /// <summary>
@@ -163,7 +174,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsObjectCachingCachedObject
         {
-            get { return Name == "objectCaching.CachedObject"; }
+            get { return Name.EndsWith(".objectCaching.CachedObject"); }
         }
 
         #endregion
@@ -206,20 +217,20 @@ namespace EveCacheParser.STypes
         {
             if (IsRowList || IsCRowset)
             {
-                return Members.Where(member => member != Members.First()).Select(
+                return Members.Where(member => member != Members.FirstOrDefault()).Select(
                     member => member.Members).SelectMany(obj => obj, (obj, type) => new { obj, type }).Where(
                         obj => !(obj.type is SObjectType)).Select(
                             obj => obj.type.ToObject()).ToList();
             }
 
-            if (IsCFilterRowset || IsRowDict || IsCIndexedRowset)
-                return ToDictionary(Members.Where(member => member != Members.First()).ToList());
+            if (IsCFilterRowset || IsRowDict || IsCIndexedRowset )
+                return ToDictionary(Members.Where(member => member != Members.FirstOrDefault()).ToList());
 
             if (IsKeyVal || IsCachedObject || IsCachedMethodCallResult)
-                return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
+                return Members.Where(member => member != Members.FirstOrDefault()).Select(member => member.ToObject()).ToList();
             
             if (IsObjectCachingCachedObject)
-                return Members.Where(member => member != Members.First()).Select(member => member.ToObject()).ToList();
+                return Members.Where(member => member != Members.FirstOrDefault()).Select(member => member.ToObject()).ToList();
 
             if (IsDBRowDescriptor)
                 return null;
