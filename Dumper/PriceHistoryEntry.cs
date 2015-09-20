@@ -4,6 +4,10 @@ namespace Dumper
 {
     internal class PriceHistoryEntry
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PriceHistoryEntry"/> class.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
         public PriceHistoryEntry(IDictionary<object, object> entry)
         {
             HistoryDate = (long)entry["historyDate"];

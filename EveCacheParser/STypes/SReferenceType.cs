@@ -54,7 +54,7 @@ namespace EveCacheParser.STypes
             : base(StreamType.StringRef)
         {
             m_id = id;
-            Text = !string.IsNullOrWhiteSpace(text) ? text : "Unknown";
+            Text = !string.IsNullOrWhiteSpace(text) ? text : @"Unknown";
         }
 
         #endregion

@@ -39,7 +39,6 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
@@ -134,18 +133,29 @@ namespace EveCacheParser.STypes
             // the four last bytes which are the adler32 checksum and
             // the two first bytes which are the zlib header
             byte[] choppedRawData = rawData.Take(rawData.Count - 4).Skip(2).ToArray();
-            byte[] decompressedData;
-            
-            // Decompress the data
-            using (MemoryStream inStream = new MemoryStream(choppedRawData))
-            using (MemoryStream outStream = new MemoryStream())
-            {
-                DeflateStream outZStream = new DeflateStream(inStream, CompressionMode.Decompress);
-                outZStream.CopyTo(outStream);
-                decompressedData = outStream.ToArray();
-            }
 
-            return decompressedData;
+            // Decompress the data
+            using (MemoryStream outStream = GetMemoryStream())
+            using (
+                DeflateStream outZStream = new DeflateStream(GetMemoryStream(choppedRawData), CompressionMode.Decompress)
+                )
+            {
+                outZStream.CopyTo(outStream);
+                return outStream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Gets the memory stream.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns></returns>
+        private static MemoryStream GetMemoryStream(byte[] buffer = null)
+        {
+            if (buffer == null || buffer.Length == 0)
+                return new MemoryStream();
+
+            return new MemoryStream(buffer);
         }
 
         /// <summary>

@@ -121,6 +121,7 @@ namespace EveCacheParser
         /// <summary>
         /// Gets the macho net cached files.
         /// </summary>
+        /// <param name="folderPath">The folder path.</param>
         /// <returns></returns>
         internal static FileInfo[] GetMachoNetCachedFiles(string folderPath = null)
         {
@@ -133,18 +134,18 @@ namespace EveCacheParser
 
             // Quit if folder not found
             if (!Directory.Exists(eveApplicationDataDir))
-                return new FileInfo[] { };
+                return Enumerable.Empty<FileInfo>().ToArray();
 
             // Find all eve clients data folders
             DirectoryInfo directory = new DirectoryInfo(eveApplicationDataDir);
             DirectoryInfo[] foldersIn = directory.GetDirectories(ServerLookupName).OrderBy(dir => dir.CreationTimeUtc).ToArray();
 
             // Get the path to the cache folder of each eve client
-            IEnumerable<string> cacheFoldersPath =
+            IList<string> cacheFoldersPath =
                 !foldersIn.Any()
                     ? new List<string> { Path.Combine(eveApplicationDataDir, CacheFolderPath) }
                     : foldersIn.Select(folder => folder.Name).Select(
-                        folder => Path.Combine(eveApplicationDataDir, folder, CacheFolderPath));
+                        folder => Path.Combine(eveApplicationDataDir, folder, CacheFolderPath)).ToList();
 
             // Get the latest cache folder (differs on every client patch version)
             // We take into consideration the edge case where the user has multiple clients but uses only one
@@ -158,7 +159,7 @@ namespace EveCacheParser
                                    ? cacheFoldersPath.SelectMany(
                                        path => s_includedFolders,
                                        (path, folder) => Path.Combine(path, latestFolder, folder)).ToList()
-                                   : cacheFoldersPath.Select(path => Path.Combine(path, latestFolder, DefaultFolderLookupName));
+                                   : cacheFoldersPath.Select(path => Path.Combine(path, latestFolder, DefaultFolderLookupName)).ToList();
 
             // Get the cached files we need to scrap
             IEnumerable<FileInfo> cachedFiles = cacheFoldersPath.Select(path => new DirectoryInfo(path)).Where(

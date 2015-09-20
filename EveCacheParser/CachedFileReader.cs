@@ -410,8 +410,9 @@ namespace EveCacheParser
         /// <summary>
         /// Determines whether the next byte is a marker.
         /// </summary>
+        /// <param name="number">The number.</param>
         /// <returns>
-        /// 	<c>true</c> if the next byte is a marker; otherwise, <c>false</c>.
+        ///   <c>true</c> if the next byte is a marker; otherwise, <c>false</c>.
         /// </returns>
         internal bool IsDoubleMarker(int number)
         {

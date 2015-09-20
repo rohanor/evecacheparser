@@ -4,6 +4,10 @@ namespace Dumper
 {
     internal sealed class MarketOrder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MarketOrder"/> class.
+        /// </summary>
+        /// <param name="order">The order.</param>
         public MarketOrder(IDictionary<object, object> order)
         {
             Price = (decimal)(double)order["price"];

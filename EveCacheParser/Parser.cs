@@ -84,6 +84,7 @@ namespace EveCacheParser
         /// <summary>
         /// Gets the macho net cached files.
         /// </summary>
+        /// <param name="folderPath">The folder path.</param>
         /// <returns></returns>
         public static FileInfo[] GetMachoNetCachedFiles(string folderPath = null)
         {

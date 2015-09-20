@@ -46,6 +46,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MarketOrder.cs" />
     <Compile Include="PriceHistoryEntry.cs" />
     <Compile Include="Program.cs" />

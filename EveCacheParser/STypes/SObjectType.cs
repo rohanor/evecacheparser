@@ -65,7 +65,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsDBRowDescriptor
         {
-            get { return Name.EndsWith(".DBRowDescriptor"); }
+            get { return Name.EndsWith(".DBRowDescriptor", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsRowList
         {
-            get { return Name.EndsWith(".RowList"); }
+            get { return Name.EndsWith(".RowList", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsRowDict
         {
-            get { return Name.EndsWith(".RowDict"); }
+            get { return Name.EndsWith(".RowDict", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsRowset
         {
-            get { return Name.EndsWith(".Rowset"); }
+            get { return Name.EndsWith(".Rowset", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCRowset
         {
-            get { return Name.EndsWith(".CRowset"); }
+            get { return Name.EndsWith(".CRowset", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCFilterRowset
         {
-            get { return Name.EndsWith(".CFilterRowset"); }
+            get { return Name.EndsWith(".CFilterRowset", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCIndexedRowset
         {
-            get { return Name.EndsWith(".CIndexedRowset"); }
+            get { return Name.EndsWith(".CIndexedRowset", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsKeyVal
         {
-            get { return Name.EndsWith(".KeyVal"); }
+            get { return Name.EndsWith(".KeyVal", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCachedMethodCallResult
         {
-            get { return Name.EndsWith(".CachedMethodCallResult"); }
+            get { return Name.EndsWith(".CachedMethodCallResult", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsCachedObject
         {
-            get { return Name.EndsWith(".CachedObject"); }
+            get { return Name.EndsWith(".CachedObject", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace EveCacheParser.STypes
         /// </value>
         internal bool IsObjectCachingCachedObject
         {
-            get { return Name.EndsWith(".objectCaching.CachedObject"); }
+            get { return Name.EndsWith(".objectCaching.CachedObject", System.StringComparison.OrdinalIgnoreCase); }
         }
 
         #endregion

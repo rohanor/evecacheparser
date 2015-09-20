@@ -45,6 +45,13 @@ namespace EveCacheParser.Collections
             Properties.Resources.StringsTable.Replace(Environment.NewLine, String.Empty).Split(',').ToList();
 
         /// <summary>
+        /// Prevents a default instance of the <see cref="StringsTable"/> class from being created.
+        /// </summary>
+        private StringsTable()
+        {
+        }
+
+        /// <summary>
         /// Gets a string by the specified ID.
         /// </summary>
         /// <param name="id">The id.</param>

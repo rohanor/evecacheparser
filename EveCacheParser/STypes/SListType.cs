@@ -66,6 +66,7 @@ namespace EveCacheParser.STypes
         /// Adds the member.
         /// </summary>
         /// <param name="type">The type.</param>
+        /// <exception cref="ParserException">Members exceed collection capacity</exception>
         internal override void AddMember(SType type)
         {
             if (Members.Count > m_length)
