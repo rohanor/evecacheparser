@@ -37,9 +37,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EveCacheParser
+namespace EveCacheParser.Collections
 {
-    internal static class StringsTable
+    internal class StringsTable
     {
         private static readonly List<string> s_stringList =
             Properties.Resources.StringsTable.Replace(Environment.NewLine, String.Empty).Split(',').ToList();

@@ -40,6 +40,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
@@ -76,7 +77,7 @@ namespace EveCacheParser.STypes
         /// <value>
         /// 	<c>true</c> if this instance is compressed; otherwise, <c>false</c>.
         /// </value>
-        private bool IsCompressed { get; set; }
+        internal bool IsCompressed { get; set; }
 
         /// <summary>
         /// Gets or sets the node ID.
@@ -88,7 +89,7 @@ namespace EveCacheParser.STypes
         /// Gets or sets the object.
         /// </summary>
         /// <value>The object.</value>
-        private object Object { get; set; }
+        internal object Object { get; set; }
 
         /// <summary>
         /// Gets or sets the object ID.
@@ -100,7 +101,7 @@ namespace EveCacheParser.STypes
         /// Gets or sets the raw data.
         /// </summary>
         /// <value>The raw data.</value>
-        private object RawData { get; set; }
+        internal object RawData { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="SCachedObjectType"/> is shared.
@@ -120,32 +121,11 @@ namespace EveCacheParser.STypes
         #region Methods
 
         /// <summary>
-        /// Gets the cached object.
-        /// </summary>
-        /// <returns></returns>
-        internal object GetCachedObject()
-        {
-            if (Object == null)
-            {
-                if (RawData == null)
-                    throw new InvalidDataException("No object?!");
-
-                byte[] rawData = Encoding.Default.GetBytes((string)RawData);
-                byte[] data = IsCompressed ? Decompress(rawData) : rawData;
-
-                Object = CachedFileParser.Parse(data);
-                RawData = null;
-            }
-
-            return Object;
-        }
-
-        /// <summary>
         /// Decompresses the specified raw data.
         /// </summary>
         /// <param name="rawData">The raw data.</param>
         /// <returns></returns>
-        private static byte[] Decompress(ICollection<byte> rawData)
+        internal static byte[] Decompress(ICollection<byte> rawData)
         {
             // The 'rawData' are actually data compressed with zlib ("BEST_SPEED" compression)
             // The following code lines remove the need of 'zlib' usage,

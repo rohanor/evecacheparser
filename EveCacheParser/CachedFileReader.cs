@@ -36,6 +36,8 @@
 using System;
 using System.IO;
 using System.Text;
+using EveCacheParser.Enumerations;
+using EveCacheParser.Exceptions;
 using EveCacheParser.STypes;
 
 namespace EveCacheParser

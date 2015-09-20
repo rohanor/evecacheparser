@@ -33,6 +33,8 @@
  */
 # endregion
 
+using EveCacheParser.Enumerations;
+
 namespace EveCacheParser.STypes
 {
     internal class SNoneType : SType
