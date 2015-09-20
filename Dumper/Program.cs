@@ -74,11 +74,10 @@ namespace Dumper
                 //}
             }
             Console.WriteLine("Successfully parsed {0} of {1} files", count, cachedFiles.Count());
-            Console.ReadLine();
+            Console.ReadKey(true);
 
-            CodeSnippetForMarketOrder();
-            CodeSnippetForMarketHistory();
-
+            //CodeSnippetForMarketOrder();
+            //CodeSnippetForMarketHistory();
         }
 
         /// <summary>
