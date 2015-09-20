@@ -34,6 +34,8 @@
 # endregion
 
 using System.Globalization;
+using EveCacheParser.Enumerations;
+using EveCacheParser.Exceptions;
 
 namespace EveCacheParser.STypes
 {

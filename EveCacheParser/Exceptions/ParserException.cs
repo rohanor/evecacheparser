@@ -36,7 +36,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace EveCacheParser
+namespace EveCacheParser.Exceptions
 {
     [Serializable]
     public class ParserException : Exception
@@ -62,7 +62,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="innerException">The inner exception.</param>
-        public ParserException(string message, Exception innerException)
+        public ParserException(string message, System.Exception innerException)
             : base(message, innerException)
         {
         }

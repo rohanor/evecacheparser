@@ -35,6 +35,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using EveCacheParser.STypes;
 
 namespace EveCacheParser
@@ -131,7 +132,23 @@ namespace EveCacheParser
         public static object GetObject(object value)
         {
             SCachedObjectType cachedObject = value as SCachedObjectType;
-            return cachedObject == null ? null : cachedObject.GetCachedObject();
+
+            if (cachedObject == null)
+                return null;
+
+            if (cachedObject.Object != null)
+                return cachedObject.Object;
+
+            if (cachedObject.RawData == null)
+                throw new InvalidDataException("No object?!");
+
+            byte[] rawData = Encoding.Default.GetBytes((string)cachedObject.RawData);
+            byte[] data = cachedObject.IsCompressed ? SCachedObjectType.Decompress(rawData) : rawData;
+
+            cachedObject.Object = CachedFileParser.Parse(data);
+            cachedObject.RawData = null;
+
+            return cachedObject.Object;
         }
 
         #endregion

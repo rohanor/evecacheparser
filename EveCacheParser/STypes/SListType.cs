@@ -35,6 +35,8 @@
 
 using System.Globalization;
 using System.Linq;
+using EveCacheParser.Enumerations;
+using EveCacheParser.Exceptions;
 
 namespace EveCacheParser.STypes
 {

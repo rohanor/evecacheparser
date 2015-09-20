@@ -34,6 +34,7 @@
 # endregion
 
 using System.Globalization;
+using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
@@ -45,17 +46,15 @@ namespace EveCacheParser.STypes
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SReferenceType"/> class.
+        /// Initializes a new instance of the <see cref="SReferenceType" /> class.
         /// </summary>
         /// <param name="id">The id.</param>
-        internal SReferenceType(byte id)
+        /// <param name="text">The text.</param>
+        internal SReferenceType(byte id, string text)
             : base(StreamType.StringRef)
         {
             m_id = id;
-            Text = StringsTable.GetStringByID(id);
-
-            if (string.IsNullOrWhiteSpace(Text))
-                Text = "Unknown";
+            Text = !string.IsNullOrWhiteSpace(text) ? text : "Unknown";
         }
 
         #endregion

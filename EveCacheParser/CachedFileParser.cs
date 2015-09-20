@@ -39,6 +39,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using EveCacheParser.Collections;
+using EveCacheParser.Enumerations;
+using EveCacheParser.Exceptions;
 using EveCacheParser.STypes;
 
 namespace EveCacheParser
@@ -345,7 +348,7 @@ namespace EveCacheParser
                     sObject = new SStringType(m_reader.ReadString(1));
                     break;
                 case StreamType.StringRef:
-                    sObject = new SReferenceType(m_reader.ReadByte());
+                    sObject = new SReferenceType(m_reader.ReadByte(), StringsTable.GetStringByID(m_reader.ReadByte()));
                     break;
                 case StreamType.StringIdent:
                     sObject = new SIdentType(m_reader.ReadString(m_reader.ReadLength()));
@@ -586,7 +589,7 @@ namespace EveCacheParser
                 {
                     SType fieldName = field.Members.First();
                     SLongType fieldType = (SLongType)field.Members.Last();
-                    DBTypes dbType = (DBTypes)fieldType.Value;
+                    DbTypes dbType = (DbTypes)fieldType.Value;
 
                     byte boolCount = 0;
                     bool boolBuffer = false;
@@ -594,36 +597,36 @@ namespace EveCacheParser
 
                     switch (dbType)
                     {
-                        case DBTypes.Short:
-                        case DBTypes.UShort:
+                        case DbTypes.Short:
+                        case DbTypes.UShort:
                             if (pass == 3)
                                 obj = new SShortType(reader.ReadShort());
                             break;
-                        case DBTypes.Int:
-                        case DBTypes.UInt:
+                        case DbTypes.Int:
+                        case DbTypes.UInt:
                             if (pass == 2)
                                 obj = new SIntType(reader.ReadInt());
                             break;
-                        case DBTypes.Float:
+                        case DbTypes.Float:
                             if (pass == 2)
                                 obj = new SDoubleType(reader.ReadFloat());
                             break;
-                        case DBTypes.Double:
+                        case DbTypes.Double:
                             if (pass == 1)
                                 obj = new SDoubleType(reader.ReadDouble());
                             break;
-                        case DBTypes.Currency:
+                        case DbTypes.Currency:
                             if (pass == 1)
                                 obj = new SDoubleType(reader.ReadLong()/10000.0);
                             break;
-                        case DBTypes.Long:
-                        case DBTypes.ULong:
-                        case DBTypes.Filetime: // Timestamp
-                        case DBTypes.DBTimestamp:
+                        case DbTypes.Long:
+                        case DbTypes.ULong:
+                        case DbTypes.Filetime: // Timestamp
+                        case DbTypes.DBTimestamp:
                             if (pass == 1)
                                 obj = new SLongType(reader.ReadLong());
                             break;
-                        case DBTypes.Bool:
+                        case DbTypes.Bool:
                             if (pass == 5)
                             {
                                 if (boolCount == 0)
@@ -637,14 +640,14 @@ namespace EveCacheParser
                                           : new SBooleanType(0);
                             }
                             break;
-                        case DBTypes.Byte:
-                        case DBTypes.UByte:
+                        case DbTypes.Byte:
+                        case DbTypes.UByte:
                             if (pass == 4)
                                 obj = new SByteType(reader.ReadByte());
                             break;
-                        case DBTypes.Bytes: // String types
-                        case DBTypes.String:
-                        case DBTypes.WideString:
+                        case DbTypes.Bytes: // String types
+                        case DbTypes.String:
+                        case DbTypes.WideString:
                             if (pass == 6)
                                 obj = GetObject();
                             break;
@@ -678,46 +681,46 @@ namespace EveCacheParser
             int[] sizes = new int[5];
             int offset = 0;
 
-            foreach (DBTypes dbType in fields.Select(field => (DBTypes)field.Members.Last().Value))
+            foreach (DbTypes dbType in fields.Select(field => (DbTypes)field.Members.Last().Value))
             {
                 int index;
                 switch (dbType)
                 {
-                    case DBTypes.Bool:
+                    case DbTypes.Bool:
                         index = 0;
                         break;
-                    case DBTypes.Byte:
-                    case DBTypes.UByte:
+                    case DbTypes.Byte:
+                    case DbTypes.UByte:
                         index = 1;
                         break;
-                    case DBTypes.Short:
-                    case DBTypes.UShort:
+                    case DbTypes.Short:
+                    case DbTypes.UShort:
                         index = 2;
                         break;
-                    case DBTypes.Int:
-                    case DBTypes.UInt:
-                    case DBTypes.Float:
+                    case DbTypes.Int:
+                    case DbTypes.UInt:
+                    case DbTypes.Float:
                         index = 3;
                         break;
-                    case DBTypes.Currency:
-                    case DBTypes.Long:
-                    case DBTypes.ULong:
-                    case DBTypes.Filetime: // Timestamp
-                    case DBTypes.DBTimestamp:
-                    case DBTypes.Double:
+                    case DbTypes.Currency:
+                    case DbTypes.Long:
+                    case DbTypes.ULong:
+                    case DbTypes.Filetime: // Timestamp
+                    case DbTypes.DBTimestamp:
+                    case DbTypes.Double:
                         index = 4;
                         break;
-                    case DBTypes.Empty:
+                    case DbTypes.Empty:
                         continue;
-                    case DBTypes.Bytes: // String types
-                    case DBTypes.String:
-                    case DBTypes.WideString:
+                    case DbTypes.Bytes: // String types
+                    case DbTypes.String:
+                    case DbTypes.WideString:
                         continue;
                     default:
                         throw new ParserException("Unhandled DB row type " + dbType);
                 }
 
-                if (dbType != DBTypes.Empty)
+                if (dbType != DbTypes.Empty)
                     sizes[index]++;
             }
 
