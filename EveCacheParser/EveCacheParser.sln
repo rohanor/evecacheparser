@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dumper", "Dumper\Dumper.csproj", "{D0F83DD2-6081-4FDA-96F0-D0883EAD7023}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dumper", "src\Dumper\Dumper.csproj", "{D0F83DD2-6081-4FDA-96F0-D0883EAD7023}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EveCacheParser", "EveCacheParser\EveCacheParser.csproj", "{8948DCA5-C664-4093-A1FC-6C37C575FBE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EveCacheParser", "src\EveCacheParser\EveCacheParser.csproj", "{8948DCA5-C664-4093-A1FC-6C37C575FBE0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2D2EEE95-BBB4-46A7-A265-93396E14363F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E75684AC-C125-4ED9-901F-2CE041F7821F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +28,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D0F83DD2-6081-4FDA-96F0-D0883EAD7023} = {2D2EEE95-BBB4-46A7-A265-93396E14363F}
+		{8948DCA5-C664-4093-A1FC-6C37C575FBE0} = {2D2EEE95-BBB4-46A7-A265-93396E14363F}
 	EndGlobalSection
 EndGlobal
