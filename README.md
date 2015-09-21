@@ -1,16 +1,18 @@
 EVECacheParser - .NET 4/C# EVE Cache File Parser Library
-Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
+Copyright Â© 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
 
 EVECacheParser is an EVE Online cache/bulkdata file parser library.
 
 
 ==LICENSE==
+--
 
 EVECacheParser is distributed under GPL v2 
 (see license.txt that is included with the distribution).
 
 
 ==REQUIREMENTS==
+--
 
 - Windows (XP or later).
 - x86/x64 compatible processor.
@@ -27,6 +29,7 @@ Notes:
 
   
 ==SECURITY WARNING==
+--
 
 !!! DO NOT DECODE DATA FROM UNTRUSTED SOURCES WITH THIS LIBRARY !!!
 Decoding maliciously constructed or erroneous data may compromise 
@@ -34,6 +37,7 @@ your system's security and/or stability.
 
 
 ==DISCLAIMER==
+--
 
 This product does not modify in any way any file associated with the 
 EVE client or writes files that change the EVE client behavior, 
@@ -43,6 +47,7 @@ EVE Online is a registered trademark of CCP hf.
 
 
 ==HOW TO USE==
+--
 
 Every method is static and can be accessed via the Parser class.
 Parser exposes the following methods:
