@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Dumper
 {
-    internal class PriceHistoryEntry
+    class PriceHistoryEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PriceHistoryEntry"/> class.

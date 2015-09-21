@@ -39,7 +39,7 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class SBooleanType : SLongType
+    sealed class SBooleanType : SLongType
     {
         #region Constructors
 

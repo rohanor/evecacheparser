@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Dumper
 {
-    internal sealed class MarketOrder
+    sealed class MarketOrder
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MarketOrder"/> class.

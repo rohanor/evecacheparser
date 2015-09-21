@@ -43,19 +43,19 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser
 {
-    internal static class CachedFilesFinder
+    static class CachedFilesFinder
     {
-        private static List<string> s_methodIncludeFilter = new List<string>();
-        private static List<string> s_methodExcludeFilter = new List<string>();
-        private static List<string> s_includedFolders = new List<string>();
+        static List<string> s_methodIncludeFilter = new List<string>();
+        static List<string> s_methodExcludeFilter = new List<string>();
+        static List<string> s_includedFolders = new List<string>();
 
-        private const string EVESettingsPath = @"CCP\EVE";
-        private const string CacheFolderPath = @"cache\MachoNet\87.237.38.200";
-        private const string ServerLookupName = "*_tranquility";
-        private const string DefaultFolderLookupName = "CachedMethodCalls";
-        private const string BulkdataFolderName = "bulkdata";
-        private const string CacheFileExtensionLookup = "*.cache*";
-        private const string CacheFile2ExtensionLookup = "*.cache2";
+        const string EVESettingsPath = @"CCP\EVE";
+        const string CacheFolderPath = @"cache\MachoNet\87.237.38.200";
+        const string ServerLookupName = "*_tranquility";
+        const string DefaultFolderLookupName = "CachedMethodCalls";
+        const string BulkdataFolderName = "bulkdata";
+        const string CacheFileExtensionLookup = "*.cache*";
+        const string CacheFile2ExtensionLookup = "*.cache2";
 
         /// <summary>
         /// Sets the folders to look for cached files.
@@ -126,7 +126,7 @@ namespace EveCacheParser
         internal static FileInfo[] GetMachoNetCachedFiles(string folderPath = null)
         {
             // Construct the path to the EVE cache folder
-            string eveApplicationDataDir = String.IsNullOrWhiteSpace(folderPath)
+            var eveApplicationDataDir = String.IsNullOrWhiteSpace(folderPath)
                                                ? Path.Combine(
                                                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                                                    EVESettingsPath)
@@ -137,8 +137,8 @@ namespace EveCacheParser
                 return Enumerable.Empty<FileInfo>().ToArray();
 
             // Find all eve clients data folders
-            DirectoryInfo directory = new DirectoryInfo(eveApplicationDataDir);
-            DirectoryInfo[] foldersIn = directory.GetDirectories(ServerLookupName).OrderBy(dir => dir.CreationTimeUtc).ToArray();
+            var directory = new DirectoryInfo(eveApplicationDataDir);
+            var foldersIn = directory.GetDirectories(ServerLookupName).OrderBy(dir => dir.CreationTimeUtc).ToArray();
 
             // Get the path to the cache folder of each eve client
             IList<string> cacheFoldersPath =
@@ -149,7 +149,7 @@ namespace EveCacheParser
 
             // Get the latest cache folder (differs on every client patch version)
             // We take into consideration the edge case where the user has multiple clients but uses only one
-            string latestFolder = cacheFoldersPath.Select(path => new DirectoryInfo(path)).Where(dir => dir.Exists).SelectMany(
+            var latestFolder = cacheFoldersPath.Select(path => new DirectoryInfo(path)).Where(dir => dir.Exists).SelectMany(
                 dir => dir.GetDirectories()).Select(
                     dir => int.Parse(dir.Name, CultureInfo.InvariantCulture)).Concat(new[] { 0 }).Max().ToString(
                         CultureInfo.InvariantCulture);
@@ -162,7 +162,7 @@ namespace EveCacheParser
                                    : cacheFoldersPath.Select(path => Path.Combine(path, latestFolder, DefaultFolderLookupName)).ToList();
 
             // Get the cached files we need to scrap
-            IEnumerable<FileInfo> cachedFiles = cacheFoldersPath.Select(path => new DirectoryInfo(path)).Where(
+            var cachedFiles = cacheFoldersPath.Select(path => new DirectoryInfo(path)).Where(
                 dir => dir.Exists).SelectMany(dir => dir.GetFiles(CacheFileExtensionLookup));
 
             // Finds the cached files that are legit EVE files and satisfy the methods search criteria

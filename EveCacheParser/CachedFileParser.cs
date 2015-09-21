@@ -46,14 +46,14 @@ using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
-    internal class CachedFileParser
+    class CachedFileParser
     {
         #region Fields
 
-        private readonly CachedFileReader m_reader;
-        private readonly SStreamType m_stream;
-        private static bool s_dumpStructure;
-        private static bool s_cachedObject;
+        readonly CachedFileReader m_reader;
+        readonly SStreamType m_stream;
+        static bool s_dumpStructure;
+        static bool s_cachedObject;
 
         #endregion
 
@@ -64,7 +64,7 @@ namespace EveCacheParser
         /// Initializes a new instance of the <see cref="CachedFileParser"/> class.
         /// </summary>
         /// <param name="reader">The reader.</param>
-        private CachedFileParser(CachedFileReader reader)
+        CachedFileParser(CachedFileReader reader)
         {
             m_reader = reader;
             m_stream = new SStreamType(StreamType.StreamStart);
@@ -98,14 +98,14 @@ namespace EveCacheParser
         {
             Console.WriteLine("Converting to ASCII...");
 
-            CachedFileReader cachedFile = new CachedFileReader(file);
+            var cachedFile = new CachedFileReader(file);
 
             // Dump 16 bytes per line
-            int len = cachedFile.Length;
-            for (int i = 0; i < len; i += 16)
+            var len = cachedFile.Length;
+            for (var i = 0; i < len; i += 16)
             {
-                int cnt = Math.Min(16, len - i);
-                byte[] line = new byte[cnt];
+                var cnt = Math.Min(16, len - i);
+                var line = new byte[cnt];
                 Array.Copy(cachedFile.Buffer, i, line, 0, cnt);
 
                 // Write address + hex + ascii
@@ -114,7 +114,7 @@ namespace EveCacheParser
                 Console.Write(" ");
 
                 // Convert non-ascii characters to "."
-                for (int j = 0; j < cnt; ++j)
+                for (var j = 0; j < cnt; ++j)
                 {
                     if (line[j] < 0x20 || line[j] > 0x7f)
                         line[j] = (byte)'.';
@@ -130,8 +130,8 @@ namespace EveCacheParser
         /// <returns></returns>
         internal static object Parse(byte[] data)
         {
-            CachedFileReader reader = new CachedFileReader(data);
-            CachedFileParser parser = new CachedFileParser(reader);
+            var reader = new CachedFileReader(data);
+            var parser = new CachedFileParser(reader);
             parser.Parse();
 
             return parser.m_stream.Members.Select(member => member.ToObject()).ToList();
@@ -147,8 +147,8 @@ namespace EveCacheParser
             Console.WriteLine("Parsing...");
 
             SType.Reset();
-            CachedFileReader cachedFile = new CachedFileReader(file);
-            CachedFileParser parser = new CachedFileParser(cachedFile);
+            var cachedFile = new CachedFileReader(file);
+            var parser = new CachedFileParser(cachedFile);
             parser.Parse();
 
             return !s_dumpStructure ? parser.ToObjects() : new KeyValuePair<object, object>();
@@ -158,14 +158,14 @@ namespace EveCacheParser
         /// Converts the stream into objects.
         /// </summary>
         /// <returns></returns>
-        private KeyValuePair<object, object> ToObjects()
+        KeyValuePair<object, object> ToObjects()
         {
             IList<SType> tupleTwoMembers = m_stream.Members.First().Members;
-            object key = tupleTwoMembers.First().ToObject();
-            object value = tupleTwoMembers.Count > 2
+            var key = tupleTwoMembers.First().ToObject();
+            var value = tupleTwoMembers.Count > 2
                                ? tupleTwoMembers.Skip(1).Select(member => member.ToObject()).ToList()
                                : tupleTwoMembers.Last().ToObject();
-            
+
             return new KeyValuePair<object, object>(key, value);
         }
 
@@ -176,25 +176,25 @@ namespace EveCacheParser
         /// <param name="unpackedDataSize">Size of the unpacked data.</param>
         /// <returns>A new array with the uncompressed data.</returns>
         /// <remarks>See http://yannramin.com/2009/12/28/about-rle_unpack-in-libevecache/ </remarks>
-        private static byte[] Rle_Unpack(IList<byte> data, int unpackedDataSize)
+        static byte[] Rle_Unpack(IList<byte> data, int unpackedDataSize)
         {
             // Initialize the list with the calculated unpacked size
-            List<byte> buffer = new List<byte>(unpackedDataSize);
+            var buffer = new List<byte>(unpackedDataSize);
 
             if (data.Any())
             {
-                int i = 0;
+                var i = 0;
                 while (i < data.Count)
                 {
-                    byte b = data[i++];
-                    byte tlen = (byte)((byte)(b << 5) >> 5);
-                    bool tzero = (byte)((byte)(b << 4) >> 7) == 1;
-                    byte blen = (byte)((byte)(b << 1) >> 5);
-                    bool bzero = (byte)(b >> 7) == 1;
+                    var b = data[i++];
+                    var tlen = (byte)((byte)(b << 5) >> 5);
+                    var tzero = (byte)((byte)(b << 4) >> 7) == 1;
+                    var blen = (byte)((byte)(b << 1) >> 5);
+                    var bzero = (byte)(b >> 7) == 1;
 
                     if (tzero)
                     {
-                        byte count = (byte)(tlen + 1);
+                        var count = (byte)(tlen + 1);
                         for (; count > 0; count--)
                         {
                             buffer.Add(0);
@@ -202,7 +202,7 @@ namespace EveCacheParser
                     }
                     else
                     {
-                        byte count = (byte)(8 - tlen);
+                        var count = (byte)(8 - tlen);
                         for (; count > 0; count--)
                         {
                             buffer.Add(data[i++]);
@@ -214,7 +214,7 @@ namespace EveCacheParser
                         if (i == data.Count)
                             break;
 
-                        byte count = (byte)(blen + 1);
+                        var count = (byte)(blen + 1);
                         for (; count > 0; count--)
                         {
                             buffer.Add(0);
@@ -225,7 +225,7 @@ namespace EveCacheParser
                         if (i == data.Count)
                             break;
 
-                        byte count = (byte)(8 - blen);
+                        var count = (byte)(8 - blen);
                         for (; count > 0; count--)
                         {
                             buffer.Add(data[i++]);
@@ -251,7 +251,7 @@ namespace EveCacheParser
         /// <summary>
         /// Parses the data of a stream.
         /// </summary>
-        private void Parse()
+        void Parse()
         {
             while (!m_reader.AtEnd)
             {
@@ -264,11 +264,11 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="limit">The limit.</param>
-        private void Parse(SType stream, int limit = 1)
+        void Parse(SType stream, int limit = 1)
         {
             while (!m_reader.AtEnd && limit-- > 0)
             {
-                SType obj = GetObject();
+                var obj = GetObject();
 
                 // Null object is marker and is handled in base method
                 stream.AddMember(obj);
@@ -283,12 +283,12 @@ namespace EveCacheParser
         /// Gets an object from the data.
         /// </summary>
         /// <returns></returns>
-        private SType GetObject()
+        SType GetObject()
         {
             SType sObject = null;
-            byte type = m_reader.ReadByte();
-            StreamType checkType = (StreamType)(type & ~(byte)StreamType.SharedFlag);
-            bool shared = Convert.ToBoolean(type & (byte)StreamType.SharedFlag);
+            var type = m_reader.ReadByte();
+            var checkType = (StreamType)(type & ~(byte)StreamType.SharedFlag);
+            var shared = Convert.ToBoolean(type & (byte)StreamType.SharedFlag);
 
             switch (checkType)
             {
@@ -356,7 +356,7 @@ namespace EveCacheParser
                     break;
                 case StreamType.Tuple:
                     {
-                        int length = m_reader.ReadLength();
+                        var length = m_reader.ReadLength();
                         sObject = new STupleType((uint)length);
                         CheckShared(shared, sObject);
                         Parse(sObject, length);
@@ -364,7 +364,7 @@ namespace EveCacheParser
                     }
                 case StreamType.List:
                     {
-                        int length = m_reader.ReadLength();
+                        var length = m_reader.ReadLength();
                         sObject = new SListType((uint)length);
                         CheckShared(shared, sObject);
                         Parse(sObject, length);
@@ -372,7 +372,7 @@ namespace EveCacheParser
                     }
                 case StreamType.Dict:
                     {
-                        int length = (m_reader.ReadLength() * 2);
+                        var length = (m_reader.ReadLength() * 2);
                         sObject = new SDictType((uint)length);
                         CheckShared(shared, sObject);
                         Parse(sObject, length);
@@ -395,7 +395,7 @@ namespace EveCacheParser
                 case StreamType.NewObj:
                 case StreamType.Object:
                     {
-                        int storedId = m_reader.ReserveSlot(shared);
+                        var storedId = m_reader.ReserveSlot(shared);
                         sObject = ParseObject();
                         m_reader.UpdateSlot(storedId, sObject);
                     }
@@ -457,7 +457,7 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="shared">if set to <c>true</c> it's a shared object.</param>
         /// <param name="sObject">The object.</param>
-        private void CheckShared(bool shared, SType sObject)
+        void CheckShared(bool shared, SType sObject)
         {
             if (shared)
                 m_reader.AddSharedObj(sObject);
@@ -467,12 +467,12 @@ namespace EveCacheParser
         /// Parses an object.
         /// </summary>
         /// <returns></returns>
-        private SType ParseObject()
+        SType ParseObject()
         {
             s_cachedObject = false;
 
             SType row;
-            SObjectType obj = new SObjectType();
+            var obj = new SObjectType();
             Parse(obj);
 
             if (obj.IsCachedMethodCallResult || obj.IsCachedObject || obj.IsKeyVal)
@@ -516,15 +516,15 @@ namespace EveCacheParser
         /// Parses a sub stream.
         /// </summary>
         /// <returns></returns>
-        private SType ParseSubStream()
+        SType ParseSubStream()
         {
             SType subStream = new SStreamType(StreamType.SubStream);
-            int length = m_reader.ReadLength();
+            var length = m_reader.ReadLength();
 
             if (s_dumpStructure)
             {
-                CachedFileReader subReader = new CachedFileReader(m_reader, length);
-                CachedFileParser subParser = new CachedFileParser(subReader);
+                var subReader = new CachedFileReader(m_reader, length);
+                var subParser = new CachedFileParser(subReader);
                 subParser.Parse();
                 subStream.AddMember(subParser.m_stream.Clone());
             }
@@ -541,9 +541,9 @@ namespace EveCacheParser
         /// Parses a database row.
         /// </summary>
         /// <returns></returns>
-        private SType ParseDBRow()
+        SType ParseDBRow()
         {
-            SObjectType header = GetObject() as SObjectType;
+            var header = GetObject() as SObjectType;
 
             if (header == null)
                 throw new ParserException("DBRow header not found");
@@ -551,30 +551,30 @@ namespace EveCacheParser
             if (!header.IsDBRowDescriptor)
                 throw new ParserException("Bad DBRow descriptor name");
 
-            List<STupleType> fields = header.Members.First().Members.First(
+            var fields = header.Members.First().Members.First(
                 member => member is STupleType).Members.First().Members.Cast<STupleType>().ToList();
 
             if (!fields.Any())
                 return new SNoneType();
 
             // Check for double marker in stream (usually found in a file with one DBRow)
-            int length = m_reader.ReadLength();
+            var length = m_reader.ReadLength();
             if (m_reader.IsDoubleMarker(length))
                 length = m_reader.ReadLength();
 
-            int unpackedDataSize = GetUnpackedDataSize(fields);
-            byte[] compressedData = m_reader.ReadBytes(length);
-            byte[] uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
+            var unpackedDataSize = GetUnpackedDataSize(fields);
+            var compressedData = m_reader.ReadBytes(length);
+            var uncompressedData = Rle_Unpack(compressedData, unpackedDataSize);
 
-            CachedFileReader reader = new CachedFileReader(uncompressedData, false);
+            var reader = new CachedFileReader(uncompressedData, false);
 
             // Find the maximum number of elements for each field member
-            int maxElements = fields.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();
+            var maxElements = fields.Select(field => field.Members.Count).Concat(new[] { 0 }).Max();
 
             // The size of SDict must be the ammount of entries stored,
             // multiplied by the max elements of each field member
-            SDictType dict = new SDictType((uint)(fields.Count() * maxElements));
-            int pass = 1;
+            var dict = new SDictType((uint)(fields.Count() * maxElements));
+            var pass = 1;
             while (pass < 7)
             {
                 // The pattern for what data to read on each pass is:
@@ -585,14 +585,14 @@ namespace EveCacheParser
                 // 5: 1 bit (Boolean)
                 // 6: strings
 
-                foreach (STupleType field in fields)
+                foreach (var field in fields)
                 {
-                    SType fieldName = field.Members.First();
-                    SLongType fieldType = (SLongType)field.Members.Last();
-                    DbTypes dbType = (DbTypes)fieldType.Value;
+                    var fieldName = field.Members.First();
+                    var fieldType = (SLongType)field.Members.Last();
+                    var dbType = (DbTypes)fieldType.Value;
 
                     byte boolCount = 0;
-                    bool boolBuffer = false;
+                    var boolBuffer = false;
                     SType obj = null;
 
                     switch (dbType)
@@ -617,7 +617,7 @@ namespace EveCacheParser
                             break;
                         case DbTypes.Currency:
                             if (pass == 1)
-                                obj = new SDoubleType(reader.ReadLong()/10000.0);
+                                obj = new SDoubleType(reader.ReadLong() / 10000.0);
                             break;
                         case DbTypes.Long:
                         case DbTypes.ULong:
@@ -665,7 +665,7 @@ namespace EveCacheParser
                 pass++;
             }
 
-            STupleType parsedDBRow = new STupleType(2);
+            var parsedDBRow = new STupleType(2);
             parsedDBRow.AddMember(header);
             parsedDBRow.AddMember(dict);
             return parsedDBRow;
@@ -676,12 +676,12 @@ namespace EveCacheParser
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        private static int GetUnpackedDataSize(IEnumerable<STupleType> fields)
+        static int GetUnpackedDataSize(IEnumerable<STupleType> fields)
         {
-            int[] sizes = new int[5];
-            int offset = 0;
+            var sizes = new int[5];
+            var offset = 0;
 
-            foreach (DbTypes dbType in fields.Select(field => (DbTypes)field.Members.Last().Value))
+            foreach (var dbType in fields.Select(field => (DbTypes)field.Members.Last().Value))
             {
                 int index;
                 switch (dbType)
@@ -724,7 +724,7 @@ namespace EveCacheParser
                     sizes[index]++;
             }
 
-            for (int i = 4; i > 0; i--)
+            for (var i = 4; i > 0; i--)
             {
                 offset += sizes[i] * (1 << (i - 1));
             }

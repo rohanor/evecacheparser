@@ -42,14 +42,14 @@ using EveCacheParser.STypes;
 
 namespace EveCacheParser
 {
-    internal class CachedFileReader
+    class CachedFileReader
     {
         #region Fields
 
-        private SType[] m_sharedObj;
-        private int[] m_sharedMap;
-        private int m_sharePosition;
-        private int m_shareSkip;
+        SType[] m_sharedObj;
+        int[] m_sharedMap;
+        int m_sharePosition;
+        int m_shareSkip;
 
         #endregion
 
@@ -68,9 +68,9 @@ namespace EveCacheParser
 
             try
             {
-                using (FileStream stream = file.OpenRead())
+                using (var stream = file.OpenRead())
                 {
-                    BinaryReader binaryReader = new BinaryReader(stream);
+                    var binaryReader = new BinaryReader(stream);
                     Buffer = binaryReader.ReadBytes((int)stream.Length);
                 }
 
@@ -161,7 +161,7 @@ namespace EveCacheParser
         /// Gets or sets the end of the objects data.
         /// </summary>
         /// <value>The end of objects data.</value>
-        private int EndOfObjectsData { get; set; }
+        int EndOfObjectsData { get; set; }
 
         /// <summary>
         /// Gets the length.
@@ -192,8 +192,8 @@ namespace EveCacheParser
         /// <returns></returns>
         internal long ReadBigInt()
         {
-            byte[] source = ReadBytes(ReadLength());
-            byte[] destination = new byte[8];
+            var source = ReadBytes(ReadLength());
+            var destination = new byte[8];
             Array.Copy(source, destination, source.Length);
 
             return BitConverter.ToInt64(destination, 0);
@@ -283,7 +283,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal byte ReadByte()
         {
-            byte temp = GetByte();
+            var temp = GetByte();
             Seek(1);
             return temp;
         }
@@ -295,7 +295,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal byte[] ReadBytes(int length)
         {
-            byte[] temp = GetBytes(new byte[length], length);
+            var temp = GetBytes(new byte[length], length);
             Seek(length);
             return temp;
         }
@@ -363,7 +363,7 @@ namespace EveCacheParser
             if (m_sharePosition >= m_sharedMap.Length)
                 throw new ParserException("sharePosition out of range");
 
-            int sharedId = m_sharedMap[m_sharePosition++] - 1;
+            var sharedId = m_sharedMap[m_sharePosition++] - 1;
 
             if (sharedId >= m_sharedMap.Length)
                 throw new ParserException("shareid out of range");
@@ -432,36 +432,36 @@ namespace EveCacheParser
         /// <summary>
         /// Does a security check on the data.
         /// </summary>
-        private void SecurityCheck()
+        void SecurityCheck()
         {
             // Move one position
             Seek(1);
 
             // Get the # of the shared mapped data in stream
-            int sharedMapsize = ReadInt();
+            var sharedMapsize = ReadInt();
 
             // Calculate the size of the shared mapped data in stream
-            m_shareSkip = sharedMapsize * sizeof (int);
+            m_shareSkip = sharedMapsize * sizeof(int);
 
             // Security check #1
             if (Position + m_shareSkip > Length)
                 throw new ParserException("Not enough room in stream for map");
 
             // Store the position to return to
-            int positionTemp = Position;
+            var positionTemp = Position;
 
             // Jump to the shared mapped data posistion in stream
             Seek(m_shareSkip, SeekOrigin.End);
 
             // Create and store the shared mapped data
             m_sharedMap = new int[sharedMapsize];
-            for (int i = 0; i < sharedMapsize; i++)
+            for (var i = 0; i < sharedMapsize; i++)
             {
                 m_sharedMap[i] = ReadInt();
             }
 
             // Security Check #2
-            for (int i = 0; i < sharedMapsize; i++)
+            for (var i = 0; i < sharedMapsize; i++)
             {
                 if ((m_sharedMap[i] > sharedMapsize) || (m_sharedMap[i] < 1))
                     throw new ParserException("Bogus map data in stream");
@@ -481,7 +481,7 @@ namespace EveCacheParser
         /// Gets a byte.
         /// </summary>
         /// <returns></returns>
-        private byte GetByte()
+        byte GetByte()
         {
             CheckSize(1);
             return Buffer[Position];
@@ -493,10 +493,10 @@ namespace EveCacheParser
         /// <param name="destination">The destination.</param>
         /// <param name="count">The count.</param>
         /// <returns></returns>
-        private byte[] GetBytes(byte[] destination, int count)
+        byte[] GetBytes(byte[] destination, int count)
         {
             CheckSize(count);
-            int copyLength = Position + count < Length ? count : Length - Position;
+            var copyLength = Position + count < Length ? count : Length - Position;
             Array.Copy(Buffer, Position, destination, 0, copyLength);
             return destination;
         }
@@ -505,7 +505,7 @@ namespace EveCacheParser
         /// Checks there are enough data ahead.
         /// </summary>
         /// <param name="length">The length of data to check.</param>
-        private void CheckSize(int length)
+        void CheckSize(int length)
         {
             if (Position + length <= Length)
                 return;

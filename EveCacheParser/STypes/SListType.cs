@@ -40,9 +40,9 @@ using EveCacheParser.Exceptions;
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class SListType : SType
+    sealed class SListType : SType
     {
-        private readonly uint m_length;
+        readonly uint m_length;
 
 
         #region Constructors

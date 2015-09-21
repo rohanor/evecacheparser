@@ -38,7 +38,7 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class SShortType : SLongType
+    sealed class SShortType : SLongType
     {
         #region Constructors
 

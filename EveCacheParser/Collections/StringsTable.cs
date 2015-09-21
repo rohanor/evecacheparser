@@ -39,15 +39,15 @@ using System.Linq;
 
 namespace EveCacheParser.Collections
 {
-    internal class StringsTable
+    class StringsTable
     {
-        private static readonly List<string> s_stringList =
+        static readonly List<string> s_stringList =
             Properties.Resources.StringsTable.Replace(Environment.NewLine, String.Empty).Split(',').ToList();
 
         /// <summary>
         /// Prevents a default instance of the <see cref="StringsTable"/> class from being created.
         /// </summary>
-        private StringsTable()
+        StringsTable()
         {
         }
 

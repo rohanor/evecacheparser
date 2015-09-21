@@ -41,9 +41,9 @@ using EveCacheParser.Exceptions;
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class STupleType : SType
+    sealed class STupleType : SType
     {
-        private readonly uint m_length;
+        readonly uint m_length;
 
 
         #region Constructors
