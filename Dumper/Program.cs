@@ -7,13 +7,13 @@ using EveCacheParser.Exceptions;
 
 namespace Dumper
 {
-    internal static class Program
+    static class Program
     {
         /// <summary>
         /// The application entry point.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        private static void Main(params string[] args)
+        static void Main(params string[] args)
         {
             /* Switch to force showing the cache file in ASCII format */
             //args = new[] { "-ascii" };
@@ -41,13 +41,13 @@ namespace Dumper
             //FileInfo[] cachedFiles = Parser.GetBulkDataCachedFiles(@"E:\CCP\EVE");
 
             /* Example of method usage */
-            FileInfo[] cachedFiles = Parser.GetMachoNetCachedFiles();
+            var cachedFiles = Parser.GetMachoNetCachedFiles();
             //FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
             //FileInfo[] cachedFiles = Parser.GetMachoNetCachedFiles(@"E:\CCP\EVE");
 
             /* Code snippet of testing the parsing of the cached files */
-            int count = 0;
-            foreach (FileInfo cachedFile in cachedFiles/*.Where(x => x.Name == "9d34.cache")*/)
+            var count = 0;
+            foreach (FileInfo cachedFile in cachedFiles /*.Where(x => x.Name == "9d34.cache")*/)
             {
                 try
                 {
@@ -58,7 +58,7 @@ namespace Dumper
                         Parser.DumpStructure(cachedFile);
                     else
                     {
-                        KeyValuePair<object, object> result = Parser.Parse(cachedFile);
+                        var result = Parser.Parse(cachedFile);
                         CheckResult(result);
                     }
                     count++;
@@ -83,36 +83,38 @@ namespace Dumper
         /// <summary>
         /// Code snippet for extracting market orders.
         /// </summary>
-        private static void CodeSnippetForMarketOrder()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        static void CodeSnippetForMarketOrder()
         {
             Parser.SetIncludeMethodsFilter("GetOrders");
-            FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
-            KeyValuePair<object, object> result = Parser.Parse(cachedFile);
-            List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
-            long regionID = (long)key[2];
-            short typeID = (short)key[3];
-            Dictionary<object, object> resultValue = (Dictionary<object, object>)result.Value;
-            List<object> value = (List<object>)resultValue["lret"];
-            List<MarketOrder> orders = value.Cast<List<object>>().SelectMany(
+            var cachedFile = Parser.GetMachoNetCachedFiles().First();
+            var result = Parser.Parse(cachedFile);
+            var key = (List<object>)((Tuple<object>)result.Key).Item1;
+            var regionID = (long)key[2];
+            var typeID = (short)key[3];
+            var resultValue = (Dictionary<object, object>)result.Value;
+            var value = (List<object>)resultValue["lret"];
+            var orders = value.Cast<List<object>>().SelectMany(
                 obj => obj.Cast<Dictionary<object, object>>(), (obj, order) => new MarketOrder(order)).ToList();
-            List<MarketOrder> sellOrders = orders.Where(order => !order.Bid).ToList();
-            List<MarketOrder> buyOrders = orders.Where(order => order.Bid).ToList();
+            var sellOrders = orders.Where(order => !order.Bid).ToList();
+            var buyOrders = orders.Where(order => order.Bid).ToList();
         }
 
         /// <summary>
         /// Code snippet for extracting market history.
         /// </summary>
-        private static void CodeSnippetForMarketHistory()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        static void CodeSnippetForMarketHistory()
         {
             Parser.SetIncludeMethodsFilter("GetOldPriceHistory", "GetNewPriceHistory");
-            FileInfo cachedFile = Parser.GetMachoNetCachedFiles().First();
-            KeyValuePair<object, object> result = Parser.Parse(cachedFile);
-            List<object> key = (List<object>)((Tuple<object>)result.Key).Item1;
-            long regionID = (long)key[2];
-            short typeID = (short)key[3];
-            Dictionary<object, object> resultValue = (Dictionary<object, object>)result.Value;
-            List<object> value = (List<object>)resultValue["lret"];
-            List<PriceHistoryEntry> priceHistory = value.Cast<Dictionary<object, object>>().Select(
+            var cachedFile = Parser.GetMachoNetCachedFiles().First();
+            var result = Parser.Parse(cachedFile);
+            var key = (List<object>)((Tuple<object>)result.Key).Item1;
+            var regionID = (long)key[2];
+            var typeID = (short)key[3];
+            var resultValue = (Dictionary<object, object>)result.Value;
+            var value = (List<object>)resultValue["lret"];
+            var priceHistory = value.Cast<Dictionary<object, object>>().Select(
                 entry => new PriceHistoryEntry(entry)).ToList();
         }
 
@@ -120,7 +122,7 @@ namespace Dumper
         /// Checks the result.
         /// </summary>
         /// <param name="result">The result.</param>
-        private static void CheckResult(KeyValuePair<object, object> result)
+        static void CheckResult(KeyValuePair<object, object> result)
         {
             if (result.Key == null || result.Value == null)
             {
@@ -134,14 +136,14 @@ namespace Dumper
                         ((List<object>)((Tuple<object>)((List<object>)((Tuple<object>)result.Key).Item1).First()).Item1)
                             .First() as string;
 
-            Dictionary<object, object> resultValue = result.Value as Dictionary<object, object>;
+            var resultValue = result.Value as Dictionary<object, object>;
             if (resultValue == null)
             {
                 value = ((List<object>)Parser.GetObject(((List<object>)result.Value).First())).First();
                 return;
             }
 
-            object lret = resultValue["lret"];
+            var lret = resultValue["lret"];
             object method = ((List<object>)((Tuple<object>)result.Key).Item1).Skip(1).First() as string;
             switch ((string)id)
             {

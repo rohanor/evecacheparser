@@ -37,9 +37,9 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal class SStreamType : SType
+    class SStreamType : SType
     {
-        private readonly StreamType m_streamType;
+        readonly StreamType m_streamType;
 
 
         #region Constructors

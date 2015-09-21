@@ -43,7 +43,7 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal class SCachedObjectType : SType
+    class SCachedObjectType : SType
     {
         #region Constructor
 
@@ -54,7 +54,7 @@ namespace EveCacheParser.STypes
         public SCachedObjectType(SType obj)
             : base(StreamType.ClassObject)
         {
-            List<SType> objects = obj.Members.ToList();
+            var objects = obj.Members.ToList();
 
             Version = objects[0].ToObject();
             Object = objects[1].ToObject();
@@ -82,7 +82,7 @@ namespace EveCacheParser.STypes
         /// Gets or sets the node ID.
         /// </summary>
         /// <value>The node ID.</value>
-        private object NodeID { get; set; }
+        object NodeID { get; set; }
 
         /// <summary>
         /// Gets or sets the object.
@@ -94,7 +94,7 @@ namespace EveCacheParser.STypes
         /// Gets or sets the object ID.
         /// </summary>
         /// <value>The object ID.</value>
-        private object ObjectID { get; set; }
+        object ObjectID { get; set; }
 
         /// <summary>
         /// Gets or sets the raw data.
@@ -106,13 +106,13 @@ namespace EveCacheParser.STypes
         /// Gets or sets a value indicating whether this <see cref="SCachedObjectType"/> is shared.
         /// </summary>
         /// <value><c>true</c> if shared; otherwise, <c>false</c>.</value>
-        private bool Shared { get; set; }
+        bool Shared { get; set; }
 
         /// <summary>
         /// Gets or sets the version.
         /// </summary>
         /// <value>The version.</value>
-        private object Version { get; set; }
+        object Version { get; set; }
 
         #endregion
 
@@ -132,12 +132,12 @@ namespace EveCacheParser.STypes
             // To make the data compatible for 'DeflateStream', we only have to remove
             // the four last bytes which are the adler32 checksum and
             // the two first bytes which are the zlib header
-            byte[] choppedRawData = rawData.Take(rawData.Count - 4).Skip(2).ToArray();
+            var choppedRawData = rawData.Take(rawData.Count - 4).Skip(2).ToArray();
 
             // Decompress the data
-            using (MemoryStream outStream = GetMemoryStream())
+            using (var outStream = GetMemoryStream())
             using (
-                DeflateStream outZStream = new DeflateStream(GetMemoryStream(choppedRawData), CompressionMode.Decompress)
+                var outZStream = new DeflateStream(GetMemoryStream(choppedRawData), CompressionMode.Decompress)
                 )
             {
                 outZStream.CopyTo(outStream);
@@ -150,7 +150,7 @@ namespace EveCacheParser.STypes
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns></returns>
-        private static MemoryStream GetMemoryStream(byte[] buffer = null)
+        static MemoryStream GetMemoryStream(byte[] buffer = null)
         {
             if (buffer == null || buffer.Length == 0)
                 return new MemoryStream();

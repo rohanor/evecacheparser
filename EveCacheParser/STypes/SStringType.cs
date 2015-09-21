@@ -38,7 +38,7 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal class SStringType : SType
+    class SStringType : SType
     {
         #region Constructors
 

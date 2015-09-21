@@ -38,9 +38,9 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class SReferenceType : SStringType
+    sealed class SReferenceType : SStringType
     {
-        private readonly byte m_id;
+        readonly byte m_id;
 
 
         #region Constructors

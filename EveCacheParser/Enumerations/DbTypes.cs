@@ -35,7 +35,7 @@
 
 namespace EveCacheParser.Enumerations
 {
-    internal enum DbTypes
+    enum DbTypes
     {
         Empty = 0,
         Null = 1,

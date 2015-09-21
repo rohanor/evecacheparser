@@ -40,7 +40,7 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal sealed class SObjectType : SType
+    sealed class SObjectType : SType
     {
         #region Constructors
 
@@ -187,7 +187,7 @@ namespace EveCacheParser.STypes
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
-        private string Name
+        string Name
         {
             get
             {
@@ -197,7 +197,7 @@ namespace EveCacheParser.STypes
                     current = current.Members[0];
                 }
 
-                SStringType stringType = current as SStringType;
+                var stringType = current as SStringType;
 
                 return stringType != null ? stringType.Text : string.Empty;
             }

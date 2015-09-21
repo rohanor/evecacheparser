@@ -42,17 +42,17 @@ using EveCacheParser.Enumerations;
 
 namespace EveCacheParser.STypes
 {
-    internal abstract class SType
+    abstract class SType
     {
         #region Fields
 
         protected readonly int DebugID;
 
-        private readonly StreamType m_streamType;
+        readonly StreamType m_streamType;
 
-        private static readonly Dictionary<int, bool> s_typeConsumed = new Dictionary<int, bool>();
-        private static readonly List<SType> s_type = new List<SType>();
-        private static int s_count;
+        static readonly Dictionary<int, bool> s_typeConsumed = new Dictionary<int, bool>();
+        static readonly List<SType> s_type = new List<SType>();
+        static int s_count;
 
         #endregion
 
@@ -130,8 +130,8 @@ namespace EveCacheParser.STypes
         {
             s_type.ForEach(type => s_typeConsumed[type.DebugID] = false);
 
-            StringBuilder fileContents = new StringBuilder();
-            foreach (SType type in s_type.Where(type => !s_typeConsumed[type.DebugID]))
+            var fileContents = new StringBuilder();
+            foreach (var type in s_type.Where(type => !s_typeConsumed[type.DebugID]))
             {
                 if (type.m_streamType == StreamType.StreamStart)
                 {
@@ -154,13 +154,13 @@ namespace EveCacheParser.STypes
         /// <param name="sType">The stream type.</param>
         /// <param name="offset">The offset.</param>
         /// <returns></returns>
-        private static string DumpType(SType sType, int offset)
+        static string DumpType(SType sType, int offset)
         {
             if (!sType.Members.Any())
                 return String.Empty;
 
-            StringBuilder sb = new StringBuilder();
-            foreach (SType type in sType.Members)
+            var sb = new StringBuilder();
+            foreach (var type in sType.Members)
             {
                 sb.Append(type.ToString().PadLeft((2 * offset) + type.ToString().Length));
                 sb.AppendFormat("[{0:00}]\n", type.DebugID);
@@ -174,10 +174,10 @@ namespace EveCacheParser.STypes
 
         internal static Dictionary<object, object> ToDictionary(IList<SType> members, int sortCriteria = 0)
         {
-            Dictionary<object, object> dictionary = new Dictionary<object, object>();
+            var dictionary = new Dictionary<object, object>();
             object key = null;
             object value = null;
-            foreach (SType member in members)
+            foreach (var member in members)
             {
                 // 'sortCriteria' determines which members are keys
                 if (members.IndexOf(member) % 2 == sortCriteria)

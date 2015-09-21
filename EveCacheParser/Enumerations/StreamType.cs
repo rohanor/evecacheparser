@@ -1,6 +1,6 @@
 namespace EveCacheParser.Enumerations
 {
-    internal enum StreamType
+    enum StreamType
     {
         None = 0x01,                // 1: None
         StringGlobal = 0x02,        // 2: A string identifying usually a type, function or class object
