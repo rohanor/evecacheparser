@@ -192,9 +192,9 @@ namespace EveCacheParser
         /// <returns></returns>
         internal long ReadBigInt()
         {
-            var source = ReadBytes(ReadLength());
-            var destination = new byte[8];
-            Array.Copy(source, destination, source.Length);
+            byte[] source = ReadBytes(ReadLength());
+            var destination = new byte[source.LongLength];
+            Array.Copy(source, destination, source.LongLength);
 
             return BitConverter.ToInt64(destination, 0);
         }
@@ -205,7 +205,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal double ReadDouble()
         {
-            return BitConverter.ToDouble(ReadBytes(8), 0);
+            return BitConverter.ToDouble(ReadBytes(sizeof(double)), 0);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal float ReadFloat()
         {
-            return BitConverter.ToSingle(ReadBytes(4), 0);
+            return BitConverter.ToSingle(ReadBytes(sizeof(float)), 0);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace EveCacheParser
         /// <returns></returns>
         internal short ReadShort()
         {
-            return BitConverter.ToInt16(ReadBytes(2), 0);
+            return BitConverter.ToInt16(ReadBytes(sizeof(short)), 0);
         }
 
         /// <summary>
@@ -232,7 +232,16 @@ namespace EveCacheParser
         /// <returns></returns>
         internal long ReadLong()
         {
-            return BitConverter.ToInt64(ReadBytes(8), 0);
+            return BitConverter.ToInt64(ReadBytes(sizeof(long)), 0);
+        }
+
+        /// <summary>
+        /// Reads an int.
+        /// </summary>
+        /// <returns></returns>
+        internal int ReadInt()
+        {
+            return BitConverter.ToInt32(ReadBytes(sizeof(int)), 0);
         }
 
         /// <summary>
@@ -266,15 +275,6 @@ namespace EveCacheParser
             return BitConverter.IsLittleEndian
                        ? Encoding.Unicode.GetString(ReadBytes(length))
                        : Encoding.BigEndianUnicode.GetString(ReadBytes(length));
-        }
-
-        /// <summary>
-        /// Reads an int.
-        /// </summary>
-        /// <returns></returns>
-        internal int ReadInt()
-        {
-            return BitConverter.ToInt32(ReadBytes(4), 0);
         }
 
         /// <summary>
