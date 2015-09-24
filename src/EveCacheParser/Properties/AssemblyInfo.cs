@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -11,9 +12,19 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jimi C")]
 [assembly: AssemblyProduct("EVE Cache File Parser Library")]
-[assembly: AssemblyCopyright("Copyright ©  2012, Jimi C")]
+[assembly: AssemblyCopyright("Copyright ©  2012-2015, Jimi C")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+#if (DEBUG)
+// Friend assembly for unit testing
+[assembly: InternalsVisibleTo("EveCacheParser.Tests, PublicKey=" +
+    "0024000004800000940000000602000000240000525341310004000001000100c101724b5a25b5" +
+    "9520fb72f3a341e332797b3be959d90869f8b1c09f39558befdbc16b5ef2ff321b16208a696b36" +
+    "0352e3431895adfaa8ab3948918b94bb56f714144efde24e5df79587fbfeceb6f0348407886d8a" +
+    "accd93168ba78a48f52646eef2349b9095add7bc5bef2e34894974f1988ef317a7bb4586541609" +
+    "92d9b5d1")]
+#endif
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
