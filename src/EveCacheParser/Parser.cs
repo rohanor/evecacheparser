@@ -132,7 +132,7 @@ namespace EveCacheParser
         /// <returns></returns>
         public static object GetObject(object value)
         {
-            var cachedObject = value as SCachedObjectType;
+            SCachedObjectType cachedObject = value as SCachedObjectType;
 
             if (cachedObject == null)
                 return null;
@@ -143,8 +143,8 @@ namespace EveCacheParser
             if (cachedObject.RawData == null)
                 throw new InvalidDataException("No object?!");
 
-            var rawData = Encoding.Default.GetBytes((string)cachedObject.RawData);
-            var data = cachedObject.IsCompressed ? SCachedObjectType.Decompress(rawData) : rawData;
+            byte[] rawData = Encoding.Default.GetBytes((string)cachedObject.RawData);
+            byte[] data = cachedObject.IsCompressed ? SCachedObjectType.Decompress(rawData) : rawData;
 
             cachedObject.Object = CachedFileParser.Parse(data);
             cachedObject.RawData = null;
