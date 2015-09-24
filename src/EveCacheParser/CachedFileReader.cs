@@ -193,7 +193,7 @@ namespace EveCacheParser
         internal long ReadBigInt()
         {
             byte[] source = ReadBytes(ReadLength());
-            var destination = new byte[source.LongLength];
+            var destination = new byte[sizeof(long)];
             Array.Copy(source, destination, source.LongLength);
 
             return BitConverter.ToInt64(destination, 0);

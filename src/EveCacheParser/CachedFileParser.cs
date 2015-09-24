@@ -348,7 +348,8 @@ namespace EveCacheParser
                     sObject = new SStringType(m_reader.ReadString(1));
                     break;
                 case StreamType.StringRef:
-                    sObject = new SReferenceType(m_reader.ReadByte(), StringsTable.GetStringByID(m_reader.ReadByte()));
+                    var id = m_reader.ReadByte();
+                    sObject = new SReferenceType(id, StringsTable.GetStringByID(id));
                     break;
                 case StreamType.StringIdent:
                     sObject = new SIdentType(m_reader.ReadString(m_reader.ReadLength()));
