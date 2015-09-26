@@ -63,7 +63,7 @@ namespace EveCacheParser
         /// <param name="folders">The folders.</param>
         internal static void SetCachedFilesFolders(params string[] folders)
         {
-            if (folders == null)
+            if (folders == null || folders.All(String.IsNullOrWhiteSpace))
             {
                 s_includedFolders = new List<string>();
                 return;
@@ -78,7 +78,7 @@ namespace EveCacheParser
         /// <param name="methods">The methods.</param>
         internal static void SetIncludeMethodsFilter(params string[] methods)
         {
-            if (methods == null)
+            if (methods == null || methods.All(String.IsNullOrWhiteSpace))
             {
                 s_methodIncludeFilter = new List<string>();
                 return;
@@ -93,7 +93,7 @@ namespace EveCacheParser
         /// <param name="methods">The args.</param>
         internal static void SetExcludeMethodsFilter(params string[] methods)
         {
-            if (methods == null)
+            if (methods == null || methods.All(String.IsNullOrWhiteSpace))
             {
                 s_methodExcludeFilter = new List<string>();
                 return;
@@ -167,7 +167,7 @@ namespace EveCacheParser
 
             // Finds the cached files that are legit EVE files and satisfy the methods search criteria
             return cachedFiles.Where(cachedFile => cachedFile.Exists).Select(
-                cachedFile => new CachedFileReader(cachedFile, false)).Where(
+                cachedFile => new CachedFileReader(cachedFile, doSecurityCheck: false)).Where(
                     reader => reader.Buffer.First() == (byte)StreamType.StreamStart).Where(
                         cachedFile =>
                         s_methodIncludeFilter.Any()
