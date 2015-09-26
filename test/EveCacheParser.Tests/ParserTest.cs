@@ -25,6 +25,8 @@ namespace EveCacheParser.Tests
         public void SetIncludeMethodsFilter_Of_GetOrder_Returns_Only_GetOrders_Files()
         {
             CachedFilesFinder.SetIncludeMethodsFilter();
+            CachedFilesFinder.SetExcludeMethodsFilter();
+
             CachedFilesFinder.SetIncludeMethodsFilter(s_getOrdersText);
             FileInfo[] files = CachedFilesFinder.GetMachoNetCachedFiles(s_testFolder);
 
@@ -38,6 +40,8 @@ namespace EveCacheParser.Tests
         public void SetIncludeMethodsFilter_Of_GetOldPriceHistory_Returns_Only_GetOldPriceHistory_Files()
         {
             CachedFilesFinder.SetIncludeMethodsFilter();
+            CachedFilesFinder.SetExcludeMethodsFilter();
+
             CachedFilesFinder.SetIncludeMethodsFilter(s_getOldPriceHistoryText);
             FileInfo[] files = CachedFilesFinder.GetMachoNetCachedFiles(s_testFolder);
 
@@ -51,6 +55,8 @@ namespace EveCacheParser.Tests
         public void SetIncludeMethodsFilter_Of_GetNewPriceHistory_Returns_Only_GetNewPriceHistory_Files()
         {
             CachedFilesFinder.SetIncludeMethodsFilter();
+            CachedFilesFinder.SetExcludeMethodsFilter();
+
             CachedFilesFinder.SetIncludeMethodsFilter(s_getNewPriceHistoryText);
             FileInfo[] files = CachedFilesFinder.GetMachoNetCachedFiles(s_testFolder);
 
@@ -63,7 +69,9 @@ namespace EveCacheParser.Tests
         [Fact]
         public void SetExcludeMethodsFilter_Of_GetOrder_Does_Not_Return_GetOrders_Files()
         {
+            CachedFilesFinder.SetIncludeMethodsFilter();
             CachedFilesFinder.SetExcludeMethodsFilter();
+
             CachedFilesFinder.SetExcludeMethodsFilter(s_getOrdersText);
             FileInfo[] files = CachedFilesFinder.GetMachoNetCachedFiles(s_testFolder);
 
@@ -76,7 +84,9 @@ namespace EveCacheParser.Tests
         [Fact]
         public void SetExcludeMethodsFilter_Of_GetOldPriceHistory_Does_Not_Return_GetOldPriceHistory_Files()
         {
+            CachedFilesFinder.SetIncludeMethodsFilter();
             CachedFilesFinder.SetExcludeMethodsFilter();
+
             CachedFilesFinder.SetExcludeMethodsFilter(s_getOldPriceHistoryText);
             FileInfo[] files = CachedFilesFinder.GetMachoNetCachedFiles(s_testFolder);
 
@@ -89,7 +99,9 @@ namespace EveCacheParser.Tests
         [Fact]
         public void SetExcludeMethodsFilter_Of_GetNewPriceHistory_Does_Not_Return_GetNewPriceHistory_Files()
         {
+            CachedFilesFinder.SetIncludeMethodsFilter();
             CachedFilesFinder.SetExcludeMethodsFilter();
+
             CachedFilesFinder.SetExcludeMethodsFilter(s_getNewPriceHistoryText);
             FileInfo[] files = CachedFilesFinder.GetMachoNetCachedFiles(s_testFolder);
 
