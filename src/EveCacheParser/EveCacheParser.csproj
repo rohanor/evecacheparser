@@ -106,8 +106,9 @@
     <GitVersionFile TemplateFile="Properties\AssemblyInfo.template.cs" DestinationFile="Properties\AssemblyInfo.cs" />
   </Target>
   <Target Name="AfterBuild">
+    <ItemGroup>
+      <FilesToDelete Include="$(TargetDir)\*.*db"/>
+    </ItemGroup>   
+    <Delete Files="@(FilesToDelete)" /> 
   </Target>
-  <PropertyGroup>
-    <PostBuildEvent>Del $(TargetDir)\*.pdb</PostBuildEvent>
-  </PropertyGroup>
 </Project>
