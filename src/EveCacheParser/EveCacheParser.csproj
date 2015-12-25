@@ -105,7 +105,7 @@
   <Target Name="BeforeBuild" Condition=" '$(Configuration)' == 'Release' ">
     <GitVersionFile TemplateFile="Properties\AssemblyInfo.template.cs" DestinationFile="Properties\AssemblyInfo.cs" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
     <ItemGroup>
       <FilesToDelete Include="$(TargetDir)\*.*db"/>
     </ItemGroup>   
