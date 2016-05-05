@@ -1,5 +1,4 @@
-﻿# region License
-/* EVECacheParser - .NET 4/C# EVE Cache File Parser Library
+﻿/* EVECacheParser - .NET 4/C# EVE Cache File Parser Library
  * Copyright © 2012 Jimi 'Desmont McCallock' C <jimikar@gmail.com>
  *
  * Based on:
@@ -31,7 +30,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-# endregion
 
 using System.Collections.Generic;
 using System.IO;
